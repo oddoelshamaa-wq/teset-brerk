@@ -3040,24 +3040,19 @@
 
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
-   function activateSystemAndSound() {
+ function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // تشغيل الصوت الصامت فوراً لفتح نظام الميديا في الموبايل
+    // تشغيل ملف الصمت فوراً
     const silent = document.getElementById('silentLoop');
     if(silent) {
-        silent.play().catch(e => console.log("Silent loop wait"));
+        silent.play().then(() => {
+            console.log("العداد في الخلفية يعمل الآن ✅");
+        }).catch(e => console.log("يجب التفاعل مع الصفحة أولاً"));
     }
 
-    // فك حظر باقي الأصوات
-    ['alarmSound', 'notifySound', 'broadcastSound', 'complaintSound', 'requestRing'].forEach(id => {
-        const audio = document.getElementById(id);
-        if (audio) {
-            audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(e => {});
-        }
-    });
-
+    // إخفاء الأوفرلاي وبدء العدادات
     document.getElementById('forceSoundOverlay').style.display = 'none';
     startGlobalTimer();
 }
@@ -9566,14 +9561,17 @@ function manageSingleSession(username) {
 function updateLockScreenProgress(timeLeft, status) {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            // السطر ده هو اللي بيخلي العداد يظهر مكان اسم الأغنية
-            title: `الوقت المتبقي: ${timeLeft}`, 
-            artist: status, // الحالة (بريك عام، صلاة، أكسدة)
+            title: `الوقت المتبقي: ${timeLeft}`, // ده اللي هيظهر بخط كبير على شاشة القفل
+            artist: `الحالة: ${status}`,       // ده هيظهر تحتها
             album: 'نظام الشمعة الإداري',
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
+
+        // دي عشان نمنع الزراير (تقديم وتأخير) إنها تظهر وتبوظ الشكل
+        navigator.mediaSession.setActionHandler('play', () => {});
+        navigator.mediaSession.setActionHandler('pause', () => {});
     }
 }
 // 2. دالة إرسال إشعار للموبايل حتى لو القفل مقفول
