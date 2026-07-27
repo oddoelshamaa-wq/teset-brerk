@@ -9544,6 +9544,57 @@ function manageSingleSession(username) {
             }
         });
     });
+    // دالة لتحديث العداد على شاشة القفل
+// 1. دالة تحديث شاشة القفل (بتظهر العداد كأنه أغنية شغالة)
+function updateLockScreenProgress(timeLeft, status) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: `العداد: ${timeLeft}`,
+            artist: 'نظام ELSHAMAA الإداري',
+            album: status,
+            artwork: [
+                { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
+    }
+}
+
+// 2. دالة إرسال إشعار للموبايل حتى لو القفل مقفول
+function showLocalNotification(title, body) {
+    if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                icon: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg',
+                vibrate: [300, 100, 300],
+                tag: 'oxidation-alert',
+                renotify: true
+            });
+        });
+    }
+}
+
+// طلب إذن التنبيهات من المستخدم فور تسجيل الدخول
+function requestNotificationPermission() {
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                console.log("تم تفعيل التنبيهات بنجاح ✅");
+            }
+        });
+    }
+}
+function showLocalNotification(title, body) {
+    if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                vibrate: [200, 100, 200],
+                tag: 'oxidation-urgent'
+            });
+        });
+    }
+}
     // تنفيذ التبديل الفعلي في الطابور
 
             </script>
