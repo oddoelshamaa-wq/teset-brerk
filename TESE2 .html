@@ -3040,16 +3040,18 @@
 
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
-       function activateSystemAndSound() {
+   function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // تشغيل الملف الصامت (ده اللي بيخلي العداد يظهر في شاشة القفل)
-    document.getElementById('silentLoop').play();
+    // تشغيل الصوت الصامت فوراً لفتح نظام الميديا في الموبايل
+    const silent = document.getElementById('silentLoop');
+    if(silent) {
+        silent.play().catch(e => console.log("Silent loop wait"));
+    }
 
     // فك حظر باقي الأصوات
-    const allSounds = ['alarmSound', 'notifySound', 'broadcastSound', 'complaintSound', 'requestRing'];
-    allSounds.forEach(id => {
+    ['alarmSound', 'notifySound', 'broadcastSound', 'complaintSound', 'requestRing'].forEach(id => {
         const audio = document.getElementById(id);
         if (audio) {
             audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(e => {});
@@ -9564,9 +9566,10 @@ function manageSingleSession(username) {
 function updateLockScreenProgress(timeLeft, status) {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `الوقت المتبقي: ${timeLeft}`, // الرقم هيظهر هنا مكان اسم الأغنية
-            artist: status,                    // الحالة هتظهر هنا (بريك أو أكسدة)
-            album: 'ELSHAMAA Management',
+            // السطر ده هو اللي بيخلي العداد يظهر مكان اسم الأغنية
+            title: `الوقت المتبقي: ${timeLeft}`, 
+            artist: status, // الحالة (بريك عام، صلاة، أكسدة)
+            album: 'نظام الشمعة الإداري',
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
