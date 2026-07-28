@@ -9189,38 +9189,39 @@ function playAlarm() {
     // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
 function updateLockScreenTimer(secondsRemaining, statusType) {
     if ('mediaSession' in navigator) {
-        // تأكد إن ملف الصوت الصامت شغال (ده المحرك بتاع اللوك اسكرين)
+        // تأكد إن ملف الصوت الصامت شغال (المحرك اللي بيشغل الشاشة المقفولة)
         const silentAudio = document.getElementById('silentLoop');
         if (silentAudio && silentAudio.paused) {
-            silentAudio.play().catch(e => console.log("بانتظار تفاعل المستخدم لتشغيل العداد"));
+            silentAudio.play().catch(e => console.log("بانتظار تفاعل المستخدم"));
         }
 
         let timeStr = formatTime(secondsRemaining);
         let label = "";
+        let isOxidation = false;
 
+        // تحديد العنوان بناءً على الحالة بالظبط زي الصور
         if (statusType === 'صلاة') {
             label = "🕌 متبقي للصلاة";
         } else if (secondsRemaining < 0) {
             label = "⚠️ أكسدة الآن!";
             timeStr = "-" + formatTime(Math.abs(secondsRemaining));
+            isOxidation = true;
         } else {
-            label = "⏳ متبقي لك في البريك";
+            label = "⏳ متبقي في البريك";
         }
 
-        // تحديث البيانات في اللوك اسكرين
+        // تحديث البيانات اللي بتظهر في المستطيل الأبيض
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`,
-            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
-            album: `الحالة: ${statusType}`,
+            title: `${label}: ${timeStr}`, // السطر الأول الكبير
+            artist: `الموظف: ${currentUser.realName || currentUser.username}`, // السطر التاني
+            album: `إدارة البريك | ELSHAMAA`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
 
-        // دي مهمة جداً: بتخلي العداد يفضل "حي" في اللوك اسكرين
-        if (navigator.mediaSession.playbackState !== 'playing') {
-            navigator.mediaSession.playbackState = 'playing';
-        }
+        // دي حركة سحرية بتخلي العداد يظهر ويشتغل فوراً
+        navigator.mediaSession.playbackState = 'playing';
     }
 }
 
