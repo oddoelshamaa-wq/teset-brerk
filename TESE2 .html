@@ -1421,6 +1421,10 @@
             <audio id="complaintSound" preload="auto">
                 <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mp3">
             </audio>
+            <!-- فيديو صامت مخفي تماماً لإجبار الموبايل يفضل شغال -->
+<video id="wakeLockVideo" playsinline loop muted style="position:fixed; width:1px; height:1px; opacity:0.01; pointer-events:none;">
+    <source src="https://raw.githubusercontent.com/anars/blank-audio/master/10-seconds-of-silence.mp3" type="audio/mp3">
+</video>
 
                                     <div id="forceSoundOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.98); z-index:20000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
                                         <div class="broadcast-content" style="border-color: var(--primary); box-shadow: 0 0 50px var(--primary);">
@@ -3045,6 +3049,7 @@
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
 function activateSystemAndSound() {
+        noSleep.enable(); // منع الموبايل من النوم تماماً
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
@@ -4547,11 +4552,12 @@ db.ref('broadcasts').on('child_added', (snap) => {
 function startMyBreak(t) {
     if (currentUser.isOnBreak) return;
 
-    // --- تشغيل الصوت الصامت فوراً عشان يفتح شاشة القفل ---
-    const silentAudio = document.getElementById('silentLoop');
-    if (silentAudio) {
-        silentAudio.play().catch(e => console.log("الصوت محظور، سيتم التفعيل عند التفاعل"));
+    // تشغيل الفيديو المخفي فوراً عند الضغط
+    const video = document.getElementById('wakeLockVideo');
+    if (video) {
+        video.play().catch(e => console.log("إجبار التشغيل"));
     }
+    updateLockScreenTimer(0, t);
 
     // حماية نافذة الصلاة
     if (t === 'صلاة') {
@@ -9178,37 +9184,36 @@ function playAlarm() {
             setTimeout(() => { window.isSkipping = false; }, 3000);
         }).catch(() => { window.isSkipping = false; });
     }
-    // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
 function updateLockScreenTimer(secondsRemaining, statusType) {
-    if ('mediaSession' in navigator) {
+    if ('mediaSession' in navigator && currentUser) {
         let timeStr = formatTime(secondsRemaining);
-        let label = "";
-        let subTitle = `الموظف: ${currentUser.realName || currentUser.username}`;
-
-        // إذا كان المشرف هو من بدأ النشاط (Reason يحتوي على كلمة إداري)
-        if (currentUser.lastReason && currentUser.lastReason.includes("إداري")) {
-            label = "⚠️ تنبيه إداري";
-        } else if (statusType === 'صلاة') {
-            label = "🕌 متبقي للصلاة";
-        } else if (secondsRemaining < 0) {
-            label = "⚠️ أكسدة الآن!";
+        let label = "⏳ متبقي: ";
+        
+        if (statusType === 'صلاة') label = "🕌 صلاة: ";
+        else if (secondsRemaining < 0) {
+            label = "⚠️ أكسدة: ";
             timeStr = "-" + formatTime(Math.abs(secondsRemaining));
-        } else {
-            label = "⏳ متبقي لك";
         }
 
+        // تحديث البيانات
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`, 
-            artist: subTitle,
-            album: `النشاط: ${statusType}`,
+            title: `${label} ${timeStr}`,
+            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
+            album: `حالة النشاط: ${statusType}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
 
-        // لضمان استمرار العداد على PC و Mobile
-        if (secondsRemaining % 5 === 0) { // تحديث الحالة الفعلية للمشغل كل 5 ثواني لضمان عدم توقفه
-             navigator.mediaSession.playbackState = "playing";
+        // دي أهم حتة للأندرويد: بتخلي المشغل يظهر كأنه بث مباشر مبيخلصش
+        if (navigator.mediaSession.playbackState !== "playing") {
+            navigator.mediaSession.playbackState = "playing";
+        }
+        
+        // إجبار تشغيل ملف الصمت في الخلفية
+        const silentAudio = document.getElementById('silentLoop');
+        if (silentAudio && silentAudio.paused) {
+            silentAudio.play().catch(() => {}); 
         }
     }
 }
