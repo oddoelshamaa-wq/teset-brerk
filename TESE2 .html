@@ -3048,18 +3048,14 @@ function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // طلب إذن الإشعارات فوراً
-    if ("Notification" in window) {
-        Notification.requestPermission();
-    }
-
-    // تشغيل الصوت الصامت
+    // تشغيل الصوت الصامت (لازم يحصل هنا عشان المتصفح يسمح للبرنامج يفضل شغال في الخلفية)
     const silent = document.getElementById('silentLoop');
     if(silent) {
         silent.play().then(() => {
-            console.log("العداد في الخلفية يعمل الآن ✅");
-            updateLockScreenTimer(0, "جاهز للعمل"); // تفعيل شاشة القفل مبدئياً
-        }).catch(e => alert("يرجى الضغط مرة أخرى لتفعيل وضع الخلفية"));
+            console.log("نظام الخلفية والعداد نشط الآن ✅");
+        }).catch(e => {
+            console.log("فشل التفعيل التلقائي، سيتم المحاولة عند بدء البريك");
+        });
     }
 
     document.getElementById('forceSoundOverlay').style.display = 'none';
@@ -4548,52 +4544,48 @@ db.ref('broadcasts').on('child_added', (snap) => {
                 }
             }
 
-    function startMyBreak(t) {
-                if (currentUser.isOnBreak) return;
+function startMyBreak(t) {
+    if (currentUser.isOnBreak) return;
 
-                // --- حماية نافذة الصلاة ---
-                if (t === 'صلاة') {
-                    if (!isPrayerWindowOpen) {
-                        alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. لا يمكنك البدء.");
-                        return;
-                    }
-                    const myIndex = (currentQueue || []).indexOf(currentUser.username);
-                    if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
-                        alert("⏳ لم يحن دورك بعد في الطابور!");
-                        return;
-                    }
-                }
+    // --- تشغيل الصوت الصامت فوراً عشان يفتح شاشة القفل ---
+    const silentAudio = document.getElementById('silentLoop');
+    if (silentAudio) {
+        silentAudio.play().catch(e => console.log("الصوت محظور، سيتم التفعيل عند التفاعل"));
+    }
 
-                const reasonInput = document.getElementById('breakReason');
-                const reasonValue = reasonInput.value.trim();
+    // حماية نافذة الصلاة
+    if (t === 'صلاة') {
+        if (!isPrayerWindowOpen) {
+            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة.");
+            return;
+        }
+        const myIndex = (currentQueue || []).indexOf(currentUser.username);
+        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
+            alert("⏳ لم يحن دورك بعد في الطابور!");
+            return;
+        }
+    }
 
-                if (reasonValue === "" && t !== 'صلاة') {
-                    alert("⚠️ يرجى كتابة سبب النشاط");
-                    reasonInput.focus();
-                    return;
-                }
+    const reasonInput = document.getElementById('breakReason');
+    const reasonValue = reasonInput.value.trim();
 
-                db.ref('users/' + currentUser.username).update({
-                    isOnBreak: true,
-                    breakType: t,
-                    lastStartTime: getServerTime(),
-                    lastReason: reasonValue || t
-                }).then(() => {
-                    // إذا بدأ صلاة، نصفر عداد الـ 10 دقائق للي بعده في الطابور
-                    if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-                });
-            }
+    if (reasonValue === "" && t !== 'صلاة') {
+        alert("⚠️ يرجى كتابة سبب النشاط");
+        reasonInput.focus();
+        return;
+    }
 
-            // دالة مساعدة لتنفيذ بدء البريك
-            function executeBreakStart(t) {
-                let r = document.getElementById('breakReason').value.trim();
-                db.ref('users/'+currentUser.username).update({
-                    isOnBreak: true,
-                    breakType: t,
-                    lastStartTime: getServerTime(),
-                    lastReason: r || t
-                });
-            }
+    db.ref('users/' + currentUser.username).update({
+        isOnBreak: true,
+        breakType: t,
+        lastStartTime: getServerTime(),
+        lastReason: reasonValue || t
+    }).then(() => {
+        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
+        // تفعيل العداد فوراً في شاشة القفل
+        updateLockScreenTimer(0, t); 
+    });
+}
 
                                         function stopMyBreak() {
             // التحقق من نوع الجهاز ومنع الموظف فقط (الأدمن مستثنى)
