@@ -4572,17 +4572,16 @@ db.ref('broadcasts').on('child_added', (snap) => {
     }
 
     // تحديد وسيلة البدء (PC أو Mobile)
-    const deviceType = getDeviceType() === 'desktop' ? 'PC 💻' : 'Mobile 📱';
+  // داخل دالة startMyBreak
+const deviceType = getDeviceType() === 'desktop' ? 'PC 💻' : 'Mobile 📱';
 
-    db.ref('users/' + currentUser.username).update({
-        isOnBreak: true,
-        breakType: t,
-        lastStartTime: getServerTime(),
-        lastReason: reasonValue || t,
-        startedBy: "الموظف نفسه (" + deviceType + ")" // المعلومة الجديدة
-    }).then(() => {
-        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-    });
+db.ref('users/' + currentUser.username).update({
+    isOnBreak: true,
+    breakType: t,
+    lastStartTime: getServerTime(),
+    lastReason: reasonValue || t,
+    startedBy: "الموظف (" + deviceType + ")" // المعلومة الجديدة
+});
 }
 
             // دالة مساعدة لتنفيذ بدء البريك
@@ -8459,19 +8458,16 @@ function playAlarm() {
 function adminStart(un) {
     const typeSelect = document.getElementById('sel_' + un);
     const type = typeSelect ? typeSelect.value : 'بريك عام';
-    const adminName = currentUser.realName || currentUser.username; // اسم المشرف الحالي
+// داخل دالة adminStart
+const adminName = currentUser.realName || currentUser.username;
 
-    db.ref('users/' + un).update({
-        isOnBreak: true,
-        breakType: type,
-        lastStartTime: getServerTime(),
-        lastReason: "بدء إداري بواسطة المشرف",
-        startedBy: "المشرف: " + adminName // المعلومة الجديدة
-    })
-    .then(() => {
-        alert("✅ تم بدء البريك للموظف بواسطة: " + adminName);
-        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
-    });
+db.ref('users/' + un).update({
+    isOnBreak: true,
+    breakType: type,
+    lastStartTime: getServerTime(),
+    lastReason: "بدء إداري",
+    startedBy: "المشرف (" + adminName + ")" // المعلومة الجديدة
+});
 }
     window.adminStop = (un) => {
         db.ref('users/' + un).once('value', (snap) => {
@@ -9186,20 +9182,27 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
         let timeStr = formatTime(secondsRemaining);
         let label = "";
 
-        // تحديد الحالة عشان الموظف يعرف العداد ده بتاع إيه
+        // تحديد التسمية بناءً على الحالة
         if (statusType === 'صلاة') {
             label = "🕌 متبقي للصلاة";
         } else if (secondsRemaining < 0) {
             label = "⚠️ أكسدة الآن!";
-            timeStr = "-" + formatTime(Math.abs(secondsRemaining));
+            timeStr = "-" + formatTime(Math.abs(secondsRemaining)); // إضافة علامة الناقص للأكسدة
         } else {
             label = "⏳ متبقي لك";
         }
 
+        // جلب معلومة مين اللي بدأ من بيانات المستخدم
+        const startedByInfo = currentUser.startedBy || "غير محدد";
+
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`, // ده اللي هيظهر بخط كبير مكان اسم الأغنية
-            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
-            album: `الحالة الحالية: ${statusType}`,
+            // 1. جعل العنوان هو العداد (مثل الصورة اللي تحبها)
+            title: `${label}: ${timeStr}`, 
+            
+            // 2. جعل خانة الفنان هي اسم الموظف ومين اللي فتحه
+            artist: `الموظف: ${currentUser.realName} | بـواسطة: ${startedByInfo}`, 
+            
+            album: `إدارة بريك الشمعة`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
