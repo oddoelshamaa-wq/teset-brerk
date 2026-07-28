@@ -1974,7 +1974,9 @@
                                                     <input type="text" id="monitorSearch" placeholder="بحث عن موظف..." style="flex:1" oninput="renderMonitorTable()">
                                                     <button onclick="endDay()" class="btn btn-danger btn-sm">إقفال اليوم 🛑</button>
                                                 </div>
-
+<button onclick="forceUpdateAllClients()" class="btn" style="background: #7e22ce; color: white;">
+    🚀 تحديث إجباري لجميع الموظفين
+</button>
                                                 <div class="table-responsive">
                                                     <table>
                                                         <thead>
@@ -2502,6 +2504,8 @@
         </div>
     </div>
                                     <script>
+                                        const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
+
                                         // منع القائمة اليمنى (Right Click)
                                         document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -4797,8 +4801,10 @@ db.ref('broadcasts').on('child_added', (snap) => {
 
                                                     // المتبقي = الرصيد الكلي - (المستهلك قديماً + المستهلك الآن)
                                                     const remaining = limit - (usedPre + current);
-updateLockScreenTimer(remaining, "صلاة 🕌");    
+
                                                     if (remaining > 0) {
+                                                        updateLockScreenTimer(remaining, u.breakType); 
+
                                                         timerText.innerText = formatTime(remaining);
                                                         lbl.innerText = "رصيد الصلاة المتبقي";
                                                         timerText.style.color = "#38bdf8"; // أزرق
@@ -4817,7 +4823,8 @@ updateLockScreenTimer(remaining, "صلاة 🕌");
                                                 // --- منطق البريك العام (الأكسدة) ---
                                                 else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ' || u.breakType === 'استراحة VIP') {
                                                     const rem = allowTotal - ((u.usedSeconds || 0) + (u.breakType === 'استراحة VIP' ? 0 : elap));
-updateLockScreenTimer(rem, "بريك عام");
+updateLockScreenTimer(rem, u.breakType);
+
                                                     let pct = (rem / allowTotal); if (pct < 0) pct = 0;
                                                     circle.style.strokeDashoffset = circ - (pct * circ);
 
@@ -4849,6 +4856,7 @@ updateLockScreenTimer(rem, "بريك عام");
                                             } else {
                                                 stopAlarm();
                                                 const rem = allowTotal - (u.usedSeconds || 0);
+                                                
                                                 timerText.innerText = rem >= 0 ? formatTime(rem) : "00:00";
                                                 timerText.style.color = "white";
                                                 lbl.innerText = "رصيد البريك";
@@ -9180,23 +9188,38 @@ function playAlarm() {
     }
     // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
 function updateLockScreenTimer(secondsRemaining, statusType) {
-    if ('mediaSession' in navigator && currentUser) {
+    if ('mediaSession' in navigator) {
+        // تأكد إن ملف الصوت الصامت شغال (ده المحرك بتاع اللوك اسكرين)
+        const silentAudio = document.getElementById('silentLoop');
+        if (silentAudio && silentAudio.paused) {
+            silentAudio.play().catch(e => console.log("بانتظار تفاعل المستخدم لتشغيل العداد"));
+        }
+
         let timeStr = formatTime(secondsRemaining);
-        let label = (secondsRemaining < 0) ? "⚠️ أكسدة (تجاوز الوقت)!" : "المتبقي: " + timeStr;
-        
+        let label = "";
+
+        if (statusType === 'صلاة') {
+            label = "🕌 متبقي للصلاة";
+        } else if (secondsRemaining < 0) {
+            label = "⚠️ أكسدة الآن!";
+            timeStr = "-" + formatTime(Math.abs(secondsRemaining));
+        } else {
+            label = "⏳ متبقي لك في البريك";
+        }
+
+        // تحديث البيانات في اللوك اسكرين
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: label, 
-            artist: statusType,
-            album: `الموظف: ${currentUser.realName || currentUser.username}`,
+            title: `${label}: ${timeStr}`,
+            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
+            album: `الحالة: ${statusType}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
 
-        // تشغيل الصوت الصامت لضمان بقاء العداد حياً على شاشة القفل
-        const silentAudio = document.getElementById('silentLoop');
-        if (silentAudio && silentAudio.paused) {
-            silentAudio.play().catch(e => console.log("الصوت محظور"));
+        // دي مهمة جداً: بتخلي العداد يفضل "حي" في اللوك اسكرين
+        if (navigator.mediaSession.playbackState !== 'playing') {
+            navigator.mediaSession.playbackState = 'playing';
         }
     }
 }
@@ -9641,6 +9664,47 @@ function showLocalNotification(title, body) {
         });
     }
 }
+// دالة يضغط عليها الأدمن بعد ما يرفع الملف الجديد
+function forceUpdateAllClients() {
+    if(!confirm("هل أنت متأكد؟ سيتم إعادة تحميل الصفحة عند جميع الموظفين فوراً لتشغيل التحديث الجديد.")) return;
+    
+    // نرسل رقم الإصدار الجديد والوقت الحالي للكل
+    db.ref('system_update').set({
+        version: APP_VERSION,
+        timestamp: getServerTime(),
+        forceReload: true
+    }).then(() => {
+        alert("تم إرسال إشارة التحديث بنجاح! ✅");
+    });
+}
+
+// دالة المراقبة (بتشتغل عند الموظف)
+db.ref('system_update').on('value', (snap) => {
+    const update = snap.val();
+    if (!update) return;
+
+    // لو الموظف شغال بنسخة قديمة أو الأدمن طلب تحديث إجباري
+    if (update.version !== APP_VERSION || update.forceReload) {
+        console.log("تحديث جديد مكتشف... جاري إعادة التحميل");
+        
+        // إظهار رسالة بسيطة قبل التحديث بـ 2 ثانية
+        if (currentUser && currentUser.role !== 'admin') {
+            const loadingOverlay = document.getElementById('loading');
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.innerHTML = `
+                <div style="text-align:center;">
+                    <h2 style="color:white;">🚀 جاري تثبيت تحديث جديد...</h2>
+                    <p style="color:var(--primary);">يرجى الانتظار ثواني قليلة</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                // مسح الكاش وإعادة التحميل الإجباري
+                window.location.replace(window.location.href + "?v=" + update.timestamp);
+            }, 2000);
+        }
+    }
+});
     // تنفيذ التبديل الفعلي في الطابور
 
             </script>
