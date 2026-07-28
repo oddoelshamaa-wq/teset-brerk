@@ -1753,6 +1753,10 @@
                                                         style="cursor: pointer; font-size: 1.5rem; margin-right: 10px; vertical-align: middle;"
                                                         title="الأرشيف السري">🕵️</span>
                                                     <button id="secretResetBtn" class="hidden btn btn-danger btn-sm" onclick="endDay()">تصفير اليوم</button>
+   <button id="globalRefreshBtn" class="hidden btn" onclick="triggerGlobalRefresh()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 8px 15px; border-radius: 12px; margin-right: 10px; font-weight: bold; border: none; cursor: pointer; height: 35px; font-size: 0.8rem;">
+        🚀 تحديث نسخة الموقع عند الكل
+    </button>
+
                                                 </div>
 
                                                 <!-- أزرار التحكم الإضافية -->
@@ -1974,7 +1978,10 @@
                                                     <input type="text" id="monitorSearch" placeholder="بحث عن موظف..." style="flex:1" oninput="renderMonitorTable()">
                                                     <button onclick="endDay()" class="btn btn-danger btn-sm">إقفال اليوم 🛑</button>
                                                 </div>
-
+<!-- وضع هذا الزر في لوحة الأدمن بجانب أزرار محمود الأخرى -->
+<button id="globalRefreshBtn" onclick="triggerGlobalRefresh()" class="btn hidden" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 8px 15px; border-radius: 12px;">
+    🔄 تحديث التطبيق عند الجميع
+</button>
                                                 <div class="table-responsive">
                                                     <table>
                                                         <thead>
@@ -3032,14 +3039,32 @@
                                             return "desktop";
                                         }
 
-                                        const localLoadTime = Date.now();
-                                        db.ref('refreshSignal').on('value', (snap) => {
-                                            const signalTime = snap.val();
-                                            if (signalTime && signalTime > localLoadTime && currentUser && currentUser.role !== 'admin') { location.reload(); }
-                                        });
+                                  // وقت تحميل الصفحة الحالي
+const pageLoadTime = Date.now();
 
-                                        function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
+// مراقبة إشارة التحديث من قاعدة البيانات
+db.ref('refreshSignal').on('value', (snap) => {
+    const signalTime = snap.val();
+    // إذا كانت الإشارة أحدث من وقت تحميل الصفحة، اعمل تحديث
+    if (signalTime && signalTime > pageLoadTime) {
+        console.log("تحديث إجباري من الإدارة...");
+        location.reload(true); 
+    }
+});
 
+function triggerGlobalRefresh() {
+    // التحقق من الصلاحية للأمان
+    if (currentUser.username !== 'mahmoud') {
+        alert("عذراً، هذه الصلاحية للمدير العام فقط.");
+        return;
+    }
+
+    if(confirm("⚠️ هل تريد إجبار جميع الأجهزة المفتوحة الآن على تحديث الصفحة فوراً؟")) {
+        // إرسال الإشارة لقاعدة البيانات
+        db.ref('refreshSignal').set(getServerTime());
+        alert("تم إرسال أمر التحديث لجميع الموظفين بنجاح 🚀");
+    }
+}
        function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
@@ -3788,39 +3813,77 @@ db.ref('broadcasts').on('child_added', (snap) => {
     location.reload(); 
 }
 
-                                        function showAdmin() {
-                                            document.getElementById('loginSection').classList.add('hidden');
-                                            document.getElementById('adminSection').classList.remove('hidden');
-            fetchPrayerTimes();
+                                        // 1. دالة التحكم في ظهور الأزرار (تأكد من استبدال دالة showAdmin الموجودة عندك)
+function showAdmin() {
+    const loginSec = document.getElementById('loginSection');
+    const adminSec = document.getElementById('adminSection');
+    if (loginSec) loginSec.classList.add('hidden');
+    if (adminSec) adminSec.classList.remove('hidden');
 
-                                            // المكان: داخل دالة showAdmin()
-                                            const managerNameEl = document.getElementById('currentManagerDisplay');
-                                            const realName = currentUser.realName || currentUser.username;
+    const managerNameEl = document.getElementById('currentManagerDisplay');
+    const realName = currentUser.realName || currentUser.username;
 
-                                            if (currentUser.username === 'mahmoud') {
-                                                // لو المستخدم هو محمود (صاحب الموقع)
-                                                managerNameEl.innerHTML = `
-                                                    <span class="boss-crown">👑</span>
-                                                    <span class="the-boss-name">${realName} (CEO)</span>
-                                                `;
-                                            } else {
-                                                // لو أي مشرف تاني (عادي)
-                                                managerNameEl.innerText = `المشرف: ${realName}`;
-                                                managerNameEl.style.color = ""; // ريست للألوان
-                                                managerNameEl.className = "";   // ريست للكلاسات
-                                            }
+    if (currentUser.username === 'mahmoud') {
+        managerNameEl.innerHTML = `<span class="boss-crown">👑</span> <span class="the-boss-name">${realName} (CEO)</span>`;
+        
+        // إظهار أزرار محمود الثلاثة
+        document.getElementById('secretArchiveBtn').classList.remove('hidden'); // الأرشيف السري
+        document.getElementById('secretResetBtn').classList.remove('hidden');   // تصفير اليوم
+        document.getElementById('globalRefreshBtn').classList.remove('hidden'); // تحديث التطبيق
+    } else {
+        // إخفاء أزرار الإدارة العليا عن باقي المشرفين
+        document.getElementById('secretArchiveBtn').classList.add('hidden');
+        document.getElementById('secretResetBtn').classList.add('hidden');
+        document.getElementById('globalRefreshBtn').classList.add('hidden');
+        
+        let title = (currentUser.username === 'ahmed') ? "المشرف العام" : "المشرف";
+        managerNameEl.innerText = `${title}: ${realName}`;
+    }
+    switchAdminTab('monitor');
+    startGlobalTimer();
+}
 
-                                            // إظهار الزر السري لمحمود فقط
-                                            if (currentUser.username === 'mahmoud') {
-                                                document.getElementById('secretResetBtn').classList.remove('hidden');
-                                            } else {
-                                                document.getElementById('secretResetBtn').classList.add('hidden');
-                                            }
+// 2. دالة تحديث التطبيق (Reload) - محمود فقط
+function triggerGlobalRefresh() {
+    if (currentUser.username !== 'mahmoud') return;
+    if(confirm("⚠️ تنبيه: سيتم عمل Reload لصفحة جميع الموظفين الآن. هل أنت متأكد؟")) {
+        // نرسل توقيت اللحظة الحالية كإشارة تحديث
+        db.ref('refreshSignal').set(Date.now());
+        alert("تم إرسال أمر التحديث للكل 🚀");
+    }
+}
 
-                                            switchAdminTab('monitor');
-                                            startGlobalTimer();
-                                        }
-                                        
+// 3. دالة تصفير اليوم (Reset العدادات) - محمود فقط
+// الوظيفة الأولى: تصفير العدادات (بدون ريلود)
+function endDay() {
+    if (currentUser.username !== 'mahmoud') return;
+    
+    if(confirm("⚠️ هل تريد تصفير عدادات البريك والصلاة لجميع الموظفين؟ (الأرقام هترجع أصفار فوراً)")) {
+        const updates = {};
+        Object.keys(allUsersData).forEach(un => {
+            if(!MANAGERS.includes(un)) {
+                updates[`users/${un}/usedSeconds`] = 0;
+                updates[`users/${un}/prayerSeconds`] = 0;
+                updates[`users/${un}/prayerLimit`] = 0;
+                updates[`users/${un}/prayerCountToday`] = 0;
+                updates[`users/${un}/isOnBreak`] = false;
+                updates[`users/${un}/lastStartTime`] = null;
+            }
+        });
+        db.ref().update(updates).then(() => alert("✅ تم تصفير العدادات بنجاح."));
+    }
+}
+
+// الوظيفة الثانية: تحديث الموقع (إجبار الكل على الـ Reload)
+function triggerGlobalRefresh() {
+    if (currentUser.username !== 'mahmoud') return;
+
+    if(confirm("🚀 هل تريد إرسال تحديث لجميع الأجهزة؟ (سيتم إعادة تحميل الصفحة عند الكل لتحميل النسخة الجديدة)")) {
+        // نرسل إشارة التحديث بـ Timestamp جديد
+        db.ref('refreshSignal').set(Date.now());
+        alert("تم إرسال أمر التحديث الشامل 🚀");
+    }
+}
                                         // متغير لمنع تشغيل الصوت عند تحميل الصفحة لأول مرة للرسائل القديمة
                                         let isInitialLoad = true;
         // --- تسجيل وقت الحضور (Clock-In) ---
@@ -6626,43 +6689,53 @@ function playAlarm() {
 
             // تعديل دالة showAdmin عشان تظهر الزرار لمحمود بس
             // (مهم: ابحث عن دالة showAdmin الموجودة عندك وضف السطر ده جواها)
-                                        function showAdmin() {
-                                            // إظهار وإخفاء الأقسام الرئيسية
-                                            const loginSec = document.getElementById('loginSection');
-                                            const adminSec = document.getElementById('adminSection');
+        function showAdmin() {
+    // 1. إخفاء قسم تسجيل الدخول وإظهار لوحة الإدارة
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('adminSection').classList.remove('hidden');
 
-                                            if (loginSec) loginSec.classList.add('hidden');
-                                            if (adminSec) adminSec.classList.remove('hidden');
+    const managerNameEl = document.getElementById('currentManagerDisplay');
+    const realName = currentUser.realName || currentUser.username;
 
-                                            const managerNameEl = document.getElementById('currentManagerDisplay');
-                                            const realName = currentUser.realName || currentUser.username;
+    // الحصول على عناصر الأزرار السرية
+    const resetBtn = document.getElementById('secretResetBtn');     // زر التصفير
+    const refreshBtn = document.getElementById('globalRefreshBtn'); // زر التحديث (الجديد)
+    const archBtn = document.getElementById('secretArchiveBtn');   // زر الأرشيف
 
-                                            if (managerNameEl) {
-                                                if (currentUser.username === 'mahmoud') {
-                                                    managerNameEl.innerHTML = `
-                                                        <span class="boss-crown">👑</span>
-                                                        <span class="the-boss-name">${realName} (CEO)</span>
-                                                    `;
-                                                    // إظهار أزرار محمود لو موجودة
-                                                    const archBtn = document.getElementById('secretArchiveBtn');
-                                                    const resetBtn = document.getElementById('secretResetBtn');
-                                                    if (archBtn) archBtn.classList.remove('hidden');
-                                                    if (resetBtn) resetBtn.classList.remove('hidden');
-                                                } else {
-                                                    let title = (currentUser.username === 'ahmed') ? "المشرف العام" : "المشرف";
-                                                    managerNameEl.innerText = `${title}: ${realName}`;
+    // 2. التحقق إذا كان المستخدم هو محمود (CEO)
+    if (currentUser.username === 'mahmoud') {
+        // تخصيص شكل الاسم (تاج + لمعة ذهبية)
+        if (managerNameEl) {
+            managerNameEl.innerHTML = `
+                <span class="boss-crown">👑</span>
+                <span class="the-boss-name">${realName} (CEO)</span>
+            `;
+        }
 
-                                                    // إخفاء أزرار محمود
-                                                    const archBtn = document.getElementById('secretArchiveBtn');
-                                                    const resetBtn = document.getElementById('secretResetBtn');
-                                                    if (archBtn) archBtn.classList.add('hidden');
-                                                    if (resetBtn) resetBtn.classList.add('hidden');
-                                                }
-                                            }
+        // إظهار الأزرار الثلاثة لمحمود فقط
+        if (resetBtn) resetBtn.classList.remove('hidden');
+        if (refreshBtn) refreshBtn.classList.remove('hidden');
+        if (archBtn) archBtn.classList.remove('hidden');
 
-                                            switchAdminTab('monitor');
-                                            startGlobalTimer();
-                                        }
+    } else {
+        // 3. إعدادات باقي المشرفين (أحمد، أبو تميم، إلخ)
+        if (managerNameEl) {
+            let title = (currentUser.username === 'ahmed') ? "المشرف العام" : "المشرف";
+            managerNameEl.innerText = `${title}: ${realName}`;
+            managerNameEl.style.color = "white"; // لون طبيعي
+        }
+
+        // إخفاء الأزرار السرية عن أي مشرف آخر
+        if (resetBtn) resetBtn.classList.add('hidden');
+        if (refreshBtn) refreshBtn.classList.add('hidden');
+        if (archBtn) archBtn.classList.add('hidden');
+    }
+
+    // 4. تشغيل الوظائف الأساسية للوحة التحكم
+    switchAdminTab('monitor'); // فتح تبويب المراقبة افتراضياً
+    startGlobalTimer();        // تشغيل ساعة السيرفر
+    if (typeof fetchPrayerTimes === "function") fetchPrayerTimes(); // تحميل مواقيت الصلاة
+}
 
                                         function updateQueueSelect() {
                                             const sel = document.getElementById('queueUserSelect');
