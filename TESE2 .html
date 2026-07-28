@@ -1768,9 +1768,9 @@
                                                     </button>
 
                                                     <!-- زر الانتقال لمعرض الصور -->
-                                                    <button onclick="window.location.href='gallery.html'" class="btn" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: white; border: 1px solid rgba(255,255,255,0.2); height: 45px; padding: 0 20px;">
-                                                        🖼️ معرض الصور
-                                                    </button>
+                                                    <button onclick="window.location.open('https://oddoelshamaa-wq.github.io/break../gallery.html', '_blank')" class="btn" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: white; border: 1px solid rgba(255,255,255,0.2); height: 45px; padding: 0 20px;">
+    🖼️ معرض الصور
+</button>
 
                                                     <!-- زر تسجيل الخروج للمشرفين -->
                                                     <button onclick="logout()" class="btn btn-danger btn-sm" style="padding: 8px 20px; border-radius: 12px; display: flex; align-items: center; gap: 8px;">
@@ -1974,7 +1974,9 @@
                                                     <input type="text" id="monitorSearch" placeholder="بحث عن موظف..." style="flex:1" oninput="renderMonitorTable()">
                                                     <button onclick="endDay()" class="btn btn-danger btn-sm">إقفال اليوم 🛑</button>
                                                 </div>
-
+<button onclick="forceUpdateAllClients()" class="btn" style="background: #7e22ce; color: white;">
+    🚀 تحديث إجباري لجميع الموظفين
+</button>
                                                 <div class="table-responsive">
                                                     <table>
                                                         <thead>
@@ -2502,6 +2504,8 @@
         </div>
     </div>
                                     <script>
+                                        const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
+
                                         // منع القائمة اليمنى (Right Click)
                                         document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -3040,19 +3044,24 @@
 
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
- function activateSystemAndSound() {
+function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // تشغيل ملف الصمت فوراً
+    // طلب إذن الإشعارات فوراً
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
+
+    // تشغيل الصوت الصامت
     const silent = document.getElementById('silentLoop');
     if(silent) {
         silent.play().then(() => {
             console.log("العداد في الخلفية يعمل الآن ✅");
-        }).catch(e => console.log("يجب التفاعل مع الصفحة أولاً"));
+            updateLockScreenTimer(0, "جاهز للعمل"); // تفعيل شاشة القفل مبدئياً
+        }).catch(e => alert("يرجى الضغط مرة أخرى لتفعيل وضع الخلفية"));
     }
 
-    // إخفاء الأوفرلاي وبدء العدادات
     document.getElementById('forceSoundOverlay').style.display = 'none';
     startGlobalTimer();
 }
@@ -3756,10 +3765,20 @@ db.ref('broadcasts').on('child_added', (snap) => {
     }
 }
 
-                                        function setupPresence(un) { 
-                                            const s = db.ref("users/" + un + "/state"), dRef = db.ref("users/" + un + "/device");
-                                            db.ref(".info/connected").on("value", snap => { if (snap.val()) { s.onDisconnect().set("offline").then(() => { s.set("online"); dRef.set(getDeviceType()); }); } }); 
-                                        }
+                                     function setupPresence(un) {
+    const s = db.ref("users/" + un + "/state");
+    const dRef = db.ref("users/" + un + "/device");
+    
+    db.ref(".info/connected").on("value", snap => {
+        if (snap.val()) {
+            // لو قفل البرنامج وهو في بريك، نحدث حالته إنه "هروب" أو "Offline" مع استمرار العداد
+            s.onDisconnect().set("offline_during_break"); 
+            
+            s.set("online");
+            dRef.set(getDeviceType());
+        }
+    });
+}
 
                      function logout() { 
     if(currentUser && currentUser.username) {
@@ -4784,6 +4803,8 @@ db.ref('broadcasts').on('child_added', (snap) => {
                                                     const remaining = limit - (usedPre + current);
 
                                                     if (remaining > 0) {
+                                                        updateLockScreenTimer(remaining, u.breakType); 
+
                                                         timerText.innerText = formatTime(remaining);
                                                         lbl.innerText = "رصيد الصلاة المتبقي";
                                                         timerText.style.color = "#38bdf8"; // أزرق
@@ -4802,6 +4823,7 @@ db.ref('broadcasts').on('child_added', (snap) => {
                                                 // --- منطق البريك العام (الأكسدة) ---
                                                 else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ' || u.breakType === 'استراحة VIP') {
                                                     const rem = allowTotal - ((u.usedSeconds || 0) + (u.breakType === 'استراحة VIP' ? 0 : elap));
+updateLockScreenTimer(rem, u.breakType);
 
                                                     let pct = (rem / allowTotal); if (pct < 0) pct = 0;
                                                     circle.style.strokeDashoffset = circ - (pct * circ);
@@ -4834,6 +4856,7 @@ db.ref('broadcasts').on('child_added', (snap) => {
                                             } else {
                                                 stopAlarm();
                                                 const rem = allowTotal - (u.usedSeconds || 0);
+                                                
                                                 timerText.innerText = rem >= 0 ? formatTime(rem) : "00:00";
                                                 timerText.style.color = "white";
                                                 lbl.innerText = "رصيد البريك";
@@ -4892,26 +4915,20 @@ db.ref('broadcasts').on('child_added', (snap) => {
 function playAlarm() { 
     if(soundActive) { 
         document.body.classList.add('وضع-التنبيه'); 
-        document.getElementById('overtimeAlert').classList.remove('hidden'); 
         
-        // تشغيل صوت التنبيه
         const alarm = document.getElementById('alarmSound');
-        alarm.play().catch(e=>{}); 
+        
+        // 1. تشغيل الصوت (هيشتغل لو أنت ضاغط على زرار تفعيل الصوت عند الدخول)
+        if (alarm.paused) {
+            alarm.play().catch(e => console.log("الصوت محظور من المتصفح"));
+        }
 
-        // إرسال إشعار يهز الموبايل (حتى لو الشاشة مقفولة)
-        if (document.visibilityState === 'hidden') {
-            showLocalNotification("🚨 تنبيه أكسدة!", "لقد تجاوزت الوقت المسموح، ارجع فوراً!");
+        // 2. إرسال إشعار يهز الموبايل (عشان لو المتصفح قفل الصوت، الهزاز ينبهك)
+        if (Notification.permission === "granted") {
+            showLocalNotification("🚨 تنبيه أكسدة!", "لقد تجاوزت الوقت المسموح، ارجع لمكتبك فوراً!");
         }
     } 
-}                                        function stopAlarm() { document.body.classList.remove('وضع-التنبيه'); if(document.getElementById('overtimeAlert')) document.getElementById('overtimeAlert').classList.add('hidden'); document.getElementById('alarmSound').pause(); }
-                                        function saveAdminTyping(u, v) { adminTypingBuffer[u] = v; }
-                                        function saveAdminSelect(u, v) { adminSelectBuffer[u] = v; }
-                                        function updateBroadcastTargets() {
-                                            const sel = document.getElementById('broadcastTarget'); const old = Array.from(sel.selectedOptions).map(o => o.value);
-                                            let h = '<option value="all">📣 للجميع</option>';
-                                            Object.values(allUsersData).forEach(u => { if(u.username && !MANAGERS.includes(u.username)) h += `<option value="${u.username}">👤 ${u.realName || u.username}</option>`; });
-                                            if (sel.innerHTML !== h) { sel.innerHTML = h; old.forEach(v => { const o = sel.querySelector(`option[value="${v}"]`); if(o) o.selected = true; }); }
-                                        }
+}                              
 
                                         function sendEmRequest() { const r = document.getElementById('breakReason').value.trim(); if(!r) return alert("اكتب السبب"); db.ref('users/'+currentUser.username+'/emRequest').set({ reason: r, status: 'قيد الانتظار', timestamp: getServerTime() }); }
 
@@ -9169,6 +9186,32 @@ function playAlarm() {
             setTimeout(() => { window.isSkipping = false; }, 3000);
         }).catch(() => { window.isSkipping = false; });
     }
+    // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
+function updateLockScreenTimer(secondsRemaining, statusType) {
+    if ('mediaSession' in navigator) {
+        let timeStr = formatTime(secondsRemaining);
+        let label = "";
+
+        // تحديد الحالة عشان الموظف يعرف العداد ده بتاع إيه
+        if (statusType === 'صلاة') {
+            label = "🕌 متبقي للصلاة";
+        } else if (secondsRemaining < 0) {
+            label = "⚠️ أكسدة الآن!";
+            timeStr = "-" + formatTime(Math.abs(secondsRemaining));
+        } else {
+            label = "⏳ متبقي لك";
+        }
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: `${label}: ${timeStr}`, // ده اللي هيظهر بخط كبير مكان اسم الأغنية
+            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
+            album: `الحالة الحالية: ${statusType}`,
+            artwork: [
+                { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
+    }
+}
 
     // 5. تصفير العداد فوراً عند تغير الشخص الأول في الطابور (للمدير)
     // مراقبة الطابور: لو الشخص اللي عليه الدور اتغير، نصفر العداد ونبدأ من جديد
@@ -9610,6 +9653,47 @@ function showLocalNotification(title, body) {
         });
     }
 }
+// دالة يضغط عليها الأدمن بعد ما يرفع الملف الجديد
+function forceUpdateAllClients() {
+    if(!confirm("هل أنت متأكد؟ سيتم إعادة تحميل الصفحة عند جميع الموظفين فوراً لتشغيل التحديث الجديد.")) return;
+    
+    // نرسل رقم الإصدار الجديد والوقت الحالي للكل
+    db.ref('system_update').set({
+        version: APP_VERSION,
+        timestamp: getServerTime(),
+        forceReload: true
+    }).then(() => {
+        alert("تم إرسال إشارة التحديث بنجاح! ✅");
+    });
+}
+
+// دالة المراقبة (بتشتغل عند الموظف)
+db.ref('system_update').on('value', (snap) => {
+    const update = snap.val();
+    if (!update) return;
+
+    // لو الموظف شغال بنسخة قديمة أو الأدمن طلب تحديث إجباري
+    if (update.version !== APP_VERSION || update.forceReload) {
+        console.log("تحديث جديد مكتشف... جاري إعادة التحميل");
+        
+        // إظهار رسالة بسيطة قبل التحديث بـ 2 ثانية
+        if (currentUser && currentUser.role !== 'admin') {
+            const loadingOverlay = document.getElementById('loading');
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.innerHTML = `
+                <div style="text-align:center;">
+                    <h2 style="color:white;">🚀 جاري تثبيت تحديث جديد...</h2>
+                    <p style="color:var(--primary);">يرجى الانتظار ثواني قليلة</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                // مسح الكاش وإعادة التحميل الإجباري
+                window.location.replace(window.location.href + "?v=" + update.timestamp);
+            }, 2000);
+        }
+    }
+});
     // تنفيذ التبديل الفعلي في الطابور
 
             </script>
