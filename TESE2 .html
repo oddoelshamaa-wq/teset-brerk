@@ -3317,98 +3317,118 @@ db.ref('broadcasts').on('child_added', (snap) => {
                                             }
                                         }
     function setPrayerWindow(status) {
-        db.ref('settings/prayerOpen').set(status).then(() => {
-            const now = getServerTime();
-            
-            if (status === false) {
-                // الحالة: إغلاق النافذة -> نحسب كم ثانية مرت من الـ 10 دقائق ونحفظها
-                db.ref('settings/turnTimer').once('value', (snap) => {
-                    const data = snap.val() || {};
-                    const startTime = data.startTime || now;
-                    const elapsedSoFar = Math.floor((now - startTime) / 1000);
-                    
-                    // حفظ الثواني المنقضية لكي لا تضيع أثناء الإغلاق
-                    db.ref('settings/turnTimer/pausedElapsed').set(elapsedSoFar);
-                });
+    db.ref('settings/prayerOpen').set(status).then(() => {
+        const now = getServerTime();
+        
+        if (status === false) {
+            // عند الإغلاق: نحسب إحنا استهلكنا قد إيه من الـ 10 دقائق ونحفظه
+            db.ref('settings/turnTimer').once('value', (snap) => {
+                const data = snap.val() || {};
+                const startTime = data.startTime || now;
+                const elapsed = Math.floor((now - startTime) / 1000);
+                db.ref('settings/turnTimer/pausedElapsed').set(elapsed);
+            });
 
-                db.ref('broadcasts').push({
-                    message: "🛑 تم إيقاف مؤقت الصلاة (النافذة مغلقة).",
-                    timestamp: now,
-                    sender: "النظام 🤖",
-                        silent: true, // هكذا ستظهر الرسالة بدون صوت
-
-                       target: "all"
-
-                });
-            } else {
-                // الحالة: فتح النافذة -> نعيد ضبط وقت البداية ليعمل كأنه "Resume"
-                db.ref('settings/turnTimer/pausedElapsed').once('value', (snap) => {
-                    const pausedElapsed = snap.val() || 0;
-                    // المعادلة: وقت البداية الجديد = (الآن - الوقت الذي انقضى سابقاً)
+            db.ref('broadcasts').push({
+                message: "🛑 تم إيقاف مؤقت الصلاة (النافذة مغلقة).",
+                timestamp: now, sender: "النظام 🤖", silent: true, target: "all"
+            });
+        } else {
+            // عند الفتح: أهم خطوة عشان الوقت ميتسرقش
+            db.ref('settings/turnTimer/pausedElapsed').once('value', (snap) => {
+                const pausedElapsed = snap.val() || 0;
+                // لو الوقت اللي فات أكتر من 10 دقائق، يبقى نبدأ من جديد خالص
+                if (pausedElapsed >= 600) {
+                    db.ref('settings/turnTimer').update({
+                        startTime: now,
+                        pausedElapsed: 0
+                    });
+                } else {
+                    // لو لسه مخلصش الـ 10 دقائق، يكمل من مطرح ما وقف
                     db.ref('settings/turnTimer/startTime').set(now - (pausedElapsed * 1000));
-                });
+                }
+            });
 
-                db.ref('broadcasts').push({
-                    message: "🕌 تم استئناف وقت الصلاة.. العداد يعمل الآن.",
-                    timestamp: now,
-                    sender: "النظام 🤖",
-                        silent: true, // هكذا ستظهر الرسالة بدون صوت
-
-                    target: "all"
-
-                });
-            }
-        });
-    }
-
-                                    function addPrayerTimeGlobal() {
-            if(!confirm("توزيع 15 دقيقة صلاة للكل؟")) return;
-
-            db.ref('users').once('value', (snap) => {
-                const users = snap.val();
-                const updates = {};
-                const timestamp = getServerTime();
-
-                Object.keys(users).forEach(un => {
-                    if(!MANAGERS.includes(un)) {
-                        // تصفير عداد الثواني المستهلكة للصلاة اليوم وبدء رصيد جديد
-                        updates[`users/${un}/prayerLimit`] = 900; // الـ 15 دقيقة
-                        updates[`users/${un}/prayerSeconds`] = 0; 
-                        updates[`users/${un}/prayerCountToday`] = 0; // تصفير عدد المرات للبدء من جديد
-                        
-                        // إذا كان الموظف "علق" في وضع الصلاة وهو مش في بريك فعلي، بنرجعه متاح
-                        if (users[un].breakType === 'صلاة' && !users[un].isOnBreak) {
-                            updates[`users/${un}/breakType`] = "";
-                        }
-                    }
-                });
-
-                // فتح نافذة الصلاة أوتوماتيكياً عند التوزيع
-                updates['settings/prayerOpen'] = true;
-
-                db.ref().update(updates).then(() => {
-                    alert("🚀 تم توزيع الرصيد وفتح الصلاة بنجاح.");
-                });
+            db.ref('broadcasts').push({
+                message: "🕌 تم فتح وقت الصلاة.. العداد يعمل الآن.",
+                timestamp: now, sender: "النظام 🤖", silent: true, target: "all"
             });
         }
+    });
+}
+function addPrayerTimeGlobal() {
+    if (!confirm("توزيع 15 دقيقة صلاة للكل؟")) return;
 
-                                        function deleteBroadcast(key) {
-                                            // رسالة توضح إنها هتفضل في المعرض
-                                            if(!confirm("⚠️ هل تريد إخفاء هذا التنبيه من سجل الإدارة؟\n\nسيتم إخفاؤه من هذه اللوحة (البريك) فقط، وسيظل موجوداً ومنشوراً في \"معرض الإنجازات\" العام.")) return;
-                                            
-                                            // تسجيل العملية في الأرشيف
-                                            logDeletionAction("إخفاء من لوحة الإدارة", "البث", "قام المشرف بإخفاء الصورة من اللوحة الإدارية، لكنها تُركت في المعرض العام.");
-                                            
-                                            // التحديث: إضافة وسم الحذف الإداري (بدل الحذف النهائي)
-                                            db.ref('broadcasts/' + key).update({
-                                                adminDeleted: true, // ده الوصف السحري
-                                                deletedBy: currentUser.realName || currentUser.username,
-                                                deletedAt: Date.now()
-                                            }).then(() => {
-                                                alert("تم الإخفاء من اللوحة بنجاح ✅\n(لا تزال موجودة في المعرض)");
-                                                triggerGlobalRefresh(); // تحديث الشاشة
-                                            });
-                                        }
+    // إظهار حالة التحميل على الزرار
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "⏳ جاري التوزيع...";
+
+    db.ref('users').once('value').then((snap) => {
+        const users = snap.val();
+        if (!users) {
+            alert("❌ لم يتم العثور على موظفين في قاعدة البيانات!");
+            return;
+        }
+
+        const updates = {};
+        const now = getServerTime();
+        let count = 0;
+
+        Object.keys(users).forEach(un => {
+            // استثناء المديرين من استلام رصيد الصلاة
+            if (!MANAGERS.includes(un)) {
+                updates[`users/${un}/prayerLimit`] = 900; // 15 دقيقة
+                updates[`users/${un}/prayerSeconds`] = 0; // تصفير المستهلك
+                updates[`users/${un}/prayerCountToday`] = 0; // تصفير مرات الصلاة
+                
+                // إذا كان الموظف عالقاً في وضع الصلاة القديم، نرجعه متاح
+                if (users[un].breakType === 'صلاة' && !users[un].isOnBreak) {
+                    updates[`users/${un}/breakType`] = "";
+                }
+                count++;
+            }
+        });
+
+        // فتح نافذة الصلاة للجميع في الإعدادات
+        updates['settings/prayerOpen'] = true;
+
+        // تنفيذ التحديث في خطوة واحدة (Atomic Update)
+        return db.ref().update(updates).then(() => {
+            // إرسال رسالة بث صامتة لتنبيه الموظفين
+            db.ref('broadcasts').push({
+                message: "🕌 تم فتح باب الصلاة وتوزيع رصيد 15 دقيقة للجميع.",
+                timestamp: now,
+                sender: "النظام 🤖",
+                target: "all",
+                silent: true
+            });
+            
+            alert(`✅ تم توزيع الرصيد بنجاح على (${count}) موظف.`);
+        });
+    }).catch((error) => {
+        console.error("Firebase Error:", error);
+        alert("❌ فشل التوزيع: " + error.message);
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    });
+}
+
+           // الكود الصحيح (المسح الصامت)
+function deleteBroadcast(key) {
+    if(!confirm("⚠️ هل تريد إخفاء هذا التنبيه من السجل؟")) return;
+    
+    db.ref('broadcasts/' + key).update({
+        adminDeleted: true,
+        deletedBy: currentUser.realName || currentUser.username,
+        deletedAt: Date.now()
+    }).then(() => {
+        alert("تم الإخفاء بنجاح ✅");
+        // كدا هيمسح من غير ما يفتحلك رسالة الصاروخ المزعجة
+    });
+}                        
    function showBroadcastOverlay(data) {
     const overlay = document.getElementById('broadcastOverlay');
     const msgText = document.getElementById('broadcastMsgText');
@@ -3868,6 +3888,7 @@ function endDay() {
                 updates[`users/${un}/prayerCountToday`] = 0;
                 updates[`users/${un}/isOnBreak`] = false;
                 updates[`users/${un}/lastStartTime`] = null;
+                
             }
         });
         db.ref().update(updates).then(() => alert("✅ تم تصفير العدادات بنجاح."));
@@ -4388,11 +4409,7 @@ function startGlobalTimer() {
                 if (typeof renderMonitorTable === "function") {
                     renderMonitorTable(); 
                 }
-                
-                // 4. إشارة تحديث للكل (لو الدالة موجودة)
-                if (typeof triggerGlobalRefresh === "function") {
-                    try { triggerGlobalRefresh(); } catch(e) { console.log("Refresh signal error ignored"); }
-                }
+        
             })
             .catch((error) => {
                 console.error("❌ فشل التحديث في قاعدة البيانات:", error);
@@ -4434,7 +4451,6 @@ function startGlobalTimer() {
 
             db.ref('users/' + un).update(updates).then(() => {
                 if (u.breakType === 'صلاة') removeFromQueueByUsername(un);
-                triggerGlobalRefresh();
                 alert("تم إيقاف النشاط للموظف ومسح تصريح الطوارئ بنجاح ✅");
             });
         });
@@ -4579,42 +4595,48 @@ function startGlobalTimer() {
                     .catch(err => alert("خطأ في الحذف: " + err.message));
                 }
             }
+function startMyBreak(t) {
+    if (currentUser.isOnBreak) return;
 
-    function startMyBreak(t) {
-                if (currentUser.isOnBreak) return;
+    // --- حماية نافذة الصلاة والرصيد ---
+    if (t === 'صلاة') {
+        if (!isPrayerWindowOpen) {
+            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة.");
+            return;
+        }
+        
+        // فحص الرصيد قبل البدء
+        const myCredit = currentUser.prayerLimit || 0;
+        if (myCredit <= 0) {
+            alert("⚠️ يا بطل، ليس لديك رصيد صلاة حالياً. اطلب من المشرف توزيع رصيد (15 دقيقة).");
+            return;
+        }
 
-                // --- حماية نافذة الصلاة ---
-                if (t === 'صلاة') {
-                    if (!isPrayerWindowOpen) {
-                        alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. لا يمكنك البدء.");
-                        return;
-                    }
-                    const myIndex = (currentQueue || []).indexOf(currentUser.username);
-                    if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
-                        alert("⏳ لم يحن دورك بعد في الطابور!");
-                        return;
-                    }
-                }
+        const myIndex = (currentQueue || []).indexOf(currentUser.username);
+        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
+            alert("⏳ لم يحن دورك بعد في الطابور!");
+            return;
+        }
+    }
 
-                const reasonInput = document.getElementById('breakReason');
-                const reasonValue = reasonInput.value.trim();
+    const reasonInput = document.getElementById('breakReason');
+    const reasonValue = reasonInput.value.trim();
 
-                if (reasonValue === "" && t !== 'صلاة') {
-                    alert("⚠️ يرجى كتابة سبب النشاط");
-                    reasonInput.focus();
-                    return;
-                }
+    if (reasonValue === "" && t !== 'صلاة') {
+        alert("⚠️ يرجى كتابة سبب النشاط");
+        reasonInput.focus();
+        return;
+    }
 
-                db.ref('users/' + currentUser.username).update({
-                    isOnBreak: true,
-                    breakType: t,
-                    lastStartTime: getServerTime(),
-                    lastReason: reasonValue || t
-                }).then(() => {
-                    // إذا بدأ صلاة، نصفر عداد الـ 10 دقائق للي بعده في الطابور
-                    if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-                });
-            }
+    db.ref('users/' + currentUser.username).update({
+        isOnBreak: true,
+        breakType: t,
+        lastStartTime: getServerTime(),
+        lastReason: reasonValue || t
+    }).then(() => {
+        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
+    });
+}
 
             // دالة مساعدة لتنفيذ بدء البريك
             function executeBreakStart(t) {
@@ -5153,43 +5175,47 @@ function playAlarm() {
                                                 c > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
                                             }
                                         }
-                                        function endDay() {
-                if (!MANAGERS.includes(currentUser.username)) {
-                    alert("⛔ عذراً، هذه الصلاحية خاصة بالمشرفين فقط.");
-                    return;
-                }
+             // ==========================================================
+// 1. زرار "الصاروخ" (تحديث نسخة الموقع لكل الناس - ريلود فقط)
+// ==========================================================
+function triggerGlobalRefresh() {
+    if (currentUser.username !== 'mahmoud') return; 
+    
+    if(confirm("🚀 هل تريد إرسال تحديث لجميع الأجهزة؟\n(سيتم إعادة تحميل الصفحة عند الكل لتحميل التعديلات الجديدة فقط)")) {
+        db.ref('refreshSignal').set(Date.now());
+        alert("تم إرسال أمر التحديث الشامل 🚀");
+    }
+}
 
-                if(confirm("⚠️ هل أنت متأكد من تصفير العدادات (بما فيها الصلاة) وبدء يوم جديد؟")) {
-                    logDeletionAction("تصفير اليوم (End Day)", "الكل", "تم تصفير كافة العدادات بما فيها رصيد الصلاة");
-
-                    const updates = {};
-                    Object.keys(allUsersData).forEach(un => {
-                        if(!MANAGERS.includes(un)) {
-                            updates[`users/${un}/usedSeconds`] = 0;
-                            updates[`users/${un}/prayerSeconds`] = 0;
-                            updates[`users/${un}/prayerLimit`] = 0; // تصفير رصيد الصلاة
-                            updates[`users/${un}/prayerCountToday`] = 0; // تصفير عدد المرات
-                            updates[`users/${un}/meetingSeconds`] = 0;
-                            updates[`users/${un}/followUpSeconds`] = 0;
-                            updates[`users/${un}/vipSeconds`] = 0;
-                            updates[`users/${un}/isOnBreak`] = false;
-                            updates[`users/${un}/lastStartTime`] = null;
-                            updates[`users/${un}/otRequest`] = null;
-                            updates[`users/${un}/emRequest`] = null;
-                            updates[`users/${un}/meetingRequest`] = null;
-                            updates[`users/${un}/permRequest`] = null;
-                        }
-                    });
-
-                    // إغلاق زر الصلاة تلقائياً عند تقفيل اليوم
-                    updates['settings/prayerOpen'] = false;
-
-                    db.ref().update(updates).then(() => {
-                        triggerGlobalRefresh();
-                        alert("✅ تم تصفير اليوم بالكامل وتصفير رصيد الصلاة للجميع.");
-                    });
-                }
+// ==========================================================
+// 2. زرار "تصفير اليوم" (تصفير العدادات فقط)
+// ==========================================================
+function endDay() {
+    if (currentUser.username !== 'mahmoud') return;
+    
+    if(confirm("⚠️ تحذير: هل تريد تصفير عدادات البريك والصلاة لجميع الموظفين الآن؟")) {
+        const updates = {};
+        Object.keys(allUsersData).forEach(un => {
+            if(!MANAGERS.includes(un)) {
+                updates[`users/${un}/usedSeconds`] = 0;
+                updates[`users/${un}/prayerSeconds`] = 0;
+                updates[`users/${un}/prayerLimit`] = 0;
+                updates[`users/${un}/prayerCountToday`] = 0;
+                updates[`users/${un}/isOnBreak`] = false;
+                updates[`users/${un}/lastStartTime`] = null;
+                // تصفير باقي الحقول الإضافية
+                updates[`users/${un}/meetingSeconds`] = 0;
+                updates[`users/${un}/followUpSeconds`] = 0;
+                updates[`users/${un}/vipSeconds`] = 0;
             }
+        });
+        updates['settings/prayerOpen'] = false; // قفل الصلاة مع التصفير
+
+        db.ref().update(updates).then(() => {
+            alert("✅ تم تصفير عدادات اليوم بنجاح بدون ريلود.");
+        });
+    }
+}
                                         function forceResetPrayerOnly() {
                                             if(!confirm("هل تريد تصفير بيانات الصلاة لجميع الموظفين؟ (يستخدم في حالة تعليق العدادات)")) return;
 
@@ -5352,7 +5378,6 @@ function playAlarm() {
                                         function deleteUser(un) {
                                             if(confirm("حذف الموظف؟")) {
                                                 logDeletionAction("حذف موظف بالكامل", un, "تم مسح حساب الموظف من السيستم");
-                                                db.ref('users/'+un).remove().then(() => triggerGlobalRefresh());
                                             }
                                         }
 
@@ -8558,7 +8583,6 @@ function playAlarm() {
 
             db.ref('users/' + un).update(updates).then(() => {
                 if (u.breakType === 'صلاة') removeFromQueueByUsername(un);
-                triggerGlobalRefresh();
                 alert("تم إيقاف النشاط للموظف ومسح تصريح الطوارئ بنجاح ✅");
             });
         });
@@ -9200,7 +9224,9 @@ function playAlarm() {
     }
 // --- 3. دالة التخطي التلقائي الصامتة ---
 async function autoSkipUser() {
-    if (window.isSkipping || !currentQueue || currentQueue.length <= 1) return;
+    // السطر ده هو السر: لو الصلاة مقفولة ميعملش Skip أبداً
+    if (window.isSkipping || !currentQueue || currentQueue.length <= 1 || !isPrayerWindowOpen) return;
+    
     window.isSkipping = true; 
 
     let newQueue = [...currentQueue];
@@ -9210,17 +9236,16 @@ async function autoSkipUser() {
 
     const updates = {};
     updates['settings/prayerQueue'] = newQueue;
-    updates['settings/turnTimer/startTime'] = getServerTime();
+    updates['settings/turnTimer/startTime'] = getServerTime(); // ريست للجديد
     updates['settings/turnTimer/activeUser'] = nextUser;
     updates['settings/turnTimer/pausedElapsed'] = 0;
 
     await db.ref().update(updates);
 
-    // رسالة صامتة تماماً
     db.ref('broadcasts').push({
         message: `⏰ انتهى وقت (${getRealName(movedUser)}) .. الدور الآن على (${getRealName(nextUser)})`,
         timestamp: getServerTime(),
-        sender: "نظام الصلاة 100% صامت 🕌",
+        sender: "نظام الصلاة 🕌",
         silent: true, 
         target: "all"
     });
