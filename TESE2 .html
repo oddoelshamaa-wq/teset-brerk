@@ -1365,151 +1365,6 @@
         text-align: justify; /* لتنسيق السطور بشكل متساوي */
         text-justify: inter-word;
     }
-    /* ===== عداد البريك الدائري للموبايل ===== */
-.mobile-timer-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(2, 6, 23, 0.95);
-    backdrop-filter: blur(20px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-.mobile-timer-overlay.active {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.mobile-timer-circle {
-    position: relative;
-    width: 250px;
-    height: 250px;
-}
-.mobile-timer-circle svg {
-    transform: rotate(-90deg);
-    width: 100%;
-    height: 100%;
-}
-.mobile-timer-circle .ring-bg {
-    fill: none;
-    stroke: rgba(255,255,255,0.08);
-    stroke-width: 10;
-}
-.mobile-timer-circle .ring-fg {
-    fill: none;
-    stroke: var(--primary);
-    stroke-width: 10;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 1s linear, stroke 0.5s;
-}
-.mobile-timer-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.mobile-timer-digits {
-    font-size: 3.5rem;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -2px;
-}
-.mobile-timer-label {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    margin-top: 5px;
-}
-.mobile-timer-type {
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 8px 25px;
-    border-radius: 30px;
-    margin-top: 5px;
-}
-.type-break { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid rgba(99,102,241,0.4); }
-.type-prayer { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
-.type-meeting { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
-
-/* تنبيه نهاية الوقت */
-.mobile-timer-warning .ring-fg {
-    stroke: var(--danger) !important;
-}
-.mobile-timer-warning .mobile-timer-digits {
-    color: var(--danger) !important;
-    animation: timerPulse 0.6s infinite;
-}
-@keyframes timerPulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.08); }
-}
-
-/* وميض حمر لما الوقت يخلص */
-.mobile-timer-finished {
-    animation: finishFlash 0.5s infinite;
-}
-@keyframes finishFlash {
-    0%, 100% { background: rgba(2, 6, 23, 0.95); }
-    50% { background: rgba(244, 63, 94, 0.15); }
-}
-
-/* زرار إغلاق العداد */
-.mobile-timer-close {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.3s;
-}
-.mobile-timer-close:hover {
-    background: var(--danger);
-    border-color: var(--danger);
-}
-
-/* شريط تقدم صغير فوق */
-.mobile-timer-progress-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 4px;
-    background: var(--primary);
-    transition: width 1s linear, background 0.5s;
-    border-radius: 0 4px 4px 0;
-}
-.mobile-timer-warning .mobile-timer-progress-bar {
-    background: var(--danger) !important;
-}
-
-/* رسالة "الوقت انتهى" */
-.timer-finished-msg {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--danger);
-    display: none;
-    animation: bounceIn 0.5s ease;
-}
-@keyframes bounceIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
 
                                         </style>
                                     </head>
@@ -1566,10 +1421,6 @@
             <audio id="complaintSound" preload="auto">
                 <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mp3">
             </audio>
-            <!-- فيديو صامت مخفي تماماً لإجبار الموبايل يفضل شغال -->
-<video id="wakeLockVideo" playsinline loop muted style="position:fixed; width:1px; height:1px; opacity:0.01; pointer-events:none;">
-    <source src="https://raw.githubusercontent.com/anars/blank-audio/master/10-seconds-of-silence.mp3" type="audio/mp3">
-</video>
 
                                     <div id="forceSoundOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.98); z-index:20000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
                                         <div class="broadcast-content" style="border-color: var(--primary); box-shadow: 0 0 50px var(--primary);">
@@ -1917,9 +1768,9 @@
                                                     </button>
 
                                                     <!-- زر الانتقال لمعرض الصور -->
-                                                    <button onclick="window.location.open('https://oddoelshamaa-wq.github.io/break../gallery.html', '_blank')" class="btn" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: white; border: 1px solid rgba(255,255,255,0.2); height: 45px; padding: 0 20px;">
-    🖼️ معرض الصور
-</button>
+                                                    <button onclick="window.location.href='gallery.html'" class="btn" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: white; border: 1px solid rgba(255,255,255,0.2); height: 45px; padding: 0 20px;">
+                                                        🖼️ معرض الصور
+                                                    </button>
 
                                                     <!-- زر تسجيل الخروج للمشرفين -->
                                                     <button onclick="logout()" class="btn btn-danger btn-sm" style="padding: 8px 20px; border-radius: 12px; display: flex; align-items: center; gap: 8px;">
@@ -2123,9 +1974,7 @@
                                                     <input type="text" id="monitorSearch" placeholder="بحث عن موظف..." style="flex:1" oninput="renderMonitorTable()">
                                                     <button onclick="endDay()" class="btn btn-danger btn-sm">إقفال اليوم 🛑</button>
                                                 </div>
-<button onclick="forceUpdateAllClients()" class="btn" style="background: #7e22ce; color: white;">
-    🚀 تحديث إجباري لجميع الموظفين
-</button>
+
                                                 <div class="table-responsive">
                                                     <table>
                                                         <thead>
@@ -2652,35 +2501,7 @@
             </div>
         </div>
     </div>
-    <!-- ===== شاشة العداد التنازلي للموبايل ===== -->
-<div class="mobile-timer-overlay" id="mobileTimerOverlay">
-    <div class="mobile-timer-progress-bar" id="timerProgressBar"></div>
-    
-    <button class="mobile-timer-close" id="timerCloseBtn" onclick="closeMobileTimer()">
-        <i class="fas fa-times"></i>
-    </button>
-    
-    <div class="mobile-timer-circle" id="timerCircle">
-        <svg viewBox="0 0 250 250">
-            <circle class="ring-bg" cx="125" cy="125" r="110"></circle>
-            <circle class="ring-fg" id="timerRing" cx="125" cy="125" r="110"
-                    stroke-dasharray="691.15" stroke-dashoffset="0"></circle>
-        </svg>
-        <div class="mobile-timer-center">
-            <div class="mobile-timer-digits" id="timerDigits">00:00</div>
-            <div class="mobile-timer-label" id="timerLabel">متبقي</div>
-        </div>
-    </div>
-    
-    <div class="mobile-timer-type" id="timerTypeBadge">بريك</div>
-    
-    <div class="timer-finished-msg" id="timerFinishedMsg">
-        <i class="fas fa-bell"></i> الوقت خلص! ارجع شغلك
-    </div>
-</div>
                                     <script>
-                                        const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
-
                                         // منع القائمة اليمنى (Right Click)
                                         document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -3219,20 +3040,21 @@
 
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
-function activateSystemAndSound() {
-    
+       function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // تشغيل الصوت الصامت (لازم يحصل هنا عشان المتصفح يسمح للبرنامج يفضل شغال في الخلفية)
-    const silent = document.getElementById('silentLoop');
-    if(silent) {
-        silent.play().then(() => {
-            console.log("نظام الخلفية والعداد نشط الآن ✅");
-        }).catch(e => {
-            console.log("فشل التفعيل التلقائي، سيتم المحاولة عند بدء البريك");
-        });
-    }
+    // تشغيل الملف الصامت (ده اللي بيخلي العداد يظهر في شاشة القفل)
+    document.getElementById('silentLoop').play();
+
+    // فك حظر باقي الأصوات
+    const allSounds = ['alarmSound', 'notifySound', 'broadcastSound', 'complaintSound', 'requestRing'];
+    allSounds.forEach(id => {
+        const audio = document.getElementById(id);
+        if (audio) {
+            audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(e => {});
+        }
+    });
 
     document.getElementById('forceSoundOverlay').style.display = 'none';
     startGlobalTimer();
@@ -3295,7 +3117,9 @@ db.ref('broadcasts').on('child_added', (snap) => {
     if (isInitialLoad) return; 
 
     const b = snap.val();
-    const bKey = snap.key;
+    // السطر السحري: لو الرسالة صامتة أو جاية من نظام الصلاة.. ممنوع الصوت نهائياً
+    const isPrayerSystem = (b.sender === "نظام الصلاة 🕌");
+    const isSilent = (b.silent === true);
 
     if (currentUser && currentUser.role !== 'admin') {
         let forMe = (!b.target || b.target === 'all');
@@ -3306,9 +3130,10 @@ db.ref('broadcasts').on('child_added', (snap) => {
 
         if(forMe) {
             showBroadcastOverlay(b);
-            // التعديل هنا: تشغيل الصوت فقط إذا لم تكن الرسالة صامتة
-            if (soundActive && !b.silent) { 
-                document.getElementById('broadcastSound').play().catch(e => {});
+            // تشغيل الصوت فقط للرسائل الإدارية العادية
+            if (soundActive && !isSilent && !isPrayerSystem) { 
+                const snd = document.getElementById('broadcastSound');
+                if(snd) snd.play().catch(e => {});
             }
         }
     }
@@ -3937,20 +3762,10 @@ db.ref('broadcasts').on('child_added', (snap) => {
     }
 }
 
-                                     function setupPresence(un) {
-    const s = db.ref("users/" + un + "/state");
-    const dRef = db.ref("users/" + un + "/device");
-    
-    db.ref(".info/connected").on("value", snap => {
-        if (snap.val()) {
-            // لو قفل البرنامج وهو في بريك، نحدث حالته إنه "هروب" أو "Offline" مع استمرار العداد
-            s.onDisconnect().set("offline_during_break"); 
-            
-            s.set("online");
-            dRef.set(getDeviceType());
-        }
-    });
-}
+                                        function setupPresence(un) { 
+                                            const s = db.ref("users/" + un + "/state"), dRef = db.ref("users/" + un + "/device");
+                                            db.ref(".info/connected").on("value", snap => { if (snap.val()) { s.onDisconnect().set("offline").then(() => { s.set("online"); dRef.set(getDeviceType()); }); } }); 
+                                        }
 
                      function logout() { 
     if(currentUser && currentUser.username) {
@@ -4180,72 +3995,54 @@ db.ref('broadcasts').on('child_added', (snap) => {
                 });
             });
         }
-    function startGlobalTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        
-        timerInterval = setInterval(() => {
-            try {
-                const timeStr = getServerTimeString();
-                const dateStr = getServerDateString();
+   // --- 2. عداد الوقت العالمي (جهاز الأدمن هو المتحكم) ---
+function startGlobalTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+        try {
+            const timeStr = getServerTimeString();
+            const dateStr = getServerDateString();
 
-                if (currentUser) {
-                    if (currentUser.role === 'admin') {
-                        // 1. تحديث الساعة والتاريخ في لوحة المشرف
-                        if(document.getElementById('adminServerTime')) document.getElementById('adminServerTime').innerText = timeStr;
-                        if(document.getElementById('adminServerDate')) document.getElementById('adminServerDate').innerText = dateStr;
+            if (currentUser) {
+                if (currentUser.role === 'admin') {
+                    if(document.getElementById('adminServerTime')) document.getElementById('adminServerTime').innerText = timeStr;
+                    if(document.getElementById('adminServerDate')) document.getElementById('adminServerDate').innerText = dateStr;
 
-                        // 2. تحديث عدادات الجدول (البريك المتبقي) لحظياً
-                        updateMonitorValuesOnly();
+                    updateMonitorValuesOnly();
+                    checkAutoPrayerDistribution();
 
-                        // 3. 🚀 الفحص التلقائي لتوزيع رصيد الصلاة (قبل الظهر بـ 10 دقائق)
-                        checkAutoPrayerDistribution();
+                    // الأدمن فقط هو من يدير منطق الـ 10 دقائق
+                    const queueTimerEl = document.getElementById('adminQueueTimer');
+                    if (queueTimerEl && turnTimerStartTime > 0 && currentQueue.length > 0) {
+                        const firstUser = currentQueue[0];
+                        const u = allUsersData[firstUser];
 
-                        // 4. إدارة عداد الـ 10 دقائق الخاص بطابور الصلاة (للمشرف)
-                        const queueTimerEl = document.getElementById('adminQueueTimer');
-                        if (queueTimerEl && turnTimerStartTime > 0) {
-                            const firstUser = currentQueue[0];
-                            const u = allUsersData[firstUser];
+                        if (u && u.isOnBreak && u.breakType === 'صلاة') {
+                            queueTimerEl.innerText = "يصلي الآن";
+                        } else if (isPrayerWindowOpen) {
+                            const diff = Math.floor((getServerTime() - turnTimerStartTime) / 1000);
+                            const rem = 600 - diff; 
 
-                            // إذا بدأ الموظف الصلاة فعلياً، يتوقف العداد عن العد التنازلي
-                            if (u && u.isOnBreak && u.breakType === 'صلاة') {
-                                // لا نفعل شيئاً هنا، العداد يتوقف
-                            } else if (isPrayerWindowOpen) {
-                                // إذا كانت نافذة الصلاة مفتوحة، يبدأ العد التنازلي
-                                const diff = Math.floor((getServerTime() - turnTimerStartTime) / 1000);
-                                const rem = 600 - diff; // 600 ثانية = 10 دقائق
-                                if (rem >= 0) {
-                                    queueTimerEl.innerText = formatTime(rem);
-                                    queueTimerEl.style.color = "#fbbf24"; // اللون الأصفر الطبيعي
-                                } else {
-                                    queueTimerEl.innerText = "00:00";
-                                    autoSkipUser(); // نقل الموظف لآخر الطابور تلقائياً عند انتهاء الوقت
-                                }
+                            if (rem >= 0) {
+                                queueTimerEl.innerText = formatTime(rem);
                             } else {
-                                // إذا أغلقت الإدارة نافذة الصلاة، يثبت العداد على الوقت الحالي (Paused)
-                                db.ref('settings/turnTimer/pausedElapsed').once('value', (snap) => {
-                                    const pausedElapsed = snap.val() || 0;
-                                    const remainingWhenPaused = 600 - pausedElapsed;
-                                    queueTimerEl.innerText = formatTime(remainingWhenPaused > 0 ? remainingWhenPaused : 0);
-                                    queueTimerEl.style.color = "#ff4444"; // اللون الأحمر للتنبيه بالتوقف
-                                });
+                                // الأدمن فقط يبعت أمر التخطي مرة واحدة
+                                if (!window.isSkipping) { autoSkipUser(); }
                             }
                         }
-                    } else {
-                        // --- وظائف لوحة الموظف ---
-                        // تحديث الساعة والتاريخ عند الموظف
-                        if(document.getElementById('userServerTime')) document.getElementById('userServerTime').innerText = timeStr;
-                        if(document.getElementById('userServerDate')) document.getElementById('userServerDate').innerText = dateStr;
-                        
-                        // تحديث واجهة المستخدم (العداد الدائري، الحالة)
-                        updateUserUI();
-                        
-                        // مراقبة تنبيه "دورك في الصلاة" والعداد الخاص بالموظف
-                        watchPrayerTurnTimer();
                     }
+                } else {
+                    // لوحة الموظف (عرض فقط)
+                    if(document.getElementById('userServerTime')) document.getElementById('userServerTime').innerText = timeStr;
+                    if(document.getElementById('userServerDate')) document.getElementById('userServerDate').innerText = dateStr;
+                    updateUserUI();
+                    watchPrayerTurnTimer();
                 }
-            } catch (e) { console.error(e); }
-        }, 1000); // تحديث كل ثانية واحدة
-    }
+            }
+        } catch (e) { console.error(e); }
+    }, 1000);
+}
             function renderMonitorTable() {
                 const tbody = document.getElementById('monitorBody');
                 if(!tbody) return; // تأكد من وجود الـ tbody
@@ -4720,49 +4517,52 @@ db.ref('broadcasts').on('child_added', (snap) => {
                 }
             }
 
-function startMyBreak(t) {
-    if (currentUser.isOnBreak) return;
+    function startMyBreak(t) {
+                if (currentUser.isOnBreak) return;
 
-    // تشغيل الفيديو المخفي فوراً عند الضغط
-    const video = document.getElementById('wakeLockVideo');
-    if (video) {
-        video.play().catch(e => console.log("إجبار التشغيل"));
-    }
-    updateLockScreenTimer(0, t);
+                // --- حماية نافذة الصلاة ---
+                if (t === 'صلاة') {
+                    if (!isPrayerWindowOpen) {
+                        alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. لا يمكنك البدء.");
+                        return;
+                    }
+                    const myIndex = (currentQueue || []).indexOf(currentUser.username);
+                    if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
+                        alert("⏳ لم يحن دورك بعد في الطابور!");
+                        return;
+                    }
+                }
 
-    // حماية نافذة الصلاة
-    if (t === 'صلاة') {
-        if (!isPrayerWindowOpen) {
-            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة.");
-            return;
-        }
-        const myIndex = (currentQueue || []).indexOf(currentUser.username);
-        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
-            alert("⏳ لم يحن دورك بعد في الطابور!");
-            return;
-        }
-    }
+                const reasonInput = document.getElementById('breakReason');
+                const reasonValue = reasonInput.value.trim();
 
-    const reasonInput = document.getElementById('breakReason');
-    const reasonValue = reasonInput.value.trim();
+                if (reasonValue === "" && t !== 'صلاة') {
+                    alert("⚠️ يرجى كتابة سبب النشاط");
+                    reasonInput.focus();
+                    return;
+                }
 
-    if (reasonValue === "" && t !== 'صلاة') {
-        alert("⚠️ يرجى كتابة سبب النشاط");
-        reasonInput.focus();
-        return;
-    }
+                db.ref('users/' + currentUser.username).update({
+                    isOnBreak: true,
+                    breakType: t,
+                    lastStartTime: getServerTime(),
+                    lastReason: reasonValue || t
+                }).then(() => {
+                    // إذا بدأ صلاة، نصفر عداد الـ 10 دقائق للي بعده في الطابور
+                    if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
+                });
+            }
 
-    db.ref('users/' + currentUser.username).update({
-        isOnBreak: true,
-        breakType: t,
-        lastStartTime: getServerTime(),
-        lastReason: reasonValue || t
-    }).then(() => {
-        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-        // تفعيل العداد فوراً في شاشة القفل
-        updateLockScreenTimer(0, t); 
-    });
-}
+            // دالة مساعدة لتنفيذ بدء البريك
+            function executeBreakStart(t) {
+                let r = document.getElementById('breakReason').value.trim();
+                db.ref('users/'+currentUser.username).update({
+                    isOnBreak: true,
+                    breakType: t,
+                    lastStartTime: getServerTime(),
+                    lastReason: r || t
+                });
+            }
 
                                         function stopMyBreak() {
             // التحقق من نوع الجهاز ومنع الموظف فقط (الأدمن مستثنى)
@@ -4972,8 +4772,6 @@ function startMyBreak(t) {
                                                     const remaining = limit - (usedPre + current);
 
                                                     if (remaining > 0) {
-                                                        updateLockScreenTimer(remaining, u.breakType); 
-
                                                         timerText.innerText = formatTime(remaining);
                                                         lbl.innerText = "رصيد الصلاة المتبقي";
                                                         timerText.style.color = "#38bdf8"; // أزرق
@@ -4992,7 +4790,6 @@ function startMyBreak(t) {
                                                 // --- منطق البريك العام (الأكسدة) ---
                                                 else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ' || u.breakType === 'استراحة VIP') {
                                                     const rem = allowTotal - ((u.usedSeconds || 0) + (u.breakType === 'استراحة VIP' ? 0 : elap));
-updateLockScreenTimer(rem, u.breakType);
 
                                                     let pct = (rem / allowTotal); if (pct < 0) pct = 0;
                                                     circle.style.strokeDashoffset = circ - (pct * circ);
@@ -5025,7 +4822,6 @@ updateLockScreenTimer(rem, u.breakType);
                                             } else {
                                                 stopAlarm();
                                                 const rem = allowTotal - (u.usedSeconds || 0);
-                                                
                                                 timerText.innerText = rem >= 0 ? formatTime(rem) : "00:00";
                                                 timerText.style.color = "white";
                                                 lbl.innerText = "رصيد البريك";
@@ -5084,20 +4880,26 @@ updateLockScreenTimer(rem, u.breakType);
 function playAlarm() { 
     if(soundActive) { 
         document.body.classList.add('وضع-التنبيه'); 
+        document.getElementById('overtimeAlert').classList.remove('hidden'); 
         
+        // تشغيل صوت التنبيه
         const alarm = document.getElementById('alarmSound');
-        
-        // 1. تشغيل الصوت (هيشتغل لو أنت ضاغط على زرار تفعيل الصوت عند الدخول)
-        if (alarm.paused) {
-            alarm.play().catch(e => console.log("الصوت محظور من المتصفح"));
-        }
+        alarm.play().catch(e=>{}); 
 
-        // 2. إرسال إشعار يهز الموبايل (عشان لو المتصفح قفل الصوت، الهزاز ينبهك)
-        if (Notification.permission === "granted") {
-            showLocalNotification("🚨 تنبيه أكسدة!", "لقد تجاوزت الوقت المسموح، ارجع لمكتبك فوراً!");
+        // إرسال إشعار يهز الموبايل (حتى لو الشاشة مقفولة)
+        if (document.visibilityState === 'hidden') {
+            showLocalNotification("🚨 تنبيه أكسدة!", "لقد تجاوزت الوقت المسموح، ارجع فوراً!");
         }
     } 
-}                              
+}                                        function stopAlarm() { document.body.classList.remove('وضع-التنبيه'); if(document.getElementById('overtimeAlert')) document.getElementById('overtimeAlert').classList.add('hidden'); document.getElementById('alarmSound').pause(); }
+                                        function saveAdminTyping(u, v) { adminTypingBuffer[u] = v; }
+                                        function saveAdminSelect(u, v) { adminSelectBuffer[u] = v; }
+                                        function updateBroadcastTargets() {
+                                            const sel = document.getElementById('broadcastTarget'); const old = Array.from(sel.selectedOptions).map(o => o.value);
+                                            let h = '<option value="all">📣 للجميع</option>';
+                                            Object.values(allUsersData).forEach(u => { if(u.username && !MANAGERS.includes(u.username)) h += `<option value="${u.username}">👤 ${u.realName || u.username}</option>`; });
+                                            if (sel.innerHTML !== h) { sel.innerHTML = h; old.forEach(v => { const o = sel.querySelector(`option[value="${v}"]`); if(o) o.selected = true; }); }
+                                        }
 
                                         function sendEmRequest() { const r = document.getElementById('breakReason').value.trim(); if(!r) return alert("اكتب السبب"); db.ref('users/'+currentUser.username+'/emRequest').set({ reason: r, status: 'قيد الانتظار', timestamp: getServerTime() }); }
 
@@ -9323,70 +9125,34 @@ function playAlarm() {
             alert("تم التأجيل بنجاح.. تذكر أنها المرة الوحيدة المتاحة لك اليوم ✅");
         });
     }
-    function autoSkipUser() {
-        // منع التعليق من خلال قفل الدالة إذا كانت تعمل بالفعل
-        if (!currentQueue || currentQueue.length <= 1 || window.isSkipping) return;
-        
-        window.isSkipping = true; 
+// --- 3. دالة التخطي التلقائي الصامتة ---
+async function autoSkipUser() {
+    if (window.isSkipping || !currentQueue || currentQueue.length <= 1) return;
+    window.isSkipping = true; 
 
-        let newQueue = [...currentQueue];
-        const movedUser = newQueue.shift(); // الشخص اللي وقته خلص
-        newQueue.push(movedUser);           // يرجع لآخر الطابور
-        
-        const nextUser = newQueue[0];      // الشخص الجديد
+    let newQueue = [...currentQueue];
+    const movedUser = newQueue.shift(); 
+    newQueue.push(movedUser);           
+    const nextUser = newQueue[0];      
 
-        const updates = {};
-        updates['settings/prayerQueue'] = newQueue;
-        updates['settings/turnTimer/startTime'] = getServerTime();
-        updates['settings/turnTimer/activeUser'] = nextUser;
-        updates['settings/turnTimer/pausedElapsed'] = 0;
+    const updates = {};
+    updates['settings/prayerQueue'] = newQueue;
+    updates['settings/turnTimer/startTime'] = getServerTime();
+    updates['settings/turnTimer/activeUser'] = nextUser;
+    updates['settings/turnTimer/pausedElapsed'] = 0;
 
-        db.ref().update(updates).then(() => {
-            // إرسال التنبيه "بدون صوت" من خلال خاصية silent: true
-            db.ref('broadcasts').push({
-                message: `⏰ انتهى وقت (${getRealName(movedUser)}) وتم نقله لآخر الطابور. الدور الآن على (${getRealName(nextUser)})`,
-                timestamp: getServerTime(),
-                sender: "نظام الصلاة 🕌",
-                silent: true, // سحر الصمت هنا
-                target: "all"
-            });
-            
-            // فتح القفل بعد 3 ثواني لضمان استقرار السيرفر
-            setTimeout(() => { window.isSkipping = false; }, 3000);
-        }).catch(() => { window.isSkipping = false; });
-    }
-function updateLockScreenTimer(secondsRemaining, statusType) {
-    if ('mediaSession' in navigator && currentUser) {
-        let timeStr = formatTime(secondsRemaining);
-        let label = "⏳ متبقي: ";
-        
-        if (statusType === 'صلاة') label = "🕌 صلاة: ";
-        else if (secondsRemaining < 0) {
-            label = "⚠️ أكسدة: ";
-            timeStr = "-" + formatTime(Math.abs(secondsRemaining));
-        }
+    await db.ref().update(updates);
 
-        // تحديث البيانات
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label} ${timeStr}`,
-            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
-            album: `حالة النشاط: ${statusType}`,
-            artwork: [
-                { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
-            ]
-        });
+    // رسالة صامتة تماماً
+    db.ref('broadcasts').push({
+        message: `⏰ انتهى وقت (${getRealName(movedUser)}) .. الدور الآن على (${getRealName(nextUser)})`,
+        timestamp: getServerTime(),
+        sender: "نظام الصلاة 100% صامت 🕌",
+        silent: true, 
+        target: "all"
+    });
 
-        // دي أهم حتة للأندرويد: بتخلي المشغل يظهر كأنه بث مباشر مبيخلصش
-        if (navigator.mediaSession.playbackState !== "playing") {
-            navigator.mediaSession.playbackState = "playing";
-        }
-        
-        // إجبار تشغيل ملف الصمت في الخلفية
-        const silentAudio = document.getElementById('silentLoop');
-        if (silentAudio && silentAudio.paused) {
-            silentAudio.play().catch(() => {}); 
-        }
-    }
+    setTimeout(() => { window.isSkipping = false; }, 5000);
 }
 
     // 5. تصفير العداد فوراً عند تغير الشخص الأول في الطابور (للمدير)
@@ -9699,42 +9465,44 @@ function manageSingleSession(username) {
     // الاستماع لطلبات التبديل الواردة (تظهر للموظف المطلوب منه التبديل)
 
 
-    // تنفيذ عملية التبديل الفعلية في قاعدة البيانات
-    function executePrayerSwap(reqId, userA, userB, userAName) {
-        db.ref('settings/prayerQueue').once('value', (snap) => {
-            let queue = snap.val() || [];
-            let idxA = queue.indexOf(userA);
-            let idxB = queue.indexOf(userB);
+// --- 4. تنفيذ التبديل بدون إزعاج ---
+function executePrayerSwap(reqId, userA, userB, userAName) {
+    if (window.isSwapping) return;
+    window.isSwapping = true;
 
-            if(idxA !== -1 && idxB !== -1) {
-                // التبديل
-                let temp = queue[idxA];
-                queue[idxA] = queue[idxB];
-                queue[idxB] = temp;
-                
-                const updates = {};
-                updates['settings/prayerQueue'] = queue;
-                updates['prayerSwapRequests/' + reqId + '/status'] = 'completed';
-                
-                // تصفير العداد لو التبديل شمل المركز الأول
-                if(idxB === 0 || idxA === 0) {
-                    updates['settings/turnTimer/startTime'] = getServerTime();
-                }
+    db.ref('settings/prayerQueue').once('value', (snap) => {
+        let queue = snap.val() || [];
+        let idxA = queue.indexOf(userA);
+        let idxB = queue.indexOf(userB);
 
-                db.ref().update(updates).then(() => {
-                    // إرسال تنبيه Overlay يظهر في نص الشاشة للكل
-                    db.ref('broadcasts').push({
-                        message: `🔄 تم تبديل الأدوار: (${userAName}) أصبح في المركز #${idxB + 1} و (${currentUser.realName || currentUser.username}) أصبح في المركز #${idxA + 1}`,
-                        timestamp: getServerTime(),
-                        sender: "نظام الصلاة 🕌",
-                            silent: true, // هكذا ستظهر الرسالة بدون صوت
+        if(idxA !== -1 && idxB !== -1) {
+            let temp = queue[idxA];
+            queue[idxA] = queue[idxB];
+            queue[idxB] = temp;
+            
+            const updates = {};
+            updates['settings/prayerQueue'] = queue;
+            updates['prayerSwapRequests/' + reqId + '/status'] = 'completed';
+            
+            // تصفير العداد للبداية الجديدة
+            updates['settings/turnTimer/startTime'] = getServerTime();
+            updates['settings/turnTimer/pausedElapsed'] = 0;
 
-                        target: "all" 
-                    });
+            db.ref().update(updates).then(() => {
+                db.ref('broadcasts').push({
+                    message: `🔄 تم التبديل صامتاً: (${userAName}) و (${getRealName(userB)})`,
+                    timestamp: getServerTime(),
+                    sender: "نظام الصلاة 🕌",
+                    silent: true, // صمت تام
+                    target: "all" 
                 });
-            }
-        });
-    }
+                window.isSwapping = false;
+            }).catch(() => { window.isSwapping = false; });
+        } else {
+            window.isSwapping = false;
+        }
+    });
+}
     // إرسال الطلب للزميل
     function sendPrayerSwapRequest() {
         const colleague = document.getElementById('prayerColleagueSelect').value;
@@ -9779,18 +9547,21 @@ function manageSingleSession(username) {
 // 1. دالة تحديث شاشة القفل (بتظهر العداد كأنه أغنية شغالة)
 function updateLockScreenProgress(timeLeft, status) {
     if ('mediaSession' in navigator) {
+        // تحديث البيانات اللي بتظهر على شاشة القفل
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `الوقت المتبقي: ${timeLeft}`, // ده اللي هيظهر بخط كبير على شاشة القفل
-            artist: `الحالة: ${status}`,       // ده هيظهر تحتها
+            title: `المتبقي: ${timeLeft}`, // العداد هيظهر هنا بخط كبير
+            artist: status,              // الحالة (متاح أو أكسدة) هتظهر هنا
             album: 'نظام الشمعة الإداري',
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
 
-        // دي عشان نمنع الزراير (تقديم وتأخير) إنها تظهر وتبوظ الشكل
-        navigator.mediaSession.setActionHandler('play', () => {});
-        navigator.mediaSession.setActionHandler('pause', () => {});
+        // عشان العداد ميتشالش من شاشة القفل، لازم الملف الصامت يفضل شغال
+        const silentAudio = document.getElementById('silentLoop');
+        if (silentAudio.paused) {
+            silentAudio.play().catch(e => console.log("Silent audio waiting for interaction"));
+        }
     }
 }
 // 2. دالة إرسال إشعار للموبايل حتى لو القفل مقفول
@@ -9829,213 +9600,6 @@ function showLocalNotification(title, body) {
         });
     }
 }
-// دالة يضغط عليها الأدمن بعد ما يرفع الملف الجديد
-function forceUpdateAllClients() {
-    if(!confirm("هل أنت متأكد؟ سيتم إعادة تحميل الصفحة عند جميع الموظفين فوراً لتشغيل التحديث الجديد.")) return;
-    
-    // نرسل رقم الإصدار الجديد والوقت الحالي للكل
-    db.ref('system_update').set({
-        version: APP_VERSION,
-        timestamp: getServerTime(),
-        forceReload: true
-    }).then(() => {
-        alert("تم إرسال إشارة التحديث بنجاح! ✅");
-    });
-}
-
-// دالة المراقبة (بتشتغل عند الموظف)
-db.ref('system_update').on('value', (snap) => {
-    const update = snap.val();
-    if (!update) return;
-
-    // لو الموظف شغال بنسخة قديمة أو الأدمن طلب تحديث إجباري
-    if (update.version !== APP_VERSION || update.forceReload) {
-        console.log("تحديث جديد مكتشف... جاري إعادة التحميل");
-        
-        // إظهار رسالة بسيطة قبل التحديث بـ 2 ثانية
-        if (currentUser && currentUser.role !== 'admin') {
-            const loadingOverlay = document.getElementById('loading');
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.innerHTML = `
-                <div style="text-align:center;">
-                    <h2 style="color:white;">🚀 جاري تثبيت تحديث جديد...</h2>
-                    <p style="color:var(--primary);">يرجى الانتظار ثواني قليلة</p>
-                </div>
-            `;
-            
-            setTimeout(() => {
-                // مسح الكاش وإعادة التحميل الإجباري
-                window.location.replace(window.location.href + "?v=" + update.timestamp);
-            }, 2000);
-        }
-    }
-});
-// ===== نظام العداد التنازلي للموبايل =====
-const mobileTimer = {
-    overlay: null,
-    ring: null,
-    digits: null,
-    label: null,
-    typeBadge: null,
-    progressBar: null,
-    finishedMsg: null,
-    
-    totalSeconds: 0,
-    remainingSeconds: 0,
-    interval: null,
-    currentType: '',
-    circumference: 2 * Math.PI * 110, // 691.15
-    
-    // تهيئة العناصر
-    init() {
-        this.overlay = document.getElementById('mobileTimerOverlay');
-        this.ring = document.getElementById('timerRing');
-        this.digits = document.getElementById('timerDigits');
-        this.label = document.getElementById('timerLabel');
-        this.typeBadge = document.getElementById('timerTypeBadge');
-        this.progressBar = document.getElementById('timerProgressBar');
-        this.finishedMsg = document.getElementById('timerFinishedMsg');
-        
-        // تعيين محيط الدائرة
-        this.ring.setAttribute('stroke-dasharray', this.circumference);
-        this.ring.setAttribute('stroke-dashoffset', '0');
-    },
-    
-    // بدء العداد
-    // type: 'break' | 'prayer' | 'meeting'
-    // minutes: عدد الدقائق
-    start(type, minutes) {
-        this.stop(); // وقف أي عداد شغال قبله
-        
-        this.currentType = type;
-        this.totalSeconds = minutes * 60;
-        this.remainingSeconds = this.totalSeconds;
-        
-        // تهيئة الشاشة
-        this.overlay.classList.remove('mobile-timer-warning', 'mobile-timer-finished');
-        this.finishedMsg.style.display = 'none';
-        this.ring.style.stroke = 'var(--primary)';
-        
-        // تحديد النوع واللون
-        const typeConfig = {
-            break:    { label: 'بريك',  cssClass: 'type-break',    color: '#818cf8', ringColor: '#6366f1' },
-            prayer:   { label: 'صلاة',  cssClass: 'type-prayer',   color: '#34d399', ringColor: '#10b981' },
-            meeting:  { label: 'ميتنج', cssClass: 'type-meeting',  color: '#fbbf24', ringColor: '#f59e0b' }
-        };
-        
-        const cfg = typeConfig[type] || typeConfig.break;
-        
-        this.typeBadge.textContent = cfg.label;
-        this.typeBadge.className = 'mobile-timer-type ' + cfg.cssClass;
-        this.ring.style.stroke = cfg.ringColor;
-        this.progressBar.style.background = cfg.ringColor;
-        
-        // تحديث أولي
-        this.updateDisplay();
-        
-        // فتح الشاشة
-        this.overlay.classList.add('active');
-        
-        // بدء العد كل ثانية
-        this.interval = setInterval(() => this.tick(), 1000);
-    },
-    
-    // كل ثانية
-    tick() {
-        this.remainingSeconds--;
-        
-        if (this.remainingSeconds <= 0) {
-            this.remainingSeconds = 0;
-            this.finish();
-            return;
-        }
-        
-        // تحذير آخر 60 ثانية
-        if (this.remainingSeconds <= 60) {
-            this.overlay.classList.add('mobile-timer-warning');
-        }
-        
-        this.updateDisplay();
-    },
-    
-    // تحديث العرض
-    updateDisplay() {
-        // الأرقام
-        const mins = Math.floor(this.remainingSeconds / 60);
-        const secs = this.remainingSeconds % 60;
-        this.digits.textContent = 
-            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-        
-        // الدائرة
-        const progress = this.remainingSeconds / this.totalSeconds;
-        const offset = this.circumference * (1 - progress);
-        this.ring.setAttribute('stroke-dashoffset', offset);
-        
-        // شريط التقدم العلوي
-        this.progressBar.style.width = (progress * 100) + '%';
-    },
-    
-    // لما الوقت يخلص
-    finish() {
-        this.stop();
-        this.updateDisplay();
-        
-        this.overlay.classList.add('mobile-timer-finished');
-        this.finishedMsg.style.display = 'block';
-        this.digits.textContent = '00:00';
-        
-        // تنبيه صوتي (اهتزاز + صوت لو متاح)
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200, 100, 400]);
-        }
-        
-        // محاولة تشغيل صوت تنبيه
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-            notes.forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime + i * 0.2);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.2 + 0.3);
-                osc.start(audioCtx.currentTime + i * 0.2);
-                osc.stop(audioCtx.currentTime + i * 0.2 + 0.3);
-            });
-        } catch(e) {}
-    },
-    
-    // وقف العداد
-    stop() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-    },
-    
-    // إغلاق الشاشة
-    close() {
-        this.stop();
-        this.overlay.classList.remove('active', 'mobile-timer-warning', 'mobile-timer-finished');
-        this.finishedMsg.style.display = 'none';
-        // إعادة الدائرة
-        this.ring.setAttribute('stroke-dashoffset', '0');
-        this.progressBar.style.width = '100%';
-    }
-};
-
-// دالة الإغلاق (للهتمل)
-function closeMobileTimer() {
-    mobileTimer.close();
-}
-
-// تشغيل init لما الصفحة تحمل
-document.addEventListener('DOMContentLoaded', () => {
-    mobileTimer.init();
-});
     // تنفيذ التبديل الفعلي في الطابور
 
             </script>
