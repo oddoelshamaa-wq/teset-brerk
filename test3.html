@@ -3048,20 +3048,18 @@ function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // 1. تشغيل ملف الصوت الصامت وإجباره على التكرار
+    // طلب إذن الإشعارات فوراً
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
+
+    // تشغيل الصوت الصامت
     const silent = document.getElementById('silentLoop');
     if(silent) {
-        silent.muted = false; // فك الكتم
-        silent.volume = 0.05; // صوت واطي جداً
-        silent.loop = true;   // تكرار نهائي
         silent.play().then(() => {
-            console.log("تم خداع نظام الأيفون بنجاح ✅");
-            // 2. تفعيل الجلسة فوراً
-            navigator.mediaSession.playbackState = 'playing';
-            updateLockScreenTimer(0, "جاهز للعمل"); 
-        }).catch(e => {
-            alert("يرجى الضغط مرة أخرى على الزرار لتفعيل العداد");
-        });
+            console.log("العداد في الخلفية يعمل الآن ✅");
+            updateLockScreenTimer(0, "جاهز للعمل"); // تفعيل شاشة القفل مبدئياً
+        }).catch(e => alert("يرجى الضغط مرة أخرى لتفعيل وضع الخلفية"));
     }
 
     document.getElementById('forceSoundOverlay').style.display = 'none';
@@ -4551,40 +4549,41 @@ db.ref('broadcasts').on('child_added', (snap) => {
             }
 
     function startMyBreak(t) {
-                if (currentUser.isOnBreak) return;
+    if (currentUser.isOnBreak) return;
 
-                // --- حماية نافذة الصلاة ---
-                if (t === 'صلاة') {
-                    if (!isPrayerWindowOpen) {
-                        alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. لا يمكنك البدء.");
-                        return;
-                    }
-                    const myIndex = (currentQueue || []).indexOf(currentUser.username);
-                    if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
-                        alert("⏳ لم يحن دورك بعد في الطابور!");
-                        return;
-                    }
-                }
+    if (t === 'صلاة') {
+        if (!isPrayerWindowOpen) {
+            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة.");
+            return;
+        }
+        const myIndex = (currentQueue || []).indexOf(currentUser.username);
+        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
+            alert("⏳ لم يحن دورك بعد في الطابور!");
+            return;
+        }
+    }
 
-                const reasonInput = document.getElementById('breakReason');
-                const reasonValue = reasonInput.value.trim();
+    const reasonInput = document.getElementById('breakReason');
+    const reasonValue = reasonInput.value.trim();
+    if (reasonValue === "" && t !== 'صلاة') {
+        alert("⚠️ يرجى كتابة سبب النشاط");
+        reasonInput.focus();
+        return;
+    }
 
-                if (reasonValue === "" && t !== 'صلاة') {
-                    alert("⚠️ يرجى كتابة سبب النشاط");
-                    reasonInput.focus();
-                    return;
-                }
+    // تحديد وسيلة البدء (PC أو Mobile)
+    const deviceType = getDeviceType() === 'desktop' ? 'PC 💻' : 'Mobile 📱';
 
-                db.ref('users/' + currentUser.username).update({
-                    isOnBreak: true,
-                    breakType: t,
-                    lastStartTime: getServerTime(),
-                    lastReason: reasonValue || t
-                }).then(() => {
-                    // إذا بدأ صلاة، نصفر عداد الـ 10 دقائق للي بعده في الطابور
-                    if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-                });
-            }
+    db.ref('users/' + currentUser.username).update({
+        isOnBreak: true,
+        breakType: t,
+        lastStartTime: getServerTime(),
+        lastReason: reasonValue || t,
+        startedBy: "الموظف نفسه (" + deviceType + ")" // المعلومة الجديدة
+    }).then(() => {
+        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
+    });
+}
 
             // دالة مساعدة لتنفيذ بدء البريك
             function executeBreakStart(t) {
@@ -8457,30 +8456,23 @@ function playAlarm() {
         }
         // --- ضع هذا الكود في آخر الملف لضمان أنه "عام" ومرئي لجميع الأزرار ---
 
-        function adminStart(un) {
-            // تحديد نوع النشاط المختار من القائمة المنسدلة
-            const typeSelect = document.getElementById('sel_' + un);
-            const type = typeSelect ? typeSelect.value : 'بريك عام';
-            const reason = "بدء إداري من لوحة التحكم";
+function adminStart(un) {
+    const typeSelect = document.getElementById('sel_' + un);
+    const type = typeSelect ? typeSelect.value : 'بريك عام';
+    const adminName = currentUser.realName || currentUser.username; // اسم المشرف الحالي
 
-            console.log("محاولة بدء نشاط لـ:", un, "النوع:", type);
-
-            // تحديث قاعدة البيانات فوراً
-            db.ref('users/' + un).update({
-                isOnBreak: true,
-                breakType: type,
-                lastStartTime: getServerTime(),
-                lastReason: reason
-            })
-            .then(() => {
-                alert("✅ تم بدء الـ " + type + " للموظف بنجاح");
-                if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                alert("حدث خطأ في قاعدة البيانات: " + error.message);
-            });
-        }
+    db.ref('users/' + un).update({
+        isOnBreak: true,
+        breakType: type,
+        lastStartTime: getServerTime(),
+        lastReason: "بدء إداري بواسطة المشرف",
+        startedBy: "المشرف: " + adminName // المعلومة الجديدة
+    })
+    .then(() => {
+        alert("✅ تم بدء البريك للموظف بواسطة: " + adminName);
+        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+    });
+}
     window.adminStop = (un) => {
         db.ref('users/' + un).once('value', (snap) => {
             const u = snap.val();
@@ -9194,30 +9186,24 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
         let timeStr = formatTime(secondsRemaining);
         let label = "";
 
+        // تحديد الحالة عشان الموظف يعرف العداد ده بتاع إيه
         if (statusType === 'صلاة') {
             label = "🕌 متبقي للصلاة";
         } else if (secondsRemaining < 0) {
             label = "⚠️ أكسدة الآن!";
             timeStr = "-" + formatTime(Math.abs(secondsRemaining));
-        } else if (statusType === "جاهز للعمل") {
-            label = "✅ نظام ELSHAMAA";
-            timeStr = "دوام سعيد";
         } else {
-            label = "⏳ متبقي في البريك";
+            label = "⏳ متبقي لك";
         }
 
-        // تحديث البيانات
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`,
+            title: `${label}: ${timeStr}`, // ده اللي هيظهر بخط كبير مكان اسم الأغنية
             artist: `الموظف: ${currentUser.realName || currentUser.username}`,
-            album: `إدارة البريك الذكية`,
+            album: `الحالة الحالية: ${statusType}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
-
-        // دي بتخليها تظهر غصب عن نظام الأيفون
-        navigator.mediaSession.playbackState = 'playing';
     }
 }
 
