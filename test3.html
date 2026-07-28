@@ -3048,18 +3048,20 @@ function activateSystemAndSound() {
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
-    // طلب إذن الإشعارات فوراً
-    if ("Notification" in window) {
-        Notification.requestPermission();
-    }
-
-    // تشغيل الصوت الصامت
+    // 1. تشغيل ملف الصوت الصامت وإجباره على التكرار
     const silent = document.getElementById('silentLoop');
     if(silent) {
+        silent.muted = false; // فك الكتم
+        silent.volume = 0.05; // صوت واطي جداً
+        silent.loop = true;   // تكرار نهائي
         silent.play().then(() => {
-            console.log("العداد في الخلفية يعمل الآن ✅");
-            updateLockScreenTimer(0, "جاهز للعمل"); // تفعيل شاشة القفل مبدئياً
-        }).catch(e => alert("يرجى الضغط مرة أخرى لتفعيل وضع الخلفية"));
+            console.log("تم خداع نظام الأيفون بنجاح ✅");
+            // 2. تفعيل الجلسة فوراً
+            navigator.mediaSession.playbackState = 'playing';
+            updateLockScreenTimer(0, "جاهز للعمل"); 
+        }).catch(e => {
+            alert("يرجى الضغط مرة أخرى على الزرار لتفعيل العداد");
+        });
     }
 
     document.getElementById('forceSoundOverlay').style.display = 'none';
@@ -9189,38 +9191,32 @@ function playAlarm() {
     // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
 function updateLockScreenTimer(secondsRemaining, statusType) {
     if ('mediaSession' in navigator) {
-        // تأكد إن ملف الصوت الصامت شغال (المحرك اللي بيشغل الشاشة المقفولة)
-        const silentAudio = document.getElementById('silentLoop');
-        if (silentAudio && silentAudio.paused) {
-            silentAudio.play().catch(e => console.log("بانتظار تفاعل المستخدم"));
-        }
-
         let timeStr = formatTime(secondsRemaining);
         let label = "";
-        let isOxidation = false;
 
-        // تحديد العنوان بناءً على الحالة بالظبط زي الصور
         if (statusType === 'صلاة') {
             label = "🕌 متبقي للصلاة";
         } else if (secondsRemaining < 0) {
             label = "⚠️ أكسدة الآن!";
             timeStr = "-" + formatTime(Math.abs(secondsRemaining));
-            isOxidation = true;
+        } else if (statusType === "جاهز للعمل") {
+            label = "✅ نظام ELSHAMAA";
+            timeStr = "دوام سعيد";
         } else {
             label = "⏳ متبقي في البريك";
         }
 
-        // تحديث البيانات اللي بتظهر في المستطيل الأبيض
+        // تحديث البيانات
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`, // السطر الأول الكبير
-            artist: `الموظف: ${currentUser.realName || currentUser.username}`, // السطر التاني
-            album: `إدارة البريك | ELSHAMAA`,
+            title: `${label}: ${timeStr}`,
+            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
+            album: `إدارة البريك الذكية`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
 
-        // دي حركة سحرية بتخلي العداد يظهر ويشتغل فوراً
+        // دي بتخليها تظهر غصب عن نظام الأيفون
         navigator.mediaSession.playbackState = 'playing';
     }
 }
