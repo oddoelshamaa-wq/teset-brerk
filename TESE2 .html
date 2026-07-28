@@ -1365,6 +1365,151 @@
         text-align: justify; /* لتنسيق السطور بشكل متساوي */
         text-justify: inter-word;
     }
+    /* ===== عداد البريك الدائري للموبايل ===== */
+.mobile-timer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(2, 6, 23, 0.95);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+.mobile-timer-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.mobile-timer-circle {
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+.mobile-timer-circle svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+.mobile-timer-circle .ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 10;
+}
+.mobile-timer-circle .ring-fg {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.5s;
+}
+.mobile-timer-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.mobile-timer-digits {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+.mobile-timer-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-top: 5px;
+}
+.mobile-timer-type {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 8px 25px;
+    border-radius: 30px;
+    margin-top: 5px;
+}
+.type-break { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid rgba(99,102,241,0.4); }
+.type-prayer { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+.type-meeting { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+
+/* تنبيه نهاية الوقت */
+.mobile-timer-warning .ring-fg {
+    stroke: var(--danger) !important;
+}
+.mobile-timer-warning .mobile-timer-digits {
+    color: var(--danger) !important;
+    animation: timerPulse 0.6s infinite;
+}
+@keyframes timerPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.08); }
+}
+
+/* وميض حمر لما الوقت يخلص */
+.mobile-timer-finished {
+    animation: finishFlash 0.5s infinite;
+}
+@keyframes finishFlash {
+    0%, 100% { background: rgba(2, 6, 23, 0.95); }
+    50% { background: rgba(244, 63, 94, 0.15); }
+}
+
+/* زرار إغلاق العداد */
+.mobile-timer-close {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+.mobile-timer-close:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+/* شريط تقدم صغير فوق */
+.mobile-timer-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: var(--primary);
+    transition: width 1s linear, background 0.5s;
+    border-radius: 0 4px 4px 0;
+}
+.mobile-timer-warning .mobile-timer-progress-bar {
+    background: var(--danger) !important;
+}
+
+/* رسالة "الوقت انتهى" */
+.timer-finished-msg {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--danger);
+    display: none;
+    animation: bounceIn 0.5s ease;
+}
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
 
                                         </style>
                                     </head>
@@ -2507,6 +2652,32 @@
             </div>
         </div>
     </div>
+    <!-- ===== شاشة العداد التنازلي للموبايل ===== -->
+<div class="mobile-timer-overlay" id="mobileTimerOverlay">
+    <div class="mobile-timer-progress-bar" id="timerProgressBar"></div>
+    
+    <button class="mobile-timer-close" id="timerCloseBtn" onclick="closeMobileTimer()">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="mobile-timer-circle" id="timerCircle">
+        <svg viewBox="0 0 250 250">
+            <circle class="ring-bg" cx="125" cy="125" r="110"></circle>
+            <circle class="ring-fg" id="timerRing" cx="125" cy="125" r="110"
+                    stroke-dasharray="691.15" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="mobile-timer-center">
+            <div class="mobile-timer-digits" id="timerDigits">00:00</div>
+            <div class="mobile-timer-label" id="timerLabel">متبقي</div>
+        </div>
+    </div>
+    
+    <div class="mobile-timer-type" id="timerTypeBadge">بريك</div>
+    
+    <div class="timer-finished-msg" id="timerFinishedMsg">
+        <i class="fas fa-bell"></i> الوقت خلص! ارجع شغلك
+    </div>
+</div>
                                     <script>
                                         const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
 
@@ -3049,7 +3220,7 @@
                                         function triggerGlobalRefresh() { db.ref('refreshSignal').set(getServerTime()); }
 
 function activateSystemAndSound() {
-        noSleep.enable(); // منع الموبايل من النوم تماماً
+    
     sessionStorage.setItem('systemActive', 'true');
     soundActive = true;
     
@@ -9698,6 +9869,172 @@ db.ref('system_update').on('value', (snap) => {
             }, 2000);
         }
     }
+});
+// ===== نظام العداد التنازلي للموبايل =====
+const mobileTimer = {
+    overlay: null,
+    ring: null,
+    digits: null,
+    label: null,
+    typeBadge: null,
+    progressBar: null,
+    finishedMsg: null,
+    
+    totalSeconds: 0,
+    remainingSeconds: 0,
+    interval: null,
+    currentType: '',
+    circumference: 2 * Math.PI * 110, // 691.15
+    
+    // تهيئة العناصر
+    init() {
+        this.overlay = document.getElementById('mobileTimerOverlay');
+        this.ring = document.getElementById('timerRing');
+        this.digits = document.getElementById('timerDigits');
+        this.label = document.getElementById('timerLabel');
+        this.typeBadge = document.getElementById('timerTypeBadge');
+        this.progressBar = document.getElementById('timerProgressBar');
+        this.finishedMsg = document.getElementById('timerFinishedMsg');
+        
+        // تعيين محيط الدائرة
+        this.ring.setAttribute('stroke-dasharray', this.circumference);
+        this.ring.setAttribute('stroke-dashoffset', '0');
+    },
+    
+    // بدء العداد
+    // type: 'break' | 'prayer' | 'meeting'
+    // minutes: عدد الدقائق
+    start(type, minutes) {
+        this.stop(); // وقف أي عداد شغال قبله
+        
+        this.currentType = type;
+        this.totalSeconds = minutes * 60;
+        this.remainingSeconds = this.totalSeconds;
+        
+        // تهيئة الشاشة
+        this.overlay.classList.remove('mobile-timer-warning', 'mobile-timer-finished');
+        this.finishedMsg.style.display = 'none';
+        this.ring.style.stroke = 'var(--primary)';
+        
+        // تحديد النوع واللون
+        const typeConfig = {
+            break:    { label: 'بريك',  cssClass: 'type-break',    color: '#818cf8', ringColor: '#6366f1' },
+            prayer:   { label: 'صلاة',  cssClass: 'type-prayer',   color: '#34d399', ringColor: '#10b981' },
+            meeting:  { label: 'ميتنج', cssClass: 'type-meeting',  color: '#fbbf24', ringColor: '#f59e0b' }
+        };
+        
+        const cfg = typeConfig[type] || typeConfig.break;
+        
+        this.typeBadge.textContent = cfg.label;
+        this.typeBadge.className = 'mobile-timer-type ' + cfg.cssClass;
+        this.ring.style.stroke = cfg.ringColor;
+        this.progressBar.style.background = cfg.ringColor;
+        
+        // تحديث أولي
+        this.updateDisplay();
+        
+        // فتح الشاشة
+        this.overlay.classList.add('active');
+        
+        // بدء العد كل ثانية
+        this.interval = setInterval(() => this.tick(), 1000);
+    },
+    
+    // كل ثانية
+    tick() {
+        this.remainingSeconds--;
+        
+        if (this.remainingSeconds <= 0) {
+            this.remainingSeconds = 0;
+            this.finish();
+            return;
+        }
+        
+        // تحذير آخر 60 ثانية
+        if (this.remainingSeconds <= 60) {
+            this.overlay.classList.add('mobile-timer-warning');
+        }
+        
+        this.updateDisplay();
+    },
+    
+    // تحديث العرض
+    updateDisplay() {
+        // الأرقام
+        const mins = Math.floor(this.remainingSeconds / 60);
+        const secs = this.remainingSeconds % 60;
+        this.digits.textContent = 
+            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        
+        // الدائرة
+        const progress = this.remainingSeconds / this.totalSeconds;
+        const offset = this.circumference * (1 - progress);
+        this.ring.setAttribute('stroke-dashoffset', offset);
+        
+        // شريط التقدم العلوي
+        this.progressBar.style.width = (progress * 100) + '%';
+    },
+    
+    // لما الوقت يخلص
+    finish() {
+        this.stop();
+        this.updateDisplay();
+        
+        this.overlay.classList.add('mobile-timer-finished');
+        this.finishedMsg.style.display = 'block';
+        this.digits.textContent = '00:00';
+        
+        // تنبيه صوتي (اهتزاز + صوت لو متاح)
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200, 100, 400]);
+        }
+        
+        // محاولة تشغيل صوت تنبيه
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime + i * 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.2 + 0.3);
+                osc.start(audioCtx.currentTime + i * 0.2);
+                osc.stop(audioCtx.currentTime + i * 0.2 + 0.3);
+            });
+        } catch(e) {}
+    },
+    
+    // وقف العداد
+    stop() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    },
+    
+    // إغلاق الشاشة
+    close() {
+        this.stop();
+        this.overlay.classList.remove('active', 'mobile-timer-warning', 'mobile-timer-finished');
+        this.finishedMsg.style.display = 'none';
+        // إعادة الدائرة
+        this.ring.setAttribute('stroke-dashoffset', '0');
+        this.progressBar.style.width = '100%';
+    }
+};
+
+// دالة الإغلاق (للهتمل)
+function closeMobileTimer() {
+    mobileTimer.close();
+}
+
+// تشغيل init لما الصفحة تحمل
+document.addEventListener('DOMContentLoaded', () => {
+    mobileTimer.init();
 });
     // تنفيذ التبديل الفعلي في الطابور
 
