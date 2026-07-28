@@ -9191,9 +9191,12 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
     if ('mediaSession' in navigator) {
         let timeStr = formatTime(secondsRemaining);
         let label = "";
+        let subTitle = `الموظف: ${currentUser.realName || currentUser.username}`;
 
-        // تحديد الحالة عشان الموظف يعرف العداد ده بتاع إيه
-        if (statusType === 'صلاة') {
+        // إذا كان المشرف هو من بدأ النشاط (Reason يحتوي على كلمة إداري)
+        if (currentUser.lastReason && currentUser.lastReason.includes("إداري")) {
+            label = "⚠️ تنبيه إداري";
+        } else if (statusType === 'صلاة') {
             label = "🕌 متبقي للصلاة";
         } else if (secondsRemaining < 0) {
             label = "⚠️ أكسدة الآن!";
@@ -9203,13 +9206,18 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
         }
 
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${label}: ${timeStr}`, // ده اللي هيظهر بخط كبير مكان اسم الأغنية
-            artist: `الموظف: ${currentUser.realName || currentUser.username}`,
-            album: `الحالة الحالية: ${statusType}`,
+            title: `${label}: ${timeStr}`, 
+            artist: subTitle,
+            album: `النشاط: ${statusType}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
         });
+
+        // لضمان استمرار العداد على PC و Mobile
+        if (secondsRemaining % 5 === 0) { // تحديث الحالة الفعلية للمشغل كل 5 ثواني لضمان عدم توقفه
+             navigator.mediaSession.playbackState = "playing";
+        }
     }
 }
 
