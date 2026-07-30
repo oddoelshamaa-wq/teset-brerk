@@ -70,4 +70,99 @@ self.addEventListener('message', (event) => {
   // --- إشعار تنبيه قبل الأكسدة (تحذير مسبق) ---
   if (type === 'PRE_OXIDATION_WARNING') {
     self.registration.showNotification('⏰ تنبيه البريك', {
-      body: payload
+      body: payload.body || 'متبقي 5 دقائق على انتهاء البريك!',
+      icon: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg?auth_key=1881098147-176910170c5241b9b6f31936865757ae-0-e94dd5a43309ee23faa863616eaf3400',
+      tag: 'pre-oxidation-' + (payload.userId || Date.now()),
+      requireInteraction: false,
+      vibrate: [300, 100, 300],
+      renotify: true,
+      priority: 'high',
+      data: { userId: payload.userId, type: 'pre-oxidation' }
+    });
+  }
+
+  // --- تحديث إشعار موجود (العداد التنازلي) ---
+  if (type === 'UPDATE_NOTIFICATION') {
+    const { tag, body, progress } = payload;
+    self.registration.getNotifications({ tag: tag }).then(notifications => {
+      notifications.forEach(notification => {
+        notification.close();
+        self.registration.showNotification(notification.title, {
+          body: body || notification.body,
+          icon: notification.icon,
+          tag: notification.tag,
+          requireInteraction: notification.requireInteraction,
+          vibrate: [],
+          renotify: true,
+          priority: notification.priority,
+          data: notification.data
+        });
+      });
+    });
+  }
+
+  // --- إلغاء إشعار معين ---
+  if (type === 'CANCEL_NOTIFICATION') {
+    const { tag } = payload;
+    self.registration.getNotifications({ tag: tag }).then(notifications => {
+      notifications.forEach(n => n.close());
+    });
+  }
+
+  // --- إلغاء كل إشعارات الأكسدة ---
+  if (type === 'CANCEL_ALL_OXIDATION') {
+    self.registration.getNotifications().then(notifications => {
+      notifications.forEach(n => {
+        if (n.data && n.data.type === 'oxidation') n.close();
+      });
+    });
+  }
+
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
+// ========================================
+// عند الضغط على الإشعار
+// ========================================
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const action = event.action;
+  const data = event.notification.data || {};
+
+  // لو ضغط على زر "إيقاف التنبيه" أو "تمديد"
+  if (action === 'stop' || action === 'extend') {
+    event.waitUntil(
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+        if (clients.length > 0) {
+          // أرسل رسالة للصفحة المفتوحة
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'NOTIFICATION_ACTION',
+              action: action,
+              userId: data.userId
+            });
+          });
+          clients[0].focus();
+        } else {
+          // لو مفيش صفحة مفتوحة، افتح التطبيق
+          self.clients.openWindow('./?action=' + action + '&userId=' + (data.userId || ''));
+        }
+      })
+    );
+    return;
+  }
+
+  // ضغطة عادية على الإشعار - افتح التطبيق
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      if (clients.length > 0) {
+        clients[0].focus();
+      } else {
+        self.clients.openWindow('./');
+      }
+    })
+  );
+});
