@@ -9191,39 +9191,21 @@
         }
         // دالة لتحديث شاشة القفل (تظهر العداد كأنه أغنية شغالة)
    // دالة لتحديث شاشة القفل والإشعارات بشكل حي (ثانية بثانية)
-function updateLockScreenTimer(secondsRemaining, statusType) {
-    let timeStr = formatTime(secondsRemaining);
-    let statusAr = "";
-
-    // تحديد نص الحالة
-    if (statusType === 'صلاة') statusAr = "🕌 متبقي على الصلاة";
-    else if (statusType === 'بريك عام') statusAr = "🍔 متبقي للبريك";
-    else if (statusType === 'طوارئ') statusAr = "🚨 بريك طوارئ";
-    
-    // في حالة الأكسدة (الرقم بالسالب)
-    if (secondsRemaining < 0) {
-        statusAr = "⚠️ أكسدة الآن!";
-        timeStr = "-" + formatTime(Math.abs(secondsRemaining));
-    }
-
-    // 1. تحديث واجهة "مشغل الموسيقى" في شاشة القفل (MediaSession)
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: timeStr, // الرقم يظهر هنا بشكل كبير
-            artist: statusAr, // الحالة تظهر تحته
-            album: `الموظف: ${currentUser.realName || currentUser.username}`,
-            artwork: [
-                { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
-            ]
+function updateLiveNotification(timeStr, statusDisplay) {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SHOW_NOTIFICATION',
+            payload: {
+                title: `العداد: ${timeStr}`,      // سيظهر مثلاً: العداد: -01:45
+                body: `الحالة: ${statusDisplay}`, // سيظهر مثلاً: الحالة: ⚠️ أكسدة الآن!
+                tag: 'activity-timer',
+                renotify: false,
+                silent: true, // تحديث صامت عشان الموبايل ميزنش كل ثانية
+                requireInteraction: false
+            }
         });
-        navigator.mediaSession.playbackState = "playing";
     }
-
-    // 2. تحديث الإشعار المنسدل (System Notification)
-    // قمت بإزالة شرط (secondsRemaining % 30) لكي يقل الرقم كل ثانية أمام عينك
-    updateLiveNotification(secondsRemaining, statusType);
 }
-
     // دالة لإرسال رسالة للـ Service Worker لتحديث الإشعار
  function updateLiveNotification(seconds, type) {
     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
