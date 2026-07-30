@@ -9700,35 +9700,57 @@ firebase.database().ref('system_update').on('value', (snap) => {
     }
 });
 function forceUpdateAllClients() {
-    if(!confirm("⚠️ هل أنت متأكد؟ سيتم عمل تحديث إجباري لجميع الموظفين الآن.")) return;
+    if(!confirm("⚠️ تنبيه: سيتم إعادة تحميل النظام عند جميع الموظفين لتثبيت التحديثات الجديدة. هل تريد الاستمرار؟")) return;
     
-    // بنبعت رقم فريد (الوقت الحالي) عشان جهاز الموظف يحس بالتغيير
-    const updateTime = Date.now(); 
+    const updateTime = Date.now(); // توقيت اللحظة الحالية كرمز للتحديث
     
     db.ref('system_update').set({
-        timestamp: updateTime
+        timestamp: updateTime,
+        admin: currentUser.realName || currentUser.username
     }).then(() => {
-        alert("تم إرسال إشارة التحديث لجميع الأجهزة بنجاح! ✅");
+        alert("✅ تم إرسال أمر التحديث لجميع الأجهزة بنجاح!");
     });
 }
-// كود استقبال التحديث الإجباري من الأدمن
-// كود استقبال التحديث الإجباري من الأدمن (يوضع في index.html)
+// كود استقبال التحديث الإجباري من الأدمن (يوضع قبل إغلاق وسم <script>)
 db.ref('system_update').on('value', (snap) => {
     const data = snap.val();
     if (!data) return;
+
     const lastUpdate = localStorage.getItem('last_processed_update') || 0;
+
+    // إذا كان التاريخ المرسل أحدث من التاريخ المخزن في جهاز الموظف
     if (data.timestamp > lastUpdate) {
+        console.log("🚀 جاري تثبيت تحديث جديد من الإدارة...");
+        
+        // 1. تخزين التاريخ الجديد لمنع التكرار
         localStorage.setItem('last_processed_update', data.timestamp);
+
+        // 2. إظهار شاشة تحميل للموظف عشان يعرف إن فيه تحديث
+        const loadingOverlay = document.getElementById('loading');
+        if(loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.innerHTML = `
+                <div style="text-align:center;">
+                    <div style="border:5px solid #6366f1; border-top:5px solid transparent; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>
+                    <h2 style="color:white; font-family:Cairo;">جاري تثبيت تحديث إداري...</h2>
+                    <p style="color:#aaa;">سيتم إعادة تشغيل النظام خلال لحظات</p>
+                </div>`;
+        }
+
+        // 3. تحديث الـ Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let reg of registrations) {
-                    reg.update(); // يأمر sw.js بالبحث عن التحديث الجديد الآن
+                    reg.update(); // طلب البحث عن نسخة sw.js الجديدة
                 }
             });
         }
+
+        // 4. إعادة تحميل الصفحة مع كسر الكاش تماماً بعد ثانية واحدة
         setTimeout(() => {
-            window.location.href = window.location.pathname + "?v=" + data.timestamp;
-        }, 1000);
+            // إضافة رقم عشوائي للرابط لضمان عدم فتح النسخة القديمة من المتصفح
+            window.location.href = window.location.pathname + "?update=" + data.timestamp;
+        }, 2000);
     }
 });
     // تنفيذ التبديل الفعلي في الطابور
