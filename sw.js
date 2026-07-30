@@ -100,3 +100,13 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+// معالجة إشعارات شاشة القفل
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    const { title, body, ...options } = event.data.payload;
+    self.registration.showNotification(title, { body, ...options });
+  }
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
