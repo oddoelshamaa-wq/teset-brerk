@@ -9660,55 +9660,75 @@ function showLocalNotification(title, body) {
         });
     }
 }
-// دالة يضغط عليها الأدمن بعد ما يرفع الملف الجديد
-function forceUpdateAllClients() {
-    if(!confirm("هل أنت متأكد؟ سيتم إعادة تحميل الصفحة عند جميع الموظفين فوراً لتشغيل التحديث الجديد.")) return;
-    
-    // نرسل رقم إصدار عشوائي وقتي لكسر الكاش تماماً
-    const newV = "V_" + Date.now(); 
-    
-    db.ref('system_update').set({
-        version: newV, // نغير النسخة هنا لضمان استجابة الموظف
-        timestamp: getServerTime(),
-        forceReload: true
-    }).then(() => {
-        alert("تم إرسال إشارة التحديث بنجاح! ✅");
-    });
-}
-
-// دالة المراقبة (بتشتغل عند الموظف)
-// دالة المراقبة عند الموظف (تحديث تلقائي للتطبيق والمتصفح)
-// كود المراقبة الذكي عند الموظف
-db.ref('system_update').on('value', (snap) => {
+// استماع دائم لإشارة التحديث من الأدمن
+firebase.database().ref('system_update').on('value', (snap) => {
     const update = snap.val();
-    if (!update || !update.forceReload) return;
+    if (!update) return;
 
-    // جلب رقم آخر تحديث قام به الموظف من ذاكرة الموبايل
-    const lastUpdateProcessed = localStorage.getItem('last_processed_update');
+    // جلب رقم آخر تحديث تم تنفيذه على هذا الجهاز
+    const lastUpdateProcessed = localStorage.getItem('last_processed_update') || 0;
 
-    // إذا كان التحديث الموجود في السيرفر أحدث من الذي تم تنفيذه
-    if (update.timestamp > (lastUpdateProcessed || 0)) {
-        console.log("🚀 تحديث جديد مكتشف... جاري التنفيذ");
+    // إذا كان الرقم القادم من السيرفر أكبر من المخزن في الجهاز، إذن هذا تحديث جديد
+    if (update.timestamp > lastUpdateProcessed) {
+        console.log("🚀 تم استلام أمر تحديث من الأدمن...");
 
-        // 1. حفظ رقم التحديث فوراً لمنع التكرار قبل البدء
+        // 1. تخزين الرقم الجديد فوراً لمنع التكرار
         localStorage.setItem('last_processed_update', update.timestamp);
 
-        // 2. تحديث السيرفس وركر (للتطبيق المثبت)
+        // 2. إظهار رسالة للموظف (اختياري لكن مفيد)
+        const loadingOverlay = document.getElementById('loading');
+        if(loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.innerHTML = '<h2 style="color:white; text-align:center;">⏳ جاري تثبيت تحديث إداري جديد...<br>برجاء الانتظار ثواني</h2>';
+        }
+
+        // 3. تحديث الـ Service Worker (التطبيق المثبت)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
-                    registration.update();
+                    registration.update(); // سحب ملف sw.js الجديد
                 }
             });
         }
 
-        // 3. إعادة تحميل الصفحة بعد ثانية واحدة لضمان سحب الملفات
+        // 4. إعادة تحميل الصفحة بعد ثانية مع كسر الكاش تماماً
         setTimeout(() => {
-            // إضافة التايم ستامب للرابط لكسر الكاش تماماً
-            const url = new URL(window.location.href);
-            url.searchParams.set('v', update.timestamp);
-            window.location.replace(url.toString());
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('update_v', update.timestamp); // كسر كاش المتصفح
+            window.location.replace(currentUrl.toString());
         }, 1500);
+    }
+});
+function forceUpdateAllClients() {
+    if(!confirm("⚠️ هل أنت متأكد؟ سيتم عمل تحديث إجباري لجميع الموظفين الآن.")) return;
+    
+    // بنبعت رقم فريد (الوقت الحالي) عشان جهاز الموظف يحس بالتغيير
+    const updateTime = Date.now(); 
+    
+    db.ref('system_update').set({
+        timestamp: updateTime
+    }).then(() => {
+        alert("تم إرسال إشارة التحديث لجميع الأجهزة بنجاح! ✅");
+    });
+}
+// كود استقبال التحديث الإجباري من الأدمن
+// كود استقبال التحديث الإجباري من الأدمن (يوضع في index.html)
+db.ref('system_update').on('value', (snap) => {
+    const data = snap.val();
+    if (!data) return;
+    const lastUpdate = localStorage.getItem('last_processed_update') || 0;
+    if (data.timestamp > lastUpdate) {
+        localStorage.setItem('last_processed_update', data.timestamp);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let reg of registrations) {
+                    reg.update(); // يأمر sw.js بالبحث عن التحديث الجديد الآن
+                }
+            });
+        }
+        setTimeout(() => {
+            window.location.href = window.location.pathname + "?v=" + data.timestamp;
+        }, 1000);
     }
 });
     // تنفيذ التبديل الفعلي في الطابور
