@@ -9678,38 +9678,39 @@ function forceUpdateAllClients() {
 
 // دالة المراقبة (بتشتغل عند الموظف)
 // دالة المراقبة عند الموظف (تحديث تلقائي للتطبيق والمتصفح)
-// كود المراقبة (يوضع في نهاية index.html عند الموظف)
+// كود المراقبة الذكي عند الموظف
 db.ref('system_update').on('value', (snap) => {
     const update = snap.val();
-    if (!update) return;
+    if (!update || !update.forceReload) return;
 
-    if (update.forceReload) {
-        // 1. إجبار السيرفس وركر على التحديث الآن
+    // جلب رقم آخر تحديث قام به الموظف من ذاكرة الموبايل
+    const lastUpdateProcessed = localStorage.getItem('last_processed_update');
+
+    // إذا كان التحديث الموجود في السيرفر أحدث من الذي تم تنفيذه
+    if (update.timestamp > (lastUpdateProcessed || 0)) {
+        console.log("🚀 تحديث جديد مكتشف... جاري التنفيذ");
+
+        // 1. حفظ رقم التحديث فوراً لمنع التكرار قبل البدء
+        localStorage.setItem('last_processed_update', update.timestamp);
+
+        // 2. تحديث السيرفس وركر (للتطبيق المثبت)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
-                    registration.update(); // يبحث عن التغيير في sw.js فوراً
+                    registration.update();
                 }
             });
         }
 
-        // 2. إعادة تحميل الصفحة مع كسر الكاش
+        // 3. إعادة تحميل الصفحة بعد ثانية واحدة لضمان سحب الملفات
         setTimeout(() => {
-            // إضافة رقم عشوائي للرابط لضمان عدم تحميل النسخة القديمة من ذاكرة الموبايل
-            window.location.href = window.location.pathname + "?v=" + Date.now();
-        }, 1000);
+            // إضافة التايم ستامب للرابط لكسر الكاش تماماً
+            const url = new URL(window.location.href);
+            url.searchParams.set('v', update.timestamp);
+            window.location.replace(url.toString());
+        }, 1500);
     }
 });
-
-// كود إضافي لضمان عمل ريفريش بمجرد تنشيط الـ Service Worker الجديد
-if ('serviceWorker' in navigator) {
-    let refreshing;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        window.location.reload();
-        refreshing = true;
-    });
-}
     // تنفيذ التبديل الفعلي في الطابور
 
             </script>
