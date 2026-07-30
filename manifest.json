@@ -1,0 +1,43 @@
+{
+  "name": "ELSHAMAA | إدارة البريك",
+  "short_name": "ELSHAMAA",
+  "description": "نظام إدارة البريك والموظفين",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg?auth_key=1881098147-176910170c5241b9b6f31936865757ae-0-e94dd5a43309ee23faa863616eaf3400",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg?auth_key=1881098147-176910170c5241b9b6f31936865757ae-0-e94dd5a43309ee23faa863616eaf3400",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "بدء البريك",
+      "short_name": "بريك",
+      "url": ".",
+      "icons": [
+        {
+          "src": "https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg?auth_key=1881098147-176910170c5241b9b6f31936865757ae-0-e94dd5a43309ee23faa863616eaf3400",
+          "sizes": "96x96",
+          "type": "image/jpeg"
+        }
+      ]
+    }
+  ]
+}
