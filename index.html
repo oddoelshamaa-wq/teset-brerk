@@ -4912,23 +4912,26 @@ updateLockScreenTimer(rem, u.breakType);
                                         }
 
                                         function formatTime(s) { if(isNaN(s) || s < 0) return "00:00"; return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+// دالة تشغيل التنبيه
 function playAlarm() { 
     if(soundActive) { 
         document.body.classList.add('وضع-التنبيه'); 
-        
         const alarm = document.getElementById('alarmSound');
-        
-        // 1. تشغيل الصوت (هيشتغل لو أنت ضاغط على زرار تفعيل الصوت عند الدخول)
-        if (alarm.paused) {
-            alarm.play().catch(e => console.log("الصوت محظور من المتصفح"));
-        }
-
-        // 2. إرسال إشعار يهز الموبايل (عشان لو المتصفح قفل الصوت، الهزاز ينبهك)
-        if (Notification.permission === "granted") {
-            showLocalNotification("🚨 تنبيه أكسدة!", "لقد تجاوزت الوقت المسموح، ارجع لمكتبك فوراً!");
+        if (alarm && alarm.paused) {
+            alarm.play().catch(e => console.log("الصوت محظور"));
         }
     } 
-}                              
+}
+
+// دالة إيقاف التنبيه (هذه هي الدالة الناقصة التي تسبب العطل)
+function stopAlarm() {
+    document.body.classList.remove('وضع-التنبيه'); 
+    const alarm = document.getElementById('alarmSound');
+    if (alarm) {
+        alarm.pause();
+        alarm.currentTime = 0; // إعادة الصوت للبداية
+    }
+}                        
 
                                         function sendEmRequest() { const r = document.getElementById('breakReason').value.trim(); if(!r) return alert("اكتب السبب"); db.ref('users/'+currentUser.username+'/emRequest').set({ reason: r, status: 'قيد الانتظار', timestamp: getServerTime() }); }
 
@@ -9190,32 +9193,50 @@ function playAlarm() {
 function updateLockScreenTimer(secondsRemaining, statusType) {
     if ('mediaSession' in navigator) {
         let timeStr = formatTime(secondsRemaining);
-        let label = "";
+        let statusAr = "";
 
-        // تحديد التسمية بناءً على الحالة
-        if (statusType === 'صلاة') {
-            label = "🕌 متبقي للصلاة";
-        } else if (secondsRemaining < 0) {
-            label = "⚠️ أكسدة الآن!";
-            timeStr = "-" + formatTime(Math.abs(secondsRemaining)); // إضافة علامة الناقص للأكسدة
-        } else {
-            label = "⏳ متبقي لك";
+        if (statusType === 'صلاة') statusAr = "🕌 متبقي للصلاة";
+        else if (statusType === 'بريك عام') statusAr = "🍔 متبقي للبريك";
+        else if (statusType === 'طوارئ') statusAr = "🚨 بريك طوارئ";
+        
+        // لو في حالة أكسدة
+        if (secondsRemaining < 0) {
+            statusAr = "⚠️ أكسدة الآن!";
+            timeStr = "-" + formatTime(Math.abs(secondsRemaining));
         }
 
-        // جلب معلومة مين اللي بدأ من بيانات المستخدم
-        const startedByInfo = currentUser.startedBy || "غير محدد";
-
         navigator.mediaSession.metadata = new MediaMetadata({
-            // 1. جعل العنوان هو العداد (مثل الصورة اللي تحبها)
-            title: `${label}: ${timeStr}`, 
-            
-            // 2. جعل خانة الفنان هي اسم الموظف ومين اللي فتحه
-            artist: `الموظف: ${currentUser.realName} | بـواسطة: ${startedByInfo}`, 
-            
-            album: `إدارة بريك الشمعة`,
+            title: `العداد: ${timeStr}`, // ده اللي هيبان بخط كبير
+            artist: statusAr,           // ده النوع
+            album: `موظف: ${currentUser.realName || currentUser.username}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
+        });
+
+        // تحديث حالة التشغيل عشان العداد يفضل حي
+        navigator.mediaSession.playbackState = "playing";
+    }
+
+    // --- الجزء الجديد لتحديث الإشعار الفعلي (Notification) كل دقيقة مثلاً أو في الحالات الحرجة ---
+    if (secondsRemaining % 30 === 0 || secondsRemaining < 60) { // تحديث كل 30 ثانية أو كل ثانية لو فاضل أقل من دقيقة
+        updateLiveNotification(secondsRemaining, statusType);
+    }
+}
+
+// دالة لإرسال رسالة للـ Service Worker لتحديث الإشعار
+function updateLiveNotification(seconds, type) {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        let timeStr = seconds >= 0 ? formatTime(seconds) : "انتهى الوقت! ⚠️";
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SHOW_NOTIFICATION',
+            payload: {
+                title: `تنبيه النشاط: ${type}`,
+                body: `الوقت المتبقي: ${timeStr}`,
+                tag: 'activity-timer', // تثبيت الـ tag عشان الإشعار يتحدث مكانه مش يفتح واحد جديد
+                renotify: false,       // عشان الموبايل ميزنش كل ثانية
+                silent: true           // تحديث صامت
+            }
         });
     }
 }
