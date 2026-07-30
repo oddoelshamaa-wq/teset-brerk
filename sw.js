@@ -1,14 +1,16 @@
+// اسم الكاش - يتغير تلقائياً عند كل بناء جديد لضمان التحديث
 const CACHE_NAME = 'elshamaa-pwa-v' + Date.now();
 
+// الملفات الأساسية المطلوب حفظها للعمل بدون إنترنت
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json'
 ];
 
-// عند التثبيت
+// 1. مرحلة التثبيت: إجبار النسخة الجديدة على العمل فوراً
 self.addEventListener('install', event => {
-  self.skipWaiting(); // إجبار النسخة الجديدة على العمل فوراً
+  self.skipWaiting(); 
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(urlsToCache);
@@ -16,7 +18,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// عند التنشيط (تنظيف الكاش القديم)
+// 2. مرحلة التنشيط: مسح أي كاش قديم نهائياً لتوفير المساحة ومنع التعليق
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -32,8 +34,9 @@ self.addEventListener('activate', event => {
   return self.clients.claim(); 
 });
 
-// استراتيجية جلب الملفات (Network First) 
-// هذا الجزء هو السر: يبحث عن النسخة الجديدة من الإنترنت أولاً، إذا لم يجد (أوفلاين) يفتح الكاش
+// 3. استراتيجية جلب الملفات (Network First): 
+// يبحث عن الجديد في الإنترنت أولاً، وإذا لم يجد (أوفلاين) يفتح من الكاش.
+// هذه أهم نقطة لضمان وصول تحديث الأدمن للموظف فوراً.
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request).catch(() => {
@@ -42,7 +45,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// استقبال رسالة التحديث من الواجهة
+// 4. استقبال رسائل التحديث من الواجهة
 self.addEventListener('message', (event) => {
   if (event.data.action === 'skipWaiting') {
     self.skipWaiting();
