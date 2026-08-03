@@ -2402,23 +2402,38 @@
         </div>
                                                     <!-- الأزرار العادية للموظف -->
                                                     <div id="controlsArea">
-                                                        <input type="text" id="breakReason" placeholder="اكتب سبب النشاط هنا..." class="form-control-glass" style="text-align: center; font-size: 1.1rem;">
                                                         
-                                                        <div id="vipControlArea" class="hidden" style="margin-bottom: 20px;">
-                                                            <button onclick="startMyBreak('استراحة VIP')" class="btn btn-vip" style="width:100%; max-width:500px;">👑 بدء استراحة VIP</button>
-                                                        </div>
+                                                       <!-- زر الـ VIP المعدل ليفتح نافذة الاختيار -->
+<div id="vipControlArea" class="hidden" style="margin-bottom: 20px;">
+    <button onclick="document.getElementById('vipPickerModal').classList.remove('hidden')" class="btn btn-vip" style="width:100%; max-width:500px;">👑 بدء استراحة VIP</button>
+</div>
 
                                                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; max-width: 800px; margin: 0 auto;">
-                                                            <div style="border:1px solid var(--success); padding:8px; border-radius:15px;"><h4>🍔 بريك</h4><button onclick="startMyBreak('بريك عام')" class="btn btn-success" style="width:100%">ابدأ</button></div>
-                                                            <div style="border:1px solid var(--primary); padding:8px; border-radius:15px;"><h4>🕌 صلاة</h4><button onclick="startMyBreak('صلاة')" class="btn btn-primary" style="width:100%">ابدأ</button></div>
+<div style="border:1px solid var(--success); padding:8px; border-radius:15px;">
+    <h4>🍔 بريك</h4>
+    <button onclick="document.getElementById('breakPickerModal').classList.remove('hidden')" class="btn btn-success" style="width:100%">ابدأ</button>
+</div>
+<div style="border:1px solid var(--primary); padding:8px; border-radius:15px;">
+    <h4>🕌 صلاة</h4>
+    <button onclick="document.getElementById('prayerTypePickerModal').classList.remove('hidden')" class="btn btn-primary" style="width:100%">ابدأ</button>
+</div>
         <div id="prayerSwapArea" class="hidden" style="margin-top:10px;">
             <button onclick="openPrayerSwapModal()" class="btn btn-dark btn-sm" style="width:100%; border:1px dashed var(--accent);">
                 🔄 تبديل دوري مع زميل
             </button>
         </div>
-                    <div style="border:1px solid var(--warning); padding:8px; border-radius:15px;"><h4>🤝 ميتنج</h4><div id="meetingStatusArea"><button onclick="sendMeetingRequest()" class="btn btn-warning" style="width:100%">طلب</button></div></div>
-
-                    <div id="followUpCard" class="hidden" style="border:1px solid #10b981; padding:8px; border-radius:15px;"><h4>📞 متابع</h4><button onclick="startMyBreak('متابع عميل')" class="btn btn-success" style="width:100%; background:#10b981;">ابدأ</button></div>
+<div style="border:1px solid var(--warning); padding:8px; border-radius:15px;">
+    <h4>🤝 ميتنج</h4>
+    <div id="meetingStatusArea">
+        <!-- هنا التغيير -->
+        <button onclick="openMeetingModal()" class="btn btn-warning" style="width:100%">طلب</button>
+    </div>
+</div>
+<!-- كارت المتابع المعدل -->
+<div id="followUpCard" class="hidden" style="border:1px solid #10b981; padding:8px; border-radius:15px;">
+    <h4>📞 متابع</h4>
+    <button onclick="document.getElementById('followUpPickerModal').classList.remove('hidden')" class="btn btn-success" style="width:100%; background:#10b981;">ابدأ</button>
+</div>
                                                             <div style="border:1px solid var(--danger); padding:8px; border-radius:15px;"><h4>🚨 طوارئ</h4><div id="emStatusArea"><button onclick="sendEmRequest()" class="btn btn-danger" style="width:100%">طلب</button></div></div>
                                                         </div>
 
@@ -2503,6 +2518,124 @@
                 </div>
             </div>
         </div>
+        <!-- نافذة اختيار نوع البريك بالتفصيل -->
+<div id="breakPickerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:60000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid var(--primary); border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center; box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);">
+        <h3 style="color:white; margin-bottom:20px;">حدد نشاطك الآن 🍔</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button onclick="confirmDetailedBreak('بريك عادي')" class="btn btn-primary" style="flex-direction:column; padding:20px; font-size:1rem;">
+                <span style="font-size:1.5rem;">🥗</span><br>بريك عادي
+            </button>
+            <button onclick="confirmDetailedBreak('مكالمة تليفونية')" class="btn btn-warning" style="flex-direction:column; padding:20px; font-size:1rem; color:white;">
+                <span style="font-size:1.5rem;">📞</span><br>مكالمة
+            </button>
+            <button onclick="confirmDetailedBreak('الحمام')" class="btn btn-dark" style="flex-direction:column; padding:20px; font-size:1rem; border:1px solid #444;">
+                <span style="font-size:1.5rem;">🚾</span><br>الحمام
+            </button>
+            <button onclick="confirmDetailedBreak('هيجيب حاجة من تحت')" class="btn btn-success" style="flex-direction:column; padding:20px; font-size:1rem;">
+                <span style="font-size:1.5rem;">🏃‍♂️</span><br>مشوار تحت
+            </button>
+        </div>
+
+        <button onclick="document.getElementById('breakPickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+<!-- نافذة اختيار المشرف للميتنج بدون سبب -->
+<div id="selectManagerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:70000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid var(--warning); border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center;">
+        <h3 style="color:white; margin-bottom:20px;">🤝 ميتنج مع مين؟</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button onclick="confirmMeetingRequest('mahmoud', 'محمود')" class="btn btn-dark" style="padding:15px; border:1px solid #ffd700; color:#ffd700; font-size:1.1rem;">👑 محمود</button>
+            <button onclick="confirmMeetingRequest('ahmed', 'أحمد يحيى')" class="btn btn-dark" style="padding:15px; border:1px solid #38bdf8; color:#38bdf8; font-size:1.1rem;">👤 أحمد يحيى</button>
+        </div>
+
+        <button onclick="document.getElementById('selectManagerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+<!-- نافذة اختيار نوع الطوارئ -->
+<div id="emergencyPickerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:80000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid #ef4444; border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center; box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);">
+        <h3 style="color:white; margin-bottom:20px;">🚨 حدد نوع حالة الطوارئ</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+            <button onclick="confirmEmergencyType('📞 مكالمة تليفونية طارئة')" class="btn btn-danger" style="padding:15px; font-size:1rem; background: linear-gradient(135deg, #ef4444, #991b1b);">
+                📞 مكالمة تليفونية
+            </button>
+            <button onclick="confirmEmergencyType('🚾 محتاج الحمام ضروري')" class="btn btn-danger" style="padding:15px; font-size:1rem; background: linear-gradient(135deg, #f97316, #b91c1c);">
+                🚾 الحمام (حالة قصوى)
+            </button>
+            <button onclick="confirmEmergencyType('🆘 بريك طوارئ (ضروري جداً)')" class="btn btn-danger" style="padding:15px; font-size:1rem; background: linear-gradient(135deg, #7f1d1d, #450a0a);">
+                🆘 بريك ضروري جداً
+            </button>
+        </div>
+
+        <button onclick="document.getElementById('emergencyPickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+<!-- نافذة اختيار نوع الصلاة بالتفصيل -->
+<div id="prayerTypePickerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:90000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid #38bdf8; border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);">
+        <h3 style="color:white; margin-bottom:20px;">حدد الصلاة الآن 🕌</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button onclick="confirmSpecificPrayer('صلاة الظهر')" class="btn btn-primary" style="flex-direction:column; padding:20px; font-size:1rem; background:linear-gradient(135deg, #0ea5e9, #2563eb);">
+                <span style="font-size:1.5rem;">☀️</span><br>الظهر
+            </button>
+            <button onclick="confirmSpecificPrayer('صلاة العصر')" class="btn btn-primary" style="flex-direction:column; padding:20px; font-size:1rem; background:linear-gradient(135deg, #0ea5e9, #2563eb);">
+                <span style="font-size:1.5rem;">🕌</span><br>العصر
+            </button>
+            <button onclick="confirmSpecificPrayer('صلاة المغرب')" class="btn btn-primary" style="flex-direction:column; padding:20px; font-size:1rem; background:linear-gradient(135deg, #0ea5e9, #2563eb);">
+                <span style="font-size:1.5rem;">🌅</span><br>المغرب
+            </button>
+            <button onclick="confirmSpecificPrayer('صلاة العشاء')" class="btn btn-primary" style="flex-direction:column; padding:20px; font-size:1rem; background:linear-gradient(135deg, #0ea5e9, #2563eb);">
+                <span style="font-size:1.5rem;">🌙</span><br>العشاء
+            </button>
+        </div>
+
+        <button onclick="document.getElementById('prayerTypePickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+<!-- نافذة اختيار نوع استراحة VIP -->
+<div id="vipPickerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:95000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid #ffd700; border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);">
+        <h3 style="color:#ffd700; margin-bottom:20px;">استراحة VIP الملكية 👑</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+            <!-- اختيار الحمام -->
+            <button onclick="confirmVIPAction('حمام (VIP)')" class="btn" style="background: linear-gradient(135deg, #444, #222); border: 1px solid #ffd700; padding:20px; font-size:1.1rem; color:#ffd700;">
+                <span style="font-size:1.8rem;">🚾</span><br>دخول الحمام
+            </button>
+            
+            <!-- اختيار بريك VIP عادي -->
+           
+        </div>
+
+        <button onclick="document.getElementById('vipPickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+<!-- نافذة اختيار نوع المتابعة -->
+<div id="followUpPickerModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:96000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid #10b981; border-radius:30px; padding:25px; width:90%; max-width:400px; text-align:center;">
+        <h3 style="color:white; margin-bottom:20px;">حدد نوع المتابعة 📞</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+            <!-- الخيار الأول -->
+            <button onclick="confirmFollowUpAction('متابع عميل')" class="btn btn-success" style="padding:20px; font-size:1.1rem; background: linear-gradient(135deg, #10b981, #059669);">
+                📞 متابعة عميل
+            </button>
+            
+            <!-- الخيار الجديد الذي طلبته -->
+            <button onclick="confirmFollowUpAction('اشوف نواقص وصلت ولا لا')" class="btn" style="padding:20px; font-size:1.1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color:white;">
+                📦 اشوف نواقص وصلت ولا لا
+            </button>
+        </div>
+
+        <button onclick="document.getElementById('followUpPickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
+    </div>
+</div>
+
                                         <script>
                                             const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
 
@@ -3681,57 +3814,58 @@
                                                 });
                                             }
 
-                function checkBreakLimit() {
-                    if(!currentUser || currentUser.role === 'admin') return;
-                    const box = document.getElementById('breakLimitAlert');
-                    const breakBtn = document.querySelector("button[onclick=\"startMyBreak('بريك عام')\"]");
+               function checkBreakLimit() {
+    if(!currentUser || currentUser.role === 'admin') return false; // الإدارة لا تطبق عليها القيود
+    
+    const box = document.getElementById('breakLimitAlert');
+    // استهداف الزرار اللي بيفتح نافذة اختيار البريك
+    const mainBreakBtn = document.querySelector("button[onclick*='breakPickerModal']");
 
-                    let isBlocked = false;
-                    let message = "";
+    let isBlocked = false;
+    let message = "";
 
-                    if (currentUser.groupName && currentUser.groupName !== "") {
-                        // فحص الجروب
-                        const inMyGroupOnBreak = Object.values(allUsersData).filter(u =>
-                            u.groupName === currentUser.groupName &&
-                            u.username !== currentUser.username &&
-                            u.isOnBreak && (u.breakType === 'بريك عام' || u.breakType === 'طوارئ')
-                        );
-                        if (inMyGroupOnBreak.length >= 1) {
-                            isBlocked = true;
-                            message = `يا بطل، زميلك في مجموعة (${currentUser.groupName}) في البريك حالياً. أول ما يرجع الطريق هيكون مفتوح ليك! 💪`;
-                        }
-                    } else {
-                        // فحص المستقلين (التعديل هنا)
-                        const soloUsersOnBreak = Object.values(allUsersData).filter(u =>
-                            (!u.groupName || u.groupName === "") &&
-                            u.isOnBreak && (u.breakType === 'بريك عام' || u.breakType === 'طوارئ')
-                        ).length;
+    // منطق فحص المجموعات
+    if (currentUser.groupName && currentUser.groupName !== "") {
+        const inMyGroupOnBreak = Object.values(allUsersData).filter(u =>
+            u.groupName === currentUser.groupName &&
+            u.username !== currentUser.username &&
+            u.isOnBreak && (u.breakType === 'بريك عام' || u.breakType === 'طوارئ')
+        );
+        if (inMyGroupOnBreak.length >= 1) {
+            isBlocked = true;
+            message = `يا بطل، زميلك في مجموعة (${currentUser.groupName}) في البريك حالياً. أول ما يرجع الطريق هيكون مفتوح ليك! 💪`;
+        }
+    } else {
+        // منطق الموظفين المستقلين
+        const soloUsersOnBreak = Object.values(allUsersData).filter(u =>
+            (!u.groupName || u.groupName === "") &&
+            u.isOnBreak && (u.breakType === 'بريك عام' || u.breakType === 'طوارئ')
+        ).length;
 
-                        if (soloUsersOnBreak >= maxBreaksAllowed) {
-                            isBlocked = true;
-                            // النص الجديد اللي إنت طلبته
-                            message = `يا بطل، زمايلك كلهم في البريك دلوقتي. استنى دقايق لحد ما حد يرجع عشان نفضل شغالين.. أول ما حد يرجع الطريق هيكون مفتوح ليك! 💪`;
-                        }
-                    }
+        if (soloUsersOnBreak >= maxBreaksAllowed) {
+            isBlocked = true;
+            message = `يا بطل، زمايلك كلهم في البريك دلوقتي. استنى حد يرجع عشان نفضل شغالين.. أول ما حد يرجع الطريق هيكون مفتوح ليك! 💪`;
+        }
+    }
 
-                    if (isBlocked) {
-                        box.style.display = 'block';
-                        box.innerHTML = message;
-                        if(breakBtn) {
-                            breakBtn.disabled = true;
-                            breakBtn.style.opacity = "0.5";
-                            breakBtn.style.cursor = "not-allowed";
-                        }
-                    } else {
-                        box.style.display = 'none';
-                        if(breakBtn) {
-                            breakBtn.disabled = false;
-                            breakBtn.style.opacity = "1";
-                            breakBtn.style.cursor = "pointer";
-                        }
-                    }
-                }
-
+    if (isBlocked) {
+        if(box) { box.style.display = 'block'; box.innerHTML = message; }
+        if(mainBreakBtn) {
+            mainBreakBtn.disabled = true;
+            mainBreakBtn.style.opacity = "0.5";
+            mainBreakBtn.style.cursor = "not-allowed";
+        }
+        return true; // تعني أن البريك ممتلئ
+    } else {
+        if(box) box.style.display = 'none';
+        if(mainBreakBtn) {
+            mainBreakBtn.disabled = false;
+            mainBreakBtn.style.opacity = "1";
+            mainBreakBtn.style.cursor = "pointer";
+        }
+        return false; // تعني أن المكان متاح
+    }
+}
         function checkSavedSession() { 
             const s = localStorage.getItem('break_sys_user'); 
             if (s && allUsersData[s]) { 
@@ -3742,8 +3876,11 @@
                 manageSingleSession(s);
 
                 if (currentUser.role === 'admin') showAdmin(); 
+                
                 else { setupPresence(s); showEmployee(); } 
                 startGlobalTimer(); 
+                            listenForRemoteLogout(s); // إضافة السطر هنا
+
             } 
         }                                 
     function attemptLogin() { 
@@ -4145,10 +4282,18 @@
 
                         // القيمة المحفوظة في القائمة المنسدلة
                         const savedS = adminSelectBuffer[u.username] || 'بريك عام';
+// الكود الجديد (يجلب الاختيار التفصيلي):
+// ابحث عن هذا الجزء داخل renderMonitorTable واستبدله
+let mainStatusText = u.breakType; 
 
-                        const statusCell = u.isOnBreak
-                            ? `<span style="color:var(--danger); font-weight:bold; animation: pulse 2s infinite;">${u.breakType}</span>`
-                            : '<span style="color:var(--success);">متاح ✅</span>';
+// إذا كان الموظف في بريك واختار سبب تفصيلي، نعرض السبب بدلاً من "بريك عام"
+if (u.isOnBreak && u.breakType === 'بريك عام' && u.lastReason) {
+    mainStatusText = u.lastReason; 
+}
+
+const statusCell = u.isOnBreak
+    ? `<span style="color:var(--danger); font-weight:900; animation: pulse 2s infinite;">${mainStatusText}</span>`
+    : '<span style="color:var(--success); font-weight:bold;">متاح للعمل ✅</span>';
 
                         const ctrl = u.isOnBreak
                             ? `<button onclick="adminStop('${u.username}')" class="btn btn-danger btn-sm">🛑 إيقاف</button> <button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm" title="الملف والشكاوى">📂</button>`
@@ -4181,7 +4326,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>${statusCell}<br><small>${u.lastReason || ''}</small></td>
+<td>${statusCell}<br>${u.isOnBreak ? `<small style="color:#aaa; font-size:0.7rem;">(النوع: ${u.breakType})</small>` : ''}</td>
                                 <td><span id="rem_${u.username}" style="font-weight:bold; font-size:1.1rem; color:${rem>=0?'white':'var(--danger)'}">${rem>=0?formatTime(rem):'-'+formatTime(Math.abs(rem))}</span></td>
                                 <td><span id="pray_${u.username}">${formatTime(lp)}</span><br>${prayerCreditStatus}<small>متبع: <span id="follow_${u.username}">${formatTime(lf)}</span></small></td>
                                 <td><span id="meet_${u.username}">${formatTime(lm)}</span><br><small>VIP: <span id="vip_${u.username}">${formatTime(lv)}</span></small></td>
@@ -4548,41 +4693,46 @@
                     }
                 }
 
-        function startMyBreak(t) {
-                    if (currentUser.isOnBreak) return;
+function startMyBreak(t) {
+    if (currentUser.isOnBreak) return;
 
-                    // --- حماية نافذة الصلاة ---
-                    if (t === 'صلاة') {
-                        if (!isPrayerWindowOpen) {
-                            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. لا يمكنك البدء.");
-                            return;
-                        }
-                        const myIndex = (currentQueue || []).indexOf(currentUser.username);
-                        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
-                            alert("⏳ لم يحن دورك بعد في الطابور!");
-                            return;
-                        }
-                    }
+    // --- حماية نافذة الصلاة ---
+    if (t === 'صلاة') {
+        if (!isPrayerWindowOpen) {
+            alert("🛑 عذراً.. نافذة الصلاة مغلقة حالياً من قبل الإدارة. اطلب من المشرف فتح وقت الصلاة.");
+            return;
+        }
+        const myIndex = (currentQueue || []).indexOf(currentUser.username);
+        if (myIndex === -1 || myIndex >= maxPrayersAllowed) {
+            alert("⏳ لم يحن دورك بعد في الطابور! انتظر حتى ينتهي زملاؤك.");
+            return;
+        }
+    }
 
-                    const reasonInput = document.getElementById('breakReason');
-                    const reasonValue = reasonInput.value.trim();
+    // التأكد من وجود حقل السبب أو تعيين قيمة افتراضية
+    const reasonInput = document.getElementById('breakReason');
+    const reasonValue = reasonInput ? reasonInput.value.trim() : t;
 
-                    if (reasonValue === "" && t !== 'صلاة') {
-                        alert("⚠️ يرجى كتابة سبب النشاط");
-                        reasonInput.focus();
-                        return;
-                    }
+    // منع الخروج بدون سبب في غير الصلاة
+    if (reasonValue === "" && t !== 'صلاة') {
+        alert("⚠️ يرجى تحديد نوع النشاط أولاً");
+        return;
+    }
 
-                    db.ref('users/' + currentUser.username).update({
-                        isOnBreak: true,
-                        breakType: t,
-                        lastStartTime: getServerTime(),
-                        lastReason: reasonValue || t
-                    }).then(() => {
-                        // إذا بدأ صلاة، نصفر عداد الـ 10 دقائق للي بعده في الطابور
-                        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
-                    });
-                }
+    db.ref('users/' + currentUser.username).update({
+        isOnBreak: true,
+        breakType: t,
+        lastStartTime: getServerTime(),
+        lastReason: reasonValue || t
+    }).then(() => {
+        // إذا بدأ صلاة، نحدث توقيت الـ 10 دقائق للي بعده
+        if(t === 'صلاة') db.ref('settings/currentTurnStartTime').set(getServerTime());
+        
+        // إغلاق أي نافذة اختيار مفتوحة
+        document.getElementById('prayerTypePickerModal').classList.add('hidden');
+        document.getElementById('breakPickerModal').classList.add('hidden');
+    });
+}
 
                 // دالة مساعدة لتنفيذ بدء البريك
                 function executeBreakStart(t) {
@@ -4933,27 +5083,50 @@
         }
     }                        
 
-                                            function sendEmRequest() { const r = document.getElementById('breakReason').value.trim(); if(!r) return alert("اكتب السبب"); db.ref('users/'+currentUser.username+'/emRequest').set({ reason: r, status: 'قيد الانتظار', timestamp: getServerTime() }); }
+// 1. دالة لفتح نافذة اختيار الطوارئ
+function openEmergencyModal() {
+    document.getElementById('emergencyPickerModal').classList.remove('hidden');
+}
 
-                                            function updateEmStatus() {
-                                                const el = document.getElementById('emStatusArea');
-                                                if(!currentUser.emRequest) {
-                                                    el.innerHTML = `<button onclick="sendEmRequest()" class="btn btn-danger" style="width:100%">طلب</button>`;
-                                                    return;
-                                                }
-                                                if(currentUser.emRequest.status === 'قيد الانتظار') {
-                                                    el.innerHTML = `<span style="color:orange;">⏳...</span>`;
-                                                } else if(currentUser.emRequest.status === 'تم القبول') {
-                                                    el.innerHTML = `<button onclick="startMyBreak('طوارئ')" class="btn btn-success btn-sm" style="width:100%">ابدأ</button>`;
-                                                } else {
-                                                    el.innerHTML = `<span style="color:red; font-weight:bold;">❌ تم الرفض</span>`;
-                                                    setTimeout(() => {
-                                                        if(currentUser.emRequest && (currentUser.emRequest.status === 'رُفض' || currentUser.emRequest.status.includes('رفض'))) {
-                                                            db.ref('users/'+currentUser.username+'/emRequest').remove();
-                                                        }
-                                                    }, 4000);
-                                                }
-                                            }
+// 2. دالة لإرسال الطلب الفعلي بالسبب المختار
+function confirmEmergencyType(selectedType) {
+    // إخفاء النافذة
+    document.getElementById('emergencyPickerModal').classList.add('hidden');
+
+    // إرسال الطلب لقاعدة البيانات
+    db.ref('users/' + currentUser.username + '/emRequest').set({
+        reason: selectedType, // هنا يتم تسجيل "مكالمة" أو "حمام" إلخ...
+        status: 'قيد الانتظار',
+        timestamp: getServerTime()
+    }).then(() => {
+        alert("✅ تم إرسال طلب (" + selectedType + ") للمشرف.");
+    });
+}
+
+// 3. تحديث عرض الحالة للموظف (تعديل الزرار ليفتح النافذة بدلاً من الإرسال المباشر)
+function updateEmStatus() {
+    const el = document.getElementById('emStatusArea');
+    if (!el) return;
+
+    if (!currentUser.emRequest) {
+        // الزرار الآن يفتح الـ Modal
+        el.innerHTML = `<button onclick="openEmergencyModal()" class="btn btn-danger" style="width:100%">طلب</button>`;
+        return;
+    }
+
+    if (currentUser.emRequest.status === 'قيد الانتظار') {
+        el.innerHTML = `<div style="text-align:center;"><span style="color:orange; font-size:0.8rem;">⏳ في انتظار الموافقة...</span><br><small style="color:#888;">السبب: ${currentUser.emRequest.reason}</small></div>`;
+    } else if (currentUser.emRequest.status === 'تم القبول') {
+        el.innerHTML = `<button onclick="startMyBreak('طوارئ')" class="btn btn-success btn-sm" style="width:100%">ابدأ الآن ✅</button>`;
+    } else {
+        el.innerHTML = `<span style="color:red; font-weight:bold; font-size:0.8rem;">❌ تم الرفض</span>`;
+        setTimeout(() => {
+            if (currentUser.emRequest && currentUser.emRequest.status.includes('رفض')) {
+                db.ref('users/' + currentUser.username + '/emRequest').remove();
+            }
+        }, 4000);
+    }
+}
 
                                             function renderAdminEmRequests() { const tb = document.getElementById('adminEmBody'); tb.innerHTML = ''; let c = 0; Object.values(allUsersData).forEach(u => { if(u.emRequest && u.emRequest.status === 'قيد الانتظار') { c++; tb.innerHTML += `<tr><td>${u.realName}</td><td>${u.emRequest.reason}</td><td>${new Date(u.emRequest.timestamp).toLocaleTimeString()}</td><td><button onclick="handleEm('${u.username}', true)" class="btn btn-success btn-sm">✔</button><button onclick="handleEm('${u.username}', false)" class="btn btn-danger btn-sm">✖</button></td></tr>`; } }); document.getElementById('emBadge').innerText = c; c > 0 ? document.getElementById('emBadge').classList.remove('hidden') : document.getElementById('emBadge').classList.add('hidden'); }
                                             window.handleEm = (un, app) => { if(app) db.ref('users/'+un).update({ isOnBreak: true, breakType: 'طوارئ', lastStartTime: getServerTime(), lastReason: allUsersData[un].emRequest.reason, 'emRequest/status': 'تم القبول' }); else db.ref(`users/${un}/emRequest`).update({ status: 'رُفض' }); triggerGlobalRefresh(); };
@@ -5122,43 +5295,48 @@
                                                     c > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
                                                 }
                                             }
-                                            function endDay() {
-                    if (!MANAGERS.includes(currentUser.username)) {
-                        alert("⛔ عذراً، هذه الصلاحية خاصة بالمشرفين فقط.");
-                        return;
-                    }
+                        function endDay() {
+    if (!MANAGERS.includes(currentUser.username)) {
+        alert("⛔ عذراً، هذه الصلاحية خاصة بالمشرفين فقط.");
+        return;
+    }
 
-                    if(confirm("⚠️ هل أنت متأكد من تصفير العدادات (بما فيها الصلاة) وبدء يوم جديد؟")) {
-                        logDeletionAction("تصفير اليوم (End Day)", "الكل", "تم تصفير كافة العدادات بما فيها رصيد الصلاة");
+    if(confirm("⚠️ هل أنت متأكد من تصفير العدادات وتسجيل خروج الموظفين من أجهزة الكمبيوتر؟")) {
+        logDeletionAction("تصفير اليوم (End Day)", "الكل", "تم تصفير كافة العدادات وعمل Logout لأجهزة الـ PC");
 
-                        const updates = {};
-                        Object.keys(allUsersData).forEach(un => {
-                            if(!MANAGERS.includes(un)) {
-                                updates[`users/${un}/usedSeconds`] = 0;
-                                updates[`users/${un}/prayerSeconds`] = 0;
-                                updates[`users/${un}/prayerLimit`] = 0; // تصفير رصيد الصلاة
-                                updates[`users/${un}/prayerCountToday`] = 0; // تصفير عدد المرات
-                                updates[`users/${un}/meetingSeconds`] = 0;
-                                updates[`users/${un}/followUpSeconds`] = 0;
-                                updates[`users/${un}/vipSeconds`] = 0;
-                                updates[`users/${un}/isOnBreak`] = false;
-                                updates[`users/${un}/lastStartTime`] = null;
-                                updates[`users/${un}/otRequest`] = null;
-                                updates[`users/${un}/emRequest`] = null;
-                                updates[`users/${un}/meetingRequest`] = null;
-                                updates[`users/${un}/permRequest`] = null;
-                            }
-                        });
+        const updates = {};
+        const logoutTime = getServerTime(); // وقت الإشارة
 
-                        // إغلاق زر الصلاة تلقائياً عند تقفيل اليوم
-                        updates['settings/prayerOpen'] = false;
+        Object.keys(allUsersData).forEach(un => {
+            if(!MANAGERS.includes(un)) {
+                // تصفير العدادات العادية
+                updates[`users/${un}/usedSeconds`] = 0;
+                updates[`users/${un}/prayerSeconds`] = 0;
+                updates[`users/${un}/prayerLimit`] = 0;
+                updates[`users/${un}/prayerCountToday`] = 0;
+                updates[`users/${un}/meetingSeconds`] = 0;
+                updates[`users/${un}/followUpSeconds`] = 0;
+                updates[`users/${un}/vipSeconds`] = 0;
+                updates[`users/${un}/isOnBreak`] = false;
+                updates[`users/${un}/lastStartTime`] = null;
+                updates[`users/${un}/otRequest`] = null;
+                updates[`users/${un}/emRequest`] = null;
+                updates[`users/${un}/meetingRequest`] = null;
+                updates[`users/${un}/permRequest`] = null;
 
-                        db.ref().update(updates).then(() => {
-                            triggerGlobalRefresh();
-                            alert("✅ تم تصفير اليوم بالكامل وتصفير رصيد الصلاة للجميع.");
-                        });
-                    }
-                }
+                // --- السطر الجديد: إرسال إشارة تسجيل الخروج ---
+                updates[`users/${un}/logoutSignal`] = logoutTime; 
+            }
+        });
+
+        updates['settings/prayerOpen'] = false;
+
+        db.ref().update(updates).then(() => {
+            triggerGlobalRefresh();
+            alert("✅ تم تصفير اليوم وتسجيل خروج الموظفين من أجهزة الـ PC بنجاح.");
+        });
+    }
+}
                                             function forceResetPrayerOnly() {
                                                 if(!confirm("هل تريد تصفير بيانات الصلاة لجميع الموظفين؟ (يستخدم في حالة تعليق العدادات)")) return;
 
@@ -7807,27 +7985,45 @@
                     });
                 }
 
-                function addToQueue() {
-                    const select = document.getElementById('queueUserSelect');
-                    const username = select.value;
-                    if (!username) return alert('اختر موظف أولاً');
-                    db.ref('settings/prayerQueue').once('value', (snap) => {
-                        let queue = snap.val() || [];
-                        if (queue.includes(username)) return alert('الموظف موجود بالفعل في الدور');
-                        queue.push(username);
-                        db.ref('settings/prayerQueue').set(queue).then(() => {
-                            renderPrayerQueue();
-                            select.value = '';
-                        });
-                    });
-                }
+              function addToQueue() {
+    const select = document.getElementById('queueUserSelect');
+    const username = select.value;
+    if (!username) return alert('اختر موظف أولاً');
+    
+    db.ref('settings/prayerQueue').once('value', (snap) => {
+        let queue = snap.val() || [];
+        if (queue.includes(username)) return alert('الموظف موجود بالفعل في الدور');
+        
+        queue.push(username);
+        
+        // التعديل هنا: لو ده أول واحد يدخل الطابور، ابدأ له الـ 10 دقائق من دلوقتي
+        const updates = {};
+        updates['settings/prayerQueue'] = queue;
+        if (queue.length === 1) {
+            updates['settings/turnTimer/startTime'] = getServerTime();
+            updates['settings/turnTimer/activeUser'] = username;
+        }
 
-                function clearQueue() {
-                    if (!confirm('هل تريد تصفير الدور بالكامل؟')) return;
-                    db.ref('settings/prayerQueue').set([]).then(() => {
-                        renderPrayerQueue();
-                    });
-                }
+        db.ref().update(updates).then(() => {
+            renderPrayerQueue();
+            select.value = '';
+        });
+    });
+}
+
+              function clearQueue() {
+    if (!confirm('هل تريد تصفير الدور بالكامل؟')) return;
+    
+    const updates = {};
+    updates['settings/prayerQueue'] = [];
+    updates['settings/turnTimer/startTime'] = 0; // مسح التوقيت القديم
+    updates['settings/turnTimer/activeUser'] = null;
+    updates['settings/turnTimer/pausedElapsed'] = 0;
+
+    db.ref().update(updates).then(() => {
+        renderPrayerQueue();
+    });
+}
 
         function renderPrayerQueue() {
             const display = document.getElementById('queueDisplay');
@@ -8263,14 +8459,8 @@
                 updateWeeklyLogDisplays();
 
                 // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
-                setTimeout(() => {
-                    const widget = document.getElementById('prayerWidget');
-                    const btn = document.querySelector('.prayer-toggle-btn');
-                    if(widget && !widget.classList.contains('active')) {
-                        widget.classList.add('active');
-                        if(btn) btn.classList.add('active');
-                    }
-                }, 1500); // يفتح بعد ثانية ونصف عشان يتحمل الأول
+               // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
+
             }
             // دالة الحصول على تاريخ السيرفر بصيغة YYYY-MM-DD (لتطابق موقع الحضور)
             function getServerDateKey() {
@@ -9195,23 +9385,24 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
     let timeStr = formatTime(secondsRemaining);
     let statusAr = "";
 
-    // تحديد نص الحالة
+    // تحديد المسمى العربي بناءً على النوع
     if (statusType === 'صلاة') statusAr = "🕌 متبقي على الصلاة";
     else if (statusType === 'بريك عام') statusAr = "🍔 متبقي للبريك";
     else if (statusType === 'طوارئ') statusAr = "🚨 بريك طوارئ";
+    else statusAr = statusType; // لأي نوع آخر
     
-    // في حالة الأكسدة (الرقم بالسالب)
+    // --- التعديل السحري للأكسدة هنا ---
     if (secondsRemaining < 0) {
-        statusAr = "⚠️ أكسدة الآن!";
+        statusAr = "⚠️ أكسدة الآن!"; // هنا هيتحول الاسم فوراً
         timeStr = "-" + formatTime(Math.abs(secondsRemaining));
     }
 
-    // 1. تحديث واجهة "مشغل الموسيقى" في شاشة القفل (MediaSession)
+    // تحديث واجهة شاشة القفل (MediaSession)
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: timeStr, // الرقم يظهر هنا بشكل كبير
-            artist: statusAr, // الحالة تظهر تحته
-            album: `الموظف: ${currentUser.realName || currentUser.username}`,
+            title: timeStr,            // الرقم (مثلاً -05:20)
+            artist: statusAr,          // الحالة (هتتحول لـ أكسدة الآن!)
+            album: `موظف: ${currentUser.realName || currentUser.username}`,
             artwork: [
                 { src: 'https://z-cdn-media.chatglm.cn/files/7d4d1edb-d8aa-482e-840e-0492871f2bdf.jpg', sizes: '512x512', type: 'image/jpeg' }
             ]
@@ -9219,28 +9410,44 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
         navigator.mediaSession.playbackState = "playing";
     }
 
-    // 2. تحديث الإشعار المنسدل (System Notification)
-    // قمت بإزالة شرط (secondsRemaining % 30) لكي يقل الرقم كل ثانية أمام عينك
-    updateLiveNotification(secondsRemaining, statusType);
+    // إرسال البيانات المحدثة للإشعار المنسدل
+    updateLiveNotification(timeStr, statusAr);
 }
 
     // دالة لإرسال رسالة للـ Service Worker لتحديث الإشعار
- function updateLiveNotification(seconds, type) {
-    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        let timeStr = seconds >= 0 ? formatTime(seconds) : "انتهى الوقت! ⚠️";
-        if (seconds < 0) timeStr = "-" + formatTime(Math.abs(seconds));
+// متغير خارج الدالة لتخزين حالة الإرسال
+let notificationSentOnIOS = false;
 
-        navigator.serviceWorker.controller.postMessage({
-            type: 'SHOW_NOTIFICATION',
-            payload: {
-                title: `العداد: ${timeStr}`,
-                body: `النشاط الحالي: ${type}`,
-                tag: 'activity-timer', // تثبيت التاج مهم جداً لكي لا تتراكم الإشعارات
-                renotify: false,       // منع الموبايل من الاهتزاز أو الرنين كل ثانية
-                silent: true,          // تحديث صامت تماماً
-                requireInteraction: false
-            }
-        });
+function updateLiveNotification(seconds, type) {
+    // التأكد من دعم الخدمة
+    if (!("serviceWorker" in navigator && navigator.serviceWorker.controller)) return;
+
+    // التحقق هل الجهاز أيفون
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // إذا كان أيفون وتم الإرسال مسبقاً، نوقف الدالة فوراً
+    if (isIOS && notificationSentOnIOS) {
+        return; 
+    }
+
+    let timeStr = seconds >= 0 ? formatTime(seconds) : "انتهى الوقت! ⚠️";
+    if (seconds < 0) timeStr = "-" + formatTime(Math.abs(seconds));
+
+    navigator.serviceWorker.controller.postMessage({
+        type: 'SHOW_NOTIFICATION',
+        payload: {
+            title: `العداد: ${timeStr}`,
+            body: `النشاط الحالي: ${type}`,
+            tag: 'activity-timer',
+            renotify: false,
+            silent: true,
+            requireInteraction: false
+        }
+    });
+
+    // بمجرد الإرسال لأول مرة، نغير الحالة لـ true
+    if (isIOS) {
+        notificationSentOnIOS = true;
     }
 }
 
@@ -9723,18 +9930,21 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
             }, 1500);
         }
     });
-    function forceUpdateAllClients() {
-        if(!confirm("⚠️ تنبيه: سيتم إعادة تحميل النظام عند جميع الموظفين لتثبيت التحديثات الجديدة. هل تريد الاستمرار؟")) return;
-        
-        const updateTime = Date.now(); // توقيت اللحظة الحالية كرمز للتحديث
-        
-        db.ref('system_update').set({
-            timestamp: updateTime,
-            admin: currentUser.realName || currentUser.username
-        }).then(() => {
-            alert("✅ تم إرسال أمر التحديث لجميع الأجهزة بنجاح!");
-        });
+  async function forceUpdateAllClients() {
+    if(!confirm("⚠️ سيتم تحديث النظام عند الجميع ومسح الكاش القديم. استمرار؟")) return;
+    
+    // مسح الكاش من جهاز الأدمن أولاً (اختياري لكن مفيد)
+    if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
     }
+
+    const updateTime = Date.now();
+    db.ref('system_update').set({
+        timestamp: updateTime,
+        admin: currentUser.realName || currentUser.username
+    });
+}
     // كود استقبال التحديث الإجباري من الأدمن (يوضع قبل إغلاق وسم <script>)
     db.ref('system_update').on('value', (snap) => {
         const data = snap.val();
@@ -9762,13 +9972,30 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
             }
 
             // 3. تحديث الـ Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                    for (let reg of registrations) {
-                        reg.update(); // طلب البحث عن نسخة sw.js الجديدة
+           if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // إضافة updateViaCache: 'none' بتجبر المتصفح يروح للسيرفر يتأكد من ملف sw.js
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+        .then(reg => {
+            console.log('Service Worker Registered');
+            
+            // فحص دوري للتحديثات كل ما المستخدم يفتح التطبيق
+            reg.update();
+
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            // لو في نسخة جديدة اتحملت، اظهر رسالة التحديث
+                            showUpdateBanner();
+                        }
                     }
-                });
-            }
+                };
+            };
+        });
+    });
+}
 
             // 4. إعادة تحميل الصفحة مع كسر الكاش تماماً بعد ثانية واحدة
             setTimeout(() => {
@@ -9778,7 +10005,377 @@ function updateLockScreenTimer(secondsRemaining, statusType) {
         }
     });
         // تنفيذ التبديل الفعلي في الطابور
+// دالة لتنفيذ بدء البريك بناءً على الاختيار التفصيلي
+function confirmDetailedBreak(detailedReason) {
+    // 1. إخفاء النافذة
+    document.getElementById('breakPickerModal').classList.add('hidden');
+    
+    // 2. وضع السبب المختار داخل خانة "سبب النشاط" المخفية أو الظاهرة
+    const reasonInput = document.getElementById('breakReason');
+    if(reasonInput) {
+        reasonInput.value = detailedReason;
+    }
 
+    // 3. استدعاء دالة بدء البريك الأصلية
+    // لاحظ أننا نرسل النوع "بريك عام" ليخصم من الـ 45 دقيقة، ولكن السيرفر سيسجل السبب المختار
+    startMyBreak('بريك عام');
+}
+// 1. فتح النافذة فوراً
+function openMeetingModal() {
+    document.getElementById('selectManagerModal').classList.remove('hidden');
+}
+
+// 2. إرسال الطلب باسم المشرف المختار
+function confirmMeetingRequest(managerId, managerName) {
+    db.ref('users/' + currentUser.username + '/meetingRequest').set({
+        reason: "طلب اجتماع مع " + managerName, // سبب تلقائي
+        targetManagerId: managerId,
+        targetManagerName: managerName,
+        status: 'قيد الانتظار',
+        timestamp: getServerTime()
+    }).then(() => {
+        document.getElementById('selectManagerModal').classList.add('hidden');
+        alert("✅ تم إرسال طلب الميتنج إلى " + managerName);
+    });
+}
+
+// 3. تحديث عرض الحالة للموظف
+function updateMeetingStatus() { 
+    const el = document.getElementById('meetingStatusArea'); 
+    if(!el) return;
+
+    if(!currentUser.meetingRequest) {
+        el.innerHTML = `<button onclick="openMeetingModal()" class="btn btn-warning" style="width:100%">طلب</button>`;
+        return;
+    }
+
+    const req = currentUser.meetingRequest;
+    if(req.status === 'قيد الانتظار') {
+        el.innerHTML = `<div style="font-size:0.7rem; color:#aaa;">في انتظار:</div>
+                        <span style="color:orange; font-weight:bold; font-size:0.8rem;">${req.targetManagerName} ⏳</span>`;
+    } else if(req.status === 'تم القبول') {
+        el.innerHTML = `<button onclick="startMyBreak('ميتنج')" class="btn btn-success btn-sm" style="width:100%">ابدأ</button>`;
+    } else {
+        el.innerHTML = `<span style="color:red; font-weight:bold; font-size:0.8rem;">❌ رُفض</span>`;
+        setTimeout(() => {
+            if(currentUser.meetingRequest && currentUser.meetingRequest.status.includes('رفض')) {
+                db.ref('users/'+currentUser.username+'/meetingRequest').remove();
+            }
+        }, 4000);
+    }
+}
+
+// 4. تحديث لوحة المشرف لإظهار اسم المشرف المطلوب
+function renderAdminMeetingRequests() { 
+    const tb = document.getElementById('adminMeetBody'); 
+    if(!tb) return;
+    tb.innerHTML = ''; 
+    let c = 0; 
+    
+    Object.values(allUsersData).forEach(u => { 
+        if(u.meetingRequest && u.meetingRequest.status === 'قيد الانتظار') { 
+            c++; 
+            const isForMe = (u.meetingRequest.targetManagerId === currentUser.username);
+            // لو الطلب مبعوث للمشرف اللي فاتح حالياً، هيظهر بظل ذهبي
+            const rowStyle = isForMe ? 'background:rgba(255, 215, 0, 0.1); border-right: 4px solid gold;' : '';
+
+            tb.innerHTML += `
+                <tr style="${rowStyle}">
+                    <td style="font-weight:bold;">${u.realName}</td>
+                    <td style="color:var(--warning); font-weight:bold;">🤝 مطلوب لميتنج مع: ${u.meetingRequest.targetManagerName}</td>
+                    <td style="font-size:0.8rem; color:#aaa;">${new Date(u.meetingRequest.timestamp).toLocaleTimeString()}</td>
+                    <td>
+                        <button onclick="handleMeeting('${u.username}', true)" class="btn btn-success btn-sm">✔</button>
+                        <button onclick="handleMeeting('${u.username}', false)" class="btn btn-danger btn-sm">✖</button>
+                    </td>
+                </tr>`; 
+        } 
+    }); 
+    document.getElementById('meetBadge').innerText = c; 
+    c > 0 ? document.getElementById('meetBadge').classList.remove('hidden') : document.getElementById('meetBadge').classList.add('hidden'); 
+}
+function confirmSpecificPrayer(prayerName) {
+    // 1. إخفاء النافذة
+    document.getElementById('prayerTypePickerModal').classList.add('hidden');
+    
+    // 2. وضع نوع الصلاة كسبب في الخانة المخفية
+    const reasonInput = document.getElementById('breakReason');
+    if(reasonInput) {
+        reasonInput.value = prayerName;
+    }
+
+    // 3. استدعاء دالة بدء الصلاة الأصلية
+    // سيقوم النظام الآن بتسجيل "صلاة" كنوع، ولكن في التفاصيل والسبب سيكتب (صلاة الظهر/العصر...)
+    startMyBreak('صلاة');
+}
+// دالة تنفيذ بدء استراحة VIP بناءً على الاختيار
+function confirmVIPAction(selectedType) {
+    // 1. إخفاء النافذة
+    document.getElementById('vipPickerModal').classList.add('hidden');
+    
+    // 2. وضع السبب في الخانة المخصصة (اختياري للتوثيق)
+    const reasonInput = document.getElementById('breakReason');
+    if(reasonInput) {
+        reasonInput.value = selectedType;
+    }
+
+    // 3. استدعاء الدالة الأصلية بنوع VIP لضمان عدم الخصم من الـ 45 دقيقة
+    // سيتم تسجيل النوع كـ 'استراحة VIP' والسبب هو (حمام أو بريك)
+    startMyBreak('استراحة VIP');
+}
+function confirmFollowUpAction(selectedReason) {
+    // 1. إخفاء النافذة
+    const modal = document.getElementById('followUpPickerModal');
+    if(modal) modal.classList.add('hidden');
+    
+    // 2. تحديث الحقل المخفي بالسبب المختار
+    const reasonInput = document.getElementById('breakReason');
+    if(reasonInput) {
+        reasonInput.value = selectedReason;
+    } else {
+        // إذا لم يجد الحقل، سيقوم بإنشائه فوراً لضمان عدم توقف الكود
+        let newInp = document.createElement('input');
+        newInp.type = 'hidden';
+        newInp.id = 'breakReason';
+        newInp.value = selectedReason;
+        document.body.appendChild(newInp);
+    }
+
+    // 3. تشغيل النشاط
+    // نستخدم 'متابع عميل' كنوع نشاط أساسي لأنه مبرمج عندك في السيستم
+    startMyBreak('متابع عميل');
+    
+    // 4. رسالة تأكيد سريعة
+    console.log("تم بدء النشاط بسب: " + selectedReason);
+    
+}
+// 1. دالة إنهاء النشاط المعدلة (تم إضافة فحص الأمان)
+window.finalizeStopBreak = function(didFinishPrayer) {
+    const u = currentUser;
+    if (!u || !u.lastStartTime) return;
+
+    const d = Math.floor((getServerTime() - u.lastStartTime) / 1000);
+    const startTimeStr = new Date(u.lastStartTime).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+    const endTimeStr = getServerTimeString();
+
+    db.ref('users/' + u.username + '/sessions').push({
+        date: getServerDateString(),
+        type: u.breakType,
+        reason: u.lastReason || 'نشاط عادي',
+        duration: d,
+        startTime: startTimeStr,
+        endTime: endTimeStr
+    });
+
+    const updates = {
+        isOnBreak: false,
+        lastStartTime: null,
+        lastEndedTime: getServerTime(),
+        lastEndedType: u.breakType,
+        emRequest: null,
+        meetingRequest: null 
+    };
+
+    if (u.breakType === 'صلاة') {
+        updates.prayerSeconds = (u.prayerSeconds || 0) + d;
+        updates.prayerCountToday = (u.prayerCountToday || 0) + 1;
+        removeFromQueueByUsername(u.username);
+    } 
+    else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ') updates.usedSeconds = (u.usedSeconds || 0) + d;
+    else if (u.breakType === 'ميتنج') updates.meetingSeconds = (u.meetingSeconds || 0) + d;
+    else if (u.breakType === 'متابع عميل') updates.followUpSeconds = (u.followUpSeconds || 0) + d;
+    else if (u.breakType === 'استراحة VIP') updates.vipSeconds = (u.vipSeconds || 0) + d;
+
+    db.ref('users/' + u.username).update(updates).then(() => {
+        // الفحص الآمن هنا لمنع خطأ الـ null
+        const rInput = document.getElementById('breakReason');
+        if(rInput) rInput.value = ""; 
+        
+        if(document.getElementById('prayerCheckModal')) {
+            document.getElementById('prayerCheckModal').classList.add('hidden');
+        }
+    });
+};
+
+// 2. دوال الاختيار التفصيلي المعدلة
+window.confirmDetailedBreak = function(detailedReason) {
+    // 1. إذا كان الاختيار هو الحمام
+    if (detailedReason === 'الحمام') {
+        // البحث عن الموظف الموجود حالياً في الحمام
+        const occupyingUser = Object.values(allUsersData).find(u => 
+            u.isOnBreak && (u.lastReason === 'الحمام' || u.lastReason === 'حمام (VIP)')
+        );
+
+        if (occupyingUser) {
+            // جلب الاسم الحقيقي أو اسم المستخدم
+            const name = occupyingUser.realName || occupyingUser.username;
+            alert(`⚠️ عذراً يا بطل.. الحمام مشغول حالياً من قبل الموظف (${name}). يرجى الانتظار حتى يعود لضمان سير العمل.`);
+            return; // منع البدء
+        }
+    }
+
+    // 2. إخفاء النافذة وتكملة الإجراء الطبيعي
+    document.getElementById('breakPickerModal').classList.add('hidden');
+    
+    let reasonInput = document.getElementById('breakReason');
+    if(!reasonInput) {
+        reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.id = 'breakReason';
+        document.body.appendChild(reasonInput);
+    }
+    
+    reasonInput.value = detailedReason; 
+    startMyBreak('بريك عام');
+};
+
+window.confirmSpecificPrayer = function(prayerName) {
+    document.getElementById('prayerTypePickerModal').classList.add('hidden');
+    const rInput = document.getElementById('breakReason');
+    if(rInput) rInput.value = prayerName;
+    startMyBreak('صلاة');
+};
+
+window.confirmVIPAction = function(selectedType) {
+    // التحقق من الحمام في وضع الـ VIP
+    if (selectedType === 'حمام (VIP)') {
+        const occupyingUser = Object.values(allUsersData).find(u => 
+            u.isOnBreak && (u.lastReason === 'الحمام' || u.lastReason === 'حمام (VIP)')
+        );
+
+        if (occupyingUser) {
+            const name = occupyingUser.realName || occupyingUser.username;
+            alert(`⚠️ الحمام مشغول حالياً من قبل (${name}).. يرجى الانتظار.`);
+            return;
+        }
+    }
+
+    document.getElementById('vipPickerModal').classList.add('hidden');
+    const rInput = document.getElementById('breakReason');
+    if(rInput) rInput.value = selectedType;
+    startMyBreak('استراحة VIP');
+};
+// 1. دالة التعامل مع أزرار التأكيد (نعم / لا)
+// دالة التعامل مع أزرار التأكيد (نعم / لا)
+// دالة التعامل مع أزرار التأكيد (نعم / لا) - النسخة المصححة
+window.confirmPrayerStatus = function(didPray) {
+    if (didPray) {
+        // لو داس "نعم، الحمد لله" -> إنهاء النشاط وتسجيله
+        finalizeStopBreak(true);
+    } else {
+        // لو داس "لا، لسه" (الموظف عاوز يرجع لعداد الـ 10 دقائق البرتقالي)
+        const u = currentUser;
+        if (!u) return;
+
+        const updates = {};
+        
+        // تصحيح المسارات: لازم نحدث بيانات الموظف جوه فولدر users
+        updates['users/' + u.username + '/isOnBreak'] = false;
+        updates['users/' + u.username + '/lastStartTime'] = null;
+        updates['users/' + u.username + '/breakType'] = "";
+        
+        // تصفير عداد الـ 10 دقائق (الدور) العالمي
+        updates['settings/turnTimer/startTime'] = getServerTime();
+        updates['settings/turnTimer/pausedElapsed'] = 0;
+
+        db.ref().update(updates).then(() => {
+            // إخفاء نافذة التأكيد
+            const modal = document.getElementById('prayerCheckModal');
+            if (modal) modal.classList.add('hidden');
+            
+            // إخفاء زر الإيقاف وإظهار أزرار التحكم (للتأكيد)
+            const stopArea = document.getElementById('stopArea');
+            const controlsArea = document.getElementById('controlsArea');
+            if(stopArea) stopArea.classList.add('hidden');
+            if(controlsArea) controlsArea.classList.remove('hidden');
+
+            console.log("تمت العودة لعداد الـ 10 دقائق وتصفيره بنجاح ✅");
+        }).catch(err => {
+            console.error("خطأ في العودة للدور:", err);
+            alert("حدث خطأ، حاول مرة أخرى");
+        });
+    }
+};
+
+// 2. دالة إنهاء النشاط (النسخة الآمنة)
+window.finalizeStopBreak = function(didFinishPrayer) {
+    const u = currentUser;
+    if (!u || !u.lastStartTime) return;
+
+    const d = Math.floor((getServerTime() - u.lastStartTime) / 1000);
+    const startTimeStr = new Date(u.lastStartTime).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+    const endTimeStr = getServerTimeString();
+
+    const updates = {
+        isOnBreak: false,
+        lastStartTime: null,
+        lastEndedTime: getServerTime(),
+        lastEndedType: u.breakType,
+        emRequest: null,
+        meetingRequest: null 
+    };
+
+    if (u.breakType === 'صلاة') {
+        updates.prayerSeconds = (u.prayerSeconds || 0) + d;
+        updates.prayerCountToday = (u.prayerCountToday || 0) + 1;
+        removeFromQueueByUsername(u.username);
+    } 
+    else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ') updates.usedSeconds = (u.usedSeconds || 0) + d;
+    else if (u.breakType === 'ميتنج') updates.meetingSeconds = (u.meetingSeconds || 0) + d;
+    else if (u.breakType === 'متابع عميل') updates.followUpSeconds = (u.followUpSeconds || 0) + d;
+    else if (u.breakType === 'استراحة VIP') updates.vipSeconds = (u.vipSeconds || 0) + d;
+
+    db.ref('users/' + u.username).update(updates).then(() => {
+        db.ref('users/' + u.username + '/sessions').push({
+            date: getServerDateString(),
+            type: u.breakType,
+            reason: u.lastReason || 'نشاط عادي',
+            duration: d,
+            startTime: startTimeStr,
+            endTime: endTimeStr
+        });
+
+        // تصفير الخانة بأمان
+        const rInput = document.getElementById('breakReason');
+        if(rInput) rInput.value = ""; 
+        
+        if(document.getElementById('prayerCheckModal')) {
+            document.getElementById('prayerCheckModal').classList.add('hidden');
+        }
+        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+    });
+};
+// مراقبة إشارة تسجيل الخروج الإجباري من الإدارة
+function listenForRemoteLogout(username) {
+    if (MANAGERS.includes(username)) return; // المشرفين مش هيخرجوا
+
+    const logoutRef = db.ref(`users/${username}/logoutSignal`);
+    
+    // حفظ وقت الدخول عشان الموظف ما يخرجش أول ما يفتح لو اليوم مقفول قديم
+    const loginTime = Date.now();
+
+    logoutRef.on('value', (snap) => {
+        const signalTime = snap.val();
+        
+        if (signalTime && signalTime > (loginTime - 10000)) { // لو الإشارة جديدة (بعد ما فتح بـ 10 ثواني)
+            const device = getDeviceType(); // جلب نوع الجهاز
+            
+            // الشرط: لو الجهاز مش موبايل ومش تابلت (يعني كمبيوتر فقط)
+            if (device !== "mobile" && device !== "tablet") {
+                console.log("🚨 تم استلام أمر تسجيل خروج إجباري للكمبيوتر...");
+                
+                // مسح الإشارة من الداتابيز عشان يعرف يدخل تاني
+                logoutRef.set(null); 
+                
+                // تنفيذ تسجيل الخروج
+                alert("⏰ تم إقفال اليوم من قبل الإدارة. سيتم تسجيل خروجك الآن.");
+                logout(); 
+            } else {
+                console.log("📱 الموظف فاتح من موبايل، لن يتم تسجيل الخروج.");
+            }
+        }
+    });
+}
                 </script>
                 <script>
 
