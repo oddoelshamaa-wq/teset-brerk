@@ -8408,73 +8408,51 @@ function updateEmStatus() {
             });
         }
             function showEmployee() { 
-                document.getElementById('loginSection').classList.add('hidden'); 
-                document.getElementById('employeeSection').classList.remove('hidden'); 
-                document.getElementById('welcomeMsg').innerText = `أهلاً، ${currentUser.realName || currentUser.username}`; 
-                    updateAttendanceUI(); 
+    document.getElementById('loginSection').classList.add('hidden'); 
+    document.getElementById('employeeSection').classList.remove('hidden'); 
+    document.getElementById('welcomeMsg').innerText = `أهلاً، ${currentUser.realName || currentUser.username}`; 
+    updateAttendanceUI(); 
 
-                // --- تسجيل وقت الحضور (Clock-In) ---
-                const today = getServerDateString().replace(/\//g, '-');
-                const attendanceRef = db.ref(`users/${currentUser.username}/attendance/${today}`);
-                
-                attendanceRef.once('value', (snap) => {
-                    if (!snap.exists() || !snap.val().clockIn) {
-                        attendanceRef.update({
-                            clockIn: getServerTimeString(),
-                            lastSeen: getServerTimeString()
-                        });
-                    } else {
-                        attendanceRef.update({ lastSeen: getServerTimeString() });
-                        
-                    }
-                    fetchPrayerTimes
-                });
-                // ----------------------------------
-                
-                // ✅ 1. إصلاح صورة البروفايل (استخدام رابط بديل قوي إذا لم تكن هناك صورة)
-                const defaultPic = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.realName || currentUser.username)}&background=6366f1&color=fff&size=128`;
-                const pPic = currentUser.profilePic || defaultPic;
-                const imgElement = document.getElementById('userProfilePicDisplay');
-                
-                if(imgElement) {
-                    imgElement.src = pPic;
-                    // إذا فشل تحميل الصورة (الرابط مكسور)، نضع الصورة البديلة
-                    imgElement.onerror = function() {
-                        this.src = defaultPic;
-                    };
-                }
-
-                const titleBox = document.getElementById('userFunTitleDisplay');
-                if(currentUser.funTitle) titleBox.innerHTML = `<div class="fun-title-badge">✨ ${currentUser.funTitle} ✨</div>`;
-                else titleBox.innerHTML = "";
-                
-                if (sessionStorage.getItem('systemActive') === 'true') { 
-                    document.getElementById('forceSoundOverlay').style.display = 'none'; 
-                    soundActive = true; 
-                    startGlobalTimer(); 
-                } else { 
-                    document.getElementById('forceSoundOverlay').style.display = 'flex'; 
-                }
-
-                updateWeeklyLogDisplays();
-// ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
-setTimeout(() => {
-    const widget = document.getElementById('prayerWidget');
-    const btn = document.querySelector('.prayer-toggle-btn');
-    if(widget && !widget.classList.contains('active')) {
-        widget.classList.add('active');
-        if(btn) btn.classList.add('active');
-    }
-}, 1500); // يفتح بعد ثانية ونصف عشان يتحمل الأول/ يفتح بعد ثانية ونصف عشان يتحمل الأول
-            }
-            // دالة الحصول على تاريخ السيرفر بصيغة YYYY-MM-DD (لتطابق موقع الحضور)
-            function getServerDateKey() {
-            const d = new Date(getServerTime());
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`; // النتيجة: 2026-06-11
+    const today = getServerDateString().replace(/\//g, '-');
+    const attendanceRef = db.ref(`users/${currentUser.username}/attendance/${today}`);
+    
+    attendanceRef.once('value', (snap) => {
+        if (!snap.exists() || !snap.val().clockIn) {
+            attendanceRef.update({
+                clockIn: getServerTimeString(),
+                lastSeen: getServerTimeString()
+            });
+        } else {
+            attendanceRef.update({ lastSeen: getServerTimeString() });
         }
+        fetchPrayerTimes();
+    });
+
+    const defaultPic = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.realName || currentUser.username)}&background=6366f1&color=fff&size=128`;
+    const pPic = currentUser.profilePic || defaultPic;
+    const imgElement = document.getElementById('userProfilePicDisplay');
+    
+    if(imgElement) {
+        imgElement.src = pPic;
+        imgElement.onerror = function() { this.src = defaultPic; };
+    }
+
+    const titleBox = document.getElementById('userFunTitleDisplay');
+    if(currentUser.funTitle) titleBox.innerHTML = `<div class="fun-title-badge">✨ ${currentUser.funTitle} ✨</div>`;
+    else titleBox.innerHTML = "";
+    
+    if (sessionStorage.getItem('systemActive') === 'true') { 
+        document.getElementById('forceSoundOverlay').style.display = 'none'; 
+        soundActive = true; 
+        startGlobalTimer(); 
+    } else { 
+        document.getElementById('forceSoundOverlay').style.display = 'flex'; 
+    }
+
+    updateWeeklyLogDisplays();
+
+    // تم حذف كود الفتح التلقائي لويدجت الصلاة من هنا بناءً على طلبك ❌
+}
             // دالة تحديث شكل زر البصمة فور تسجيل الحضور من الموقع التاني
             function updateAttendanceUI() {
                 if (!currentUser) return;
