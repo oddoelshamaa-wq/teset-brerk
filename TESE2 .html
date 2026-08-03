@@ -8457,9 +8457,7 @@ function updateEmStatus() {
                 }
 
                 updateWeeklyLogDisplays();
-
-                // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
-               // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
+// ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
 setTimeout(() => {
     const widget = document.getElementById('prayerWidget');
     const btn = document.querySelector('.prayer-toggle-btn');
@@ -8467,7 +8465,7 @@ setTimeout(() => {
         widget.classList.add('active');
         if(btn) btn.classList.add('active');
     }
-}, 1500); // يفتح بعد ثانية ونصف عشان يتحمل الأول
+}, 1500); // يفتح بعد ثانية ونصف عشان يتحمل الأول/ يفتح بعد ثانية ونصف عشان يتحمل الأول
             }
             // دالة الحصول على تاريخ السيرفر بصيغة YYYY-MM-DD (لتطابق موقع الحضور)
             function getServerDateKey() {
