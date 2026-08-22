@@ -1365,7 +1365,642 @@
             text-align: justify; /* لتنسيق السطور بشكل متساوي */
             text-justify: inter-word;
         }
+        /* التصميم الجديد المطور للوجو ELSHAMAA */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* توسيط اللوجو */
+    justify-content: center;
+    padding: 20px;
+    margin-bottom: 10px;
+    perspective: 1000px;
+}
 
+.logo-text {
+    font-family: 'Montserrat', 'Cairo', sans-serif;
+    font-size: 3.5rem; /* تكبير الخط قليلاً */
+    font-weight: 900;
+    line-height: 1;
+    margin: 0;
+    position: relative;
+    letter-spacing: 5px; /* تباعد الحروف للفخامة */
+    
+    /* تدرج لوني انسيابي */
+    background: linear-gradient(to right, #6366f1, #06b6d4, #6366f1);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* أنيميشن اللمعان والحركة */
+    animation: 
+        logo-shine 3s linear infinite,
+        logo-float 4s ease-in-out infinite;
+    
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.4));
+}
+
+.logo-tagline {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-top: 8px;
+    font-weight: 700;
+    opacity: 0.8;
+    animation: fadeIn 2s ease-in-out forwards;
+}
+
+/* حركة اللمعان (البرق) الذي يمر فوق النص */
+@keyframes logo-shine {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* حركة عائمة تجعل اللوجو يبدو وكأنه يطير */
+@keyframes logo-float {
+    0%, 100% { transform: translateY(0) rotateX(0deg); }
+    50% { transform: translateY(-10px) rotateX(5deg); }
+}
+
+/* حركة ظهور تدريجي للتاج لاين */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 0.8; transform: translateY(0); }
+}
+
+/* استجابة الموبايل للوجو */
+@media (max-width: 768px) {
+    .logo-text {
+        font-size: 2.2rem;
+        letter-spacing: 3px;
+    }
+    .logo-tagline {
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+    }
+}
+/* تنسيقات صفحة تسجيل الدخول الكسولة */
+.login-lazy-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    perspective: 1000px;
+}
+
+.lazy-box {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 40px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    animation: lazy-float 6s ease-in-out infinite;
+}
+
+@keyframes lazy-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(1deg); }
+}
+
+.lazy-avatar-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.lazy-avatar {
+    font-size: 80px;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+}
+
+/* تأثير حرف الـ Z المتطاير */
+.zzz-container {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+}
+
+.zzz {
+    position: absolute;
+    color: #38bdf8;
+    font-weight: bold;
+    font-size: 20px;
+    opacity: 0;
+    animation: fly-zzz 3s infinite;
+}
+
+.zzz:nth-child(2) { animation-delay: 1s; font-size: 25px; }
+.zzz:nth-child(3) { animation-delay: 2s; font-size: 30px; }
+
+@keyframes fly-zzz {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translate(30px, -50px) scale(1.5); opacity: 0; }
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6366f1;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 45px 15px 15px !important;
+    background: rgba(0,0,0,0.3) !important;
+    border-radius: 15px !important;
+    font-size: 0.9rem !important;
+    border: 2px solid transparent !important;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #6366f1 !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.btn-login-funny {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-weight: 900;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-login-funny:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+}
+
+.office-mess {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    opacity: 0.3;
+    letter-spacing: 15px;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 5px;
+    font-weight: 900;
+}.osman-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #0f172a;
+    overflow: hidden;
+    font-family: 'Cairo', sans-serif;
+}
+
+.osman-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* الموظف عثمان */
+.osman-character {
+    width: 250px;
+    margin-bottom: -50px; /* ليدخل خلف الكارت */
+    z-index: 1;
+    transition: 0.3s;
+}
+
+/* فقاعة الكلام */
+.osman-bubble {
+    position: absolute;
+    top: -40px;
+    right: -60px;
+    background: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #1e293b;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    border: 2px solid #6366f1;
+    display: none; /* تظهر في مواقف معينة */
+    z-index: 10;
+}
+
+/* كارت تسجيل الدخول */
+.login-card-osman {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(15px);
+    padding: 50px 40px;
+    border-radius: 40px;
+    width: 400px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    z-index: 5;
+    transition: 0.3s;
+}
+
+.brand-title {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(to right, #818cf8, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid #334155;
+    border-radius: 15px;
+    color: #fff;
+    outline: none;
+    text-align: center;
+}
+
+.input-group input:focus { border-color: #6366f1; }
+
+.btn-osman {
+    width: 100%;
+    padding: 18px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* انميشن الهزة عند الغلط */
+@keyframes shake-mock {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px) rotate(-1deg); }
+    75% { transform: translateX(10px) rotate(1deg); }
+}
+
+.wrong-data { animation: shake-mock 0.2s ease-in-out 3; }
+
+/* الحاوية الرئيسية */
+.elegant-lazy-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, #1e293b, #020617);
+}
+
+.login-box-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    padding-top: 100px;
+}
+
+/* الموظف */
+.worker-desk-area {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    z-index: 1;
+}
+
+.worker-svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+}
+
+/* حركة الرأس (bobbing) */
+.head-bob {
+    animation: bob 4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(5px) rotate(2deg); }
+}
+
+/* فقاعة التريقة */
+.roast-bubble {
+    position: absolute;
+    top: -20px;
+    right: -80px;
+    background: #6366f1;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 20px 20px 20px 0;
+    font-size: 0.85rem;
+    font-weight: bold;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+}
+
+/* الكارت الزجاجي */
+.glass-login-card {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 35px;
+    padding: 50px 40px 40px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    text-align: center;
+}
+
+.system-tag {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: #06b6d4;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.glass-login-card h1 {
+    color: white;
+    margin: 10px 0 5px;
+    font-size: 1.8rem;
+}
+
+.glass-login-card p {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 30px;
+}
+
+/* المدخلات */
+.input-fields .field {
+    margin-bottom: 15px;
+}
+
+.input-fields input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 18px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+    font-family: 'Cairo';
+}
+
+.input-fields input:focus {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* الزرار */
+.btn-submit-elegant {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+    transition: 0.3s;
+}
+
+.btn-submit-elegant:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+}
+
+.card-footer {
+    margin-top: 20px;
+    color: #475569;
+    font-size: 0.75rem;
+}
+
+/* انميشن الهزة عند الغلط */
+.shake-card {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+.chat-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 5px;
+}
+.chat-contact-item:hover { background: rgba(255,255,255,0.05); }
+.msg-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    position: relative;
+}
+.msg-me {
+    align-self: flex-start;
+    background: var(--primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.msg-them {
+    align-self: flex-end;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-bottom-left-radius: 4px;
+}
+.chat-time {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    margin-top: 4px;
+    display: block;
+}
+/* تنسيقات كروت الكوالتي المطورة */
+.quality-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 25px;
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.quality-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.quality-score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, var(--bg-deep) 0%, rgba(0,0,0,0.4) 100%);
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+}
+
+.score-value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1;
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quality-badge {
+    background: var(--accent);
+    color: #000;
+    padding: 5px 15px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.eval-note-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 18px;
+    padding: 15px 20px;
+    margin-top: 15px;
+    border-right: 4px solid var(--accent);
+    font-style: italic;
+    color: #cbd5e1;
+    position: relative;
+}
+
+.eval-note-container::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 3rem;
+    color: var(--accent);
+    opacity: 0.2;
+}
+
+.audio-player-wrapper {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.eval-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 10px;
+}
+
+.eval-meta span { display: flex; align-items: center; gap: 5px; }
+#chatMessagesArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-size: cover; /* لضمان ملء الصورة للمكان */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: overlay;
+    background-color: rgba(15, 23, 42, 0.9); /* طبقة لون فوق الصورة لسهولة القراءة */
+}
+/* شكل عدد الرسائل على الزرار العائم */
+#chatNotificationBadge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444; /* أحمر */
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1e293b;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    z-index: 11;
+}
+
+/* شكل النقطة المنورة جنب اسم الشخص في القائمة */
+.unread-dot {
+    width: 10px;
+    height: 10px;
+    background: #10b981; /* أخضر أو أزرق */
+    border-radius: 50%;
+    margin-left: auto;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.chat-contact-item.has-unread {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-right: 3px solid var(--primary);
+}
+/* رسالة عثمان (البوت) */
+.msg-bot {
+    align-self: center;
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #000 !important;
+    font-weight: 900;
+    border-radius: 15px;
+    border: 2px dashed #000;
+    text-align: center;
+    width: 90%;
+    margin: 10px auto;
+    animation: pulse 1s infinite;
+}
                                             </style>
                                         </head>
                                         <body>
@@ -1377,18 +2012,22 @@
                                         <div class="aura aura-1"></div>
                                         <div class="aura aura-2"></div>
 
-                                        <div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                            <div style="border:5px solid var(--glass-border); border-top:5px solid var(--primary); border-radius:50%; width:60px; height:60px; animation:spin 1s linear infinite;"></div>
-                                            <div class="logo-container">
-                                                <h1 class="logo-text">ELSHAMAA</h1>
-                                                <span class="logo-tagline">Smart Management System</span>
-                                            </div>
-                                        </div>
+                                        <!-- اللوجو داخل شاشة التحميل -->
+<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#020617; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="logo-container">
+        <h1 class="logo-text">ELSHAMAA</h1>
+        <span class="logo-tagline">Management Intelligence</span>
+    </div>
+    <div style="border:3px solid rgba(99,102,241,0.1); border-top:3px solid var(--primary); border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin-top:20px;"></div>
+</div>
 
-                                        <div class="logo-container">
-                                            <h1 class="logo-text">ELSHAMAA</h1>
-                                            <span class="logo-tagline">Smart Management System</span>
-                                        </div>
+<!-- اللوجو الرئيسي في الصفحة -->
+<center>
+    <div class="logo-container">
+        <h1 class="logo-text">ELSHAMAA</h1>
+        <span class="logo-tagline">Smart Management System</span>
+    </div>
+</center>
 
                 <!-- =============================================
                     🔊 نظام الأصوات الكامل - 5 أصوات مختلفة
@@ -1718,14 +2357,55 @@
                                         <div class="container hidden" id="mainContainer">
                                             
                                             <!-- قسم تسجيل الدخول -->
-                                            <div id="loginSection" style="max-width: 400px; margin: 80px auto; text-align: center;">
-                                                <h2 style="font-size: 2rem; margin-bottom: 30px;">🔐 تسجيل الدخول</h2>
-                                                <div style="background: var(--glass); padding: 30px; border-radius: 30px; border: 1px solid var(--glass-border);">
-                                                    <input type="text" id="loginUser" placeholder="اسم المستخدم" style="width:100%">
-                                                    <input type="password" id="loginPass" placeholder="كلمة المرور" style="width:100%">
-                                                    <button onclick="attemptLogin()" class="btn btn-primary" style="width:100%; padding: 15px;">دخول للنظام</button>
-                                                </div>
-                                            </div>
+                                           <!-- قسم تسجيل الدخول الجديد (الكسول) -->
+<div id="loginSection" class="elegant-lazy-container">
+    
+    <div class="login-box-wrapper">
+        <!-- الموظف الكسول (منظم وبسيط) -->
+        <div class="worker-desk-area">
+            <div id="roastBubble" class="roast-bubble">اخلص يا نجم.. ورانا نوم! 🥱</div>
+            <svg viewBox="0 0 200 160" class="worker-svg">
+                <!-- الجسم -->
+                <path d="M50 160 Q100 120 150 160" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                <!-- الرأس -->
+                <g id="workerHead" class="head-bob">
+                    <circle cx="100" cy="80" r="35" fill="#ffdbac" />
+                    <!-- العيون -->
+                    <g id="workerEyes">
+                        <path id="eyeL" d="M85 80 Q90 85 95 80" fill="none" stroke="#1e293b" stroke-width="2.5" />
+                        <path id="eyeR" d="M105 80 Q110 85 115 80" fill="none" stroke="#1e293b" stroke-width="2.5" />
+                    </g>
+                    <!-- الفم -->
+                    <path id="workerMouth" d="M95 100 Q100 105 105 100" fill="none" stroke="#1e293b" stroke-width="2" />
+                </g>
+            </svg>
+        </div>
+
+        <!-- الكارت الزجاجي المنظم -->
+        <div class="glass-login-card" id="loginCard">
+            <div class="login-header">
+                <span class="system-tag">ELSHAMAA V2.0</span>
+                <h1>تسجيل الدخول</h1>
+                <p>من فضلك ادخل بياناتك (بدون إزعاج)</p>
+            </div>
+
+            <div class="input-fields">
+                <div class="field">
+                    <input type="text" id="loginUser" placeholder="اسم المستخدم" onfocus="stateActive()" onblur="stateSleep()">
+                </div>
+                <div class="field">
+                    <input type="password" id="loginPass" placeholder="كلمة المرور" onfocus="stateHide()" onblur="stateActive()">
+                </div>
+            </div>
+
+            <button onclick="mockAttemptLogin()" class="btn-submit-elegant">دخول السيستم</button>
+            
+            <div class="card-footer">
+                <span>نسيت الباسورد؟ نام وافتكر بكره</span>
+            </div>
+        </div>
+    </div>
+</div>
 
                                             <!-- لوحة المشرف -->
                                             <div id="adminSection" class="hidden">
@@ -2237,7 +2917,16 @@
                                                     🗓️ جدول الترتيب الأسبوعي
                                                 </button>
 
-                                            
+                                            <!-- زر الكوالتي الجديد بنفس تصميم أزرارك -->
+<button onclick="openQualityDashboard()" class="btn btn-dark btn-sm" style="margin-top:8px; border:1px solid #fbbf24; color:#fbbf24;">
+    🎧 تقييم الكوالتي الأسبوعي
+</button>
+<!-- زر تغيير خلفية الشات للموظف -->
+<button onclick="document.getElementById('chatBgInput').click()" class="btn btn-dark btn-sm" style="margin-top:8px; border:1px solid #06b6d4; color:#06b6d4;">
+    🖼️ تغيير خلفية الدردشة
+</button>
+<!-- مدخل ملف مخفي -->
+<input type="file" id="chatBgInput" style="display:none" accept="image/*" onchange="updateChatBackground(this)">
 
                                                 <!-- زر الانتقال لنظام الشيفات والحضور -->
                                                 <!-- زرار فتح جدول الشيتات للموظف -->
@@ -2635,7 +3324,176 @@
         <button onclick="document.getElementById('followUpPickerModal').classList.add('hidden')" class="btn" style="margin-top:20px; width:100%; background:#334155; color:#aaa;">إلغاء ✖</button>
     </div>
 </div>
+<!-- زر الشات العائم -->
+<div id="chatToggleBtn" onclick="toggleChatWindow()" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:white; cursor:pointer; z-index:10000; box-shadow:0 10px 25px rgba(99, 102, 241, 0.5); transition:0.3s;">
+    <i class="fa-solid fa-comments"></i>
+    <span id="chatNotificationBadge" class="hidden" style="position:absolute; top:0; right:0; background:red; color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; display:flex; align-items:center; justify-content:center;">0</span>
+</div>
 
+<!-- نافذة الشات الرئيسية -->
+<!-- نافذة الشات الماركة (التصميم الجديد) -->
+<div id="chatWindow" class="hidden" style="position:fixed; bottom:90px; right:20px; width:400px; height:600px; background:rgba(15, 23, 42, 0.95); backdrop-filter:blur(25px); border:1px solid rgba(255,255,255,0.1); border-radius:30px; z-index:10000; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.6);">
+    
+    <!-- هيدر الشات -->
+    <div style="padding:20px; background:rgba(99, 102, 241, 0.1); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+        <div id="chatHeaderInfo" style="display:flex; align-items:center; gap:12px;">
+            <div style="width:12px; height:12px; background:#10b981; border-radius:50%; box-shadow: 0 0 10px #10b981;"></div>
+            <span style="font-weight:900; color:#818cf8; font-size:1.1rem;">الدردشة الذكية</span>
+        </div>
+        <!-- في هيدر الشات بجانب زرار المجموعة -->
+<button onclick="checkBreakAndPlay()" id="btnGames" class="btn" style="padding:5px 10px; font-size:0.7rem; background:linear-gradient(45deg, #f59e0b, #ef4444); color:white; border-radius:10px;">🎮 العب مع عثمان</button>
+        <div style="display:flex; gap:10px;">
+            <button onclick="showCreateGroupUI()" id="btnNewGroup" class="btn btn-primary btn-sm" style="padding:5px 10px; font-size:0.7rem; background:linear-gradient(45deg, #06b6d4, #6366f1);">+ مجموعة</button>
+<button onclick="closeChatArea()" id="backToContacts" class="hidden" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; font-size: 0.8rem; padding: 5px 12px; border-radius: 10px;">
+    <i class="fa-solid fa-arrow-right"></i> رجوع
+</button>
+        </div>
+    </div>
+
+    <!-- تبويبات: خاص / مجموعات -->
+    <div id="chatTabs" style="display:flex; background:rgba(0,0,0,0.2); padding:5px;">
+        <button onclick="switchChatTab('private')" id="tabPrivate" style="flex:1; padding:10px; border:none; background:rgba(99, 102, 241, 0.2); color:white; border-radius:10px; cursor:pointer; font-weight:bold;">👤 خاص</button>
+        <button onclick="switchChatTab('groups')" id="tabGroups" style="flex:1; padding:10px; border:none; background:transparent; color:#aaa; border-radius:10px; cursor:pointer; font-weight:bold;">👥 مجموعات</button>
+    </div>
+
+    <!-- قائمة جهات الاتصال والمجموعات -->
+    <div id="chatContactsList" style="flex:1; overflow-y:auto; padding:15px;">
+        <div style="font-size:0.8rem; color:#64748b; margin-bottom:15px; padding:0 10px; font-weight:bold;">المشرفين والموظفين</div>
+        <div id="contactsContainer"></div>
+    </div>
+
+    <!-- واجهة إنشاء مجموعة جديدة (مخفية) -->
+    <div id="createGroupUI" class="hidden" style="flex:1; padding:20px; overflow-y:auto; background:rgba(0,0,0,0.3);">
+        <h4 style="color:#06b6d4; margin-top:0;">إنشاء مجموعة جديدة 👥</h4>
+        <input type="text" id="newGroupName" placeholder="اسم المجموعة..." class="form-control-glass" style="width:100%;">
+        <p style="font-size:0.75rem; color:#aaa;">اختر الأعضاء:</p>
+        <div id="groupMembersChecklist" style="max-height:200px; overflow-y:auto; margin-bottom:20px;"></div>
+        <button onclick="execCreateGroup()" class="btn btn-success" style="width:100%;">تأكيد الإنشاء 🚀</button>
+        <button onclick="hideCreateGroupUI()" class="btn btn-dark" style="width:100%; margin-top:10px;">إلغاء</button>
+    </div>
+
+    <!-- منطقة الرسائل -->
+    <div id="chatMessagesArea" class="hidden" style="flex:1; display:flex; flex-direction:column; overflow:hidden; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay;">
+        <div id="messagesContainer" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
+        
+        <!-- صندوق الإدخال -->
+        <div style="padding:20px; background:rgba(15, 23, 42, 0.9); border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:12px; align-items:center;">
+            <input type="text" id="chatInput" placeholder="اكتب رسالتك..." style="flex:1; margin-bottom:0; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:15px; padding:12px 18px; color:white; outline:none;">
+            <button onclick="sendChatMessage()" style="background:linear-gradient(135deg, #6366f1, #4f46e5); color:white; border:none; width:50px; height:45px; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.2rem;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+<!-- نافذة إرسال التقييم (للمدير) -->
+<!-- نافذة إرسال التقييم المحدثة (للمدير) -->
+<!-- نافذة إرسال وتعديل التقييم (للمدير) -->
+<div id="adminQualityEvalModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; border:2px solid #fbbf24; border-radius:30px; padding:30px; width:90%; max-width:500px; box-shadow: 0 0 40px rgba(251, 191, 36, 0.2);">
+        <h2 id="evalModalTitle" style="color:#fbbf24; text-align:center; margin-top:0;">🎧 تقييم أداء جديد</h2>
+        <p id="evalTargetName" style="text-align:center; color:#aaa; font-weight:bold;"></p>
+
+        <!-- حقل مخفي لحفظ ID التقييم عند التعديل -->
+        <input type="hidden" id="editingEvalKey" value="">
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+            <div>
+                <label style="color:#eee; font-size:0.8rem;">اختار الشهر:</label>
+                <select id="evalMonth" class="form-control-glass" style="width:100%;">
+                    <option value="1">يناير</option><option value="2">فبراير</option>
+                    <option value="3">مارس</option><option value="4">أبريل</option>
+                    <option value="5">مايو</option><option value="6">يونيو</option>
+                    <option value="7">يوليو</option><option value="8">أغسطس</option>
+                    <option value="9">سبتمبر</option><option value="10">أكتوبر</option>
+                    <option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+                </select>
+            </div>
+            <div>
+                <label style="color:#eee; font-size:0.8rem;">اختار الأسبوع:</label>
+                <select id="evalWeek" class="form-control-glass" style="width:100%;">
+                    <option value="1">الأسبوع 1</option>
+                    <option value="2">الأسبوع 2</option>
+                    <option value="3">الأسبوع 3</option>
+                    <option value="4">الأسبوع 4</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+            <div>
+                <label style="color:#eee; font-size:0.8rem;">الدرجة (من 100):</label>
+                <input type="number" id="evalScore" class="form-control-glass" style="width:100%; text-align:center;">
+            </div>
+            <div>
+                <label style="color:#eee; font-size:0.8rem;">لون التنبيه (الحالة):</label>
+                <select id="evalColor" class="form-control-glass" style="width:100%;">
+                    <option value="#10b981">🟢 أخضر (ممتاز)</option>
+                    <option value="#fbbf24">🟡 أصفر (متوسط)</option>
+                    <option value="#f43f5e">🔴 أحمر (ضعيف)</option>
+                </select>
+            </div>
+        </div>
+
+        <label style="color:#eee; font-size:0.8rem;">ملاحظات المدير:</label>
+        <textarea id="evalNote" class="form-control-glass" style="width:100%; height:80px;"></textarea>
+
+        <div class="upload-box" style="border: 1px dashed #fbbf24; padding: 10px; margin-bottom: 15px;">
+            <label style="cursor:pointer; display:block; text-align:center; color:#fbbf24; font-size:0.8rem;">
+                🎙️ إرفاق صوت (اختياري)
+                <input type="file" id="evalAudioInput" accept="audio/*" style="display:none">
+            </label>
+            <div id="evalAudioFileName" style="font-size:0.6rem; color:#10b981; text-align:center;"></div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button id="btnSubmitEval" onclick="submitQualityEval()" class="btn btn-warning" style="flex:2; font-weight:900;">حفظ التقييم 💾</button>
+            <button onclick="document.getElementById('adminQualityEvalModal').classList.add('hidden')" class="btn btn-dark" style="flex:1;">إلغاء</button>
+        </div>
+    </div>
+</div>
+<!-- نافذة العرض (تعرض التقييمات وبها أزرار الحذف للمدير) -->
+<!-- نافذة عرض التقييم (المطورة بنظام الاختيار) -->
+<div id="employeeQualityViewModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2, 6, 23, 0.98); z-index:99999; padding:20px; overflow-y:auto; backdrop-filter:blur(20px);">
+    <div style="max-width:850px; margin:20px auto; background:#0f172a; border:1px solid #fbbf24; border-radius:35px; padding:30px; box-shadow: 0 0 50px rgba(251, 191, 36, 0.15);">
+        
+        <!-- الهيدر -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px;">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span style="font-size:1.8rem; background:#fbbf24; color:#000; padding:8px; border-radius:12px;">🏆</span>
+                <h2 style="color:#fbbf24; margin:0; font-size:1.4rem;">سجل تقييمات الأداء</h2>
+            </div>
+            <button onclick="document.getElementById('employeeQualityViewModal').classList.add('hidden')" class="btn btn-danger btn-sm">إغلاق ×</button>
+        </div>
+
+        <!-- شريط الاختيار (الشهر والأسبوع) -->
+        <div style="display:grid; grid-template-columns: 2fr 2fr 1fr; gap:15px; background:rgba(255,255,255,0.03); padding:20px; border-radius:20px; margin-bottom:25px; border:1px solid rgba(251, 191, 36, 0.1);">
+            <div>
+                <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:5px;">اختار الشهر:</label>
+                <select id="filterViewMonth" class="form-control-glass" style="width:100%; margin:0;">
+                    <option value="1">يناير</option><option value="2">فبراير</option><option value="3">مارس</option>
+                    <option value="4">أبريل</option><option value="5">مايو</option><option value="6">يونيو</option>
+                    <option value="7">يوليو</option><option value="8">أغسطس</option><option value="9">سبتمبر</option>
+                    <option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+                </select>
+            </div>
+            <div>
+                <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:5px;">اختار الأسبوع:</label>
+                <select id="filterViewWeek" class="form-control-glass" style="width:100%; margin:0;">
+                    <option value="1">الأسبوع الأول</option>
+                    <option value="2">الأسبوع الثاني</option>
+                    <option value="3">الأسبوع الثالث</option>
+                    <option value="4">الأسبوع الرابع</option>
+                </select>
+            </div>
+            <div style="display:flex; align-items:flex-end;">
+                <button onclick="renderFilteredQuality()" class="btn btn-warning" style="width:100%; height:45px; font-weight:900;">عرض التقييم</button>
+            </div>
+        </div>
+        
+        <!-- مكان ظهور الكارت المختار -->
+        <div id="qualityHistoryContainer">
+            <p style="text-align:center; color:#555; padding:40px;">يرجى اختيار الفترة الزمنية من الأعلى لعرض التقييم الخاص بها.</p>
+        </div>
+    </div>
+</div>
                                         <script>
                                             const APP_VERSION = "2.0.5"; // غير الرقم ده (مثلاً لـ 2.0.6) كل ما ترفع تحديث جديد
 
@@ -3939,6 +4797,7 @@
     }
 
                                             function showAdmin() {
+                                                
                                                 document.getElementById('loginSection').classList.add('hidden');
                                                 document.getElementById('adminSection').classList.remove('hidden');
                 fetchPrayerTimes();
@@ -4211,154 +5070,140 @@
                 } catch (e) { console.error(e); }
             }, 1000); // تحديث كل ثانية واحدة
         }
-                function renderMonitorTable() {
-                    const tbody = document.getElementById('monitorBody');
-                    if(!tbody) return; // تأكد من وجود الـ tbody
-                    
-                    const search = document.getElementById('monitorSearch');
-                    const searchVal = search ? search.value.toLowerCase() : '';
+              function renderMonitorTable() {
+    const tbody = document.getElementById('monitorBody');
+    if(!tbody) return; 
+    
+    const search = document.getElementById('monitorSearch');
+    const searchVal = search ? search.value.toLowerCase() : '';
 
-                    tbody.innerHTML = '';
+    tbody.innerHTML = '';
 
-                    // عدادات للحالة العامة
-                    let actB = 0, actP = 0; // بريك وصلاة
-                    let onlineCount = 0; // عدد الفاتحين
-                    let totalCount = 0;  // إجمالي الموظفين
+    // عدادات للحالة العامة في الأعلى
+    let actB = 0, actP = 0, onlineCount = 0;
+    let usersWithCredit = 0, usersFinishedPrayer = 0;
 
-                    // 1. تحويل البيانات لمصفوفة عشان نقدر نرتبها
-                    let usersList = Object.values(allUsersData).filter(u => {
-                        // استبعاد المديرين واستبعاد الغير موجودين في البحث
-                        if (!u || !u.username || MANAGERS.includes(u.username)) return false;
-                        if (searchVal && !(u.realName || u.username).toLowerCase().includes(searchVal)) return false;
-                        return true;
-                    });
+    // 1. تحويل البيانات لمصفوفة وترتيبها (المتصل أولاً)
+    let usersList = Object.values(allUsersData).filter(u => {
+        if (!u || !u.username || MANAGERS.includes(u.username)) return false;
+        if (searchVal && !(u.realName || u.username).toLowerCase().includes(searchVal)) return false;
+        return true;
+    });
 
-                    // 2. الترتيب الذكي (المتواجدين أولاً)
-                    usersList.sort((a, b) => {
-                        // الأولوية الأولى: الحالة (online يجي قبل offline)
-                        const stateA = (a.state === 'online') ? 1 : 0;
-                        const stateB = (b.state === 'online') ? 1 : 0;
-                        if (stateA !== stateB) return stateB - stateA; // الكبير (1) يجي الأول
+    usersList.sort((a, b) => {
+        const stateA = (a.state === 'online') ? 1 : 0;
+        const stateB = (b.state === 'online') ? 1 : 0;
+        if (stateA !== stateB) return stateB - stateA;
+        return (a.realName || a.username).localeCompare(b.realName || b.username);
+    });
 
-                        // الأولوية الثانية: اللي في بريك يجي فوق (اختياري)
-                        // const breakA = a.isOnBreak ? 1 : 0;
-                        // const breakB = b.isOnBreak ? 1 : 0;
-                        // if (breakA !== breakB) return breakB - breakA;
+    usersList.forEach(u => {
+        const isOnline = u.state === 'online';
+        if (isOnline) onlineCount++;
+        
+        // عدادات إحصائيات الصلاة
+        if (u.prayerLimit > 0) usersWithCredit++;
+        if (u.prayerCountToday > 0) usersFinishedPrayer++;
 
-                        // الأولوية الثالثة: ترتيب أبجدي بالاسم
-                        const nameA = a.realName || a.username;
-                        const nameB = b.realName || b.username;
-                        return nameA.localeCompare(nameB);
-                    });
+        let lg = u.usedSeconds||0, lp = u.prayerSeconds||0, lm = u.meetingSeconds||0, lf = u.followUpSeconds||0, lv = u.vipSeconds||0;
 
-                    // 3. رسم الجدول
-                    usersList.forEach(u => {
-                        totalCount++;
-                        const isOnline = u.state === 'online';
-                        if (isOnline) onlineCount++;
+        // حساب الوقت الحي إذا كان الموظف في بريك حالياً
+        if (u.isOnBreak && u.lastStartTime) {
+            let elap = Math.floor((getServerTime() - u.lastStartTime) / 1000);
+            if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ') { lg += elap; actB++; }
+            else if (u.breakType === 'صلاة') { lp += elap; actP++; }
+            else if (u.breakType === 'ميتنج') lm += elap;
+            else if (u.breakType === 'متابع عميل') lf += elap;
+            else if (u.breakType === 'استراحة VIP') lv += elap;
+        }
 
-                        let lg = u.usedSeconds||0, lp = u.prayerSeconds||0, lm = u.meetingSeconds||0, lf = u.followUpSeconds||0, lv = u.vipSeconds||0;
+        const rem = ((u.allowance||45)*60) - lg;
+        const pPic = u.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+        const savedS = adminSelectBuffer[u.username] || 'بريك عام';
 
-                        // حساب الوقت المباشر لو هو في بريك حالياً
-                        if (u.isOnBreak && u.lastStartTime) {
-                            let elap = Math.floor((getServerTime() - u.lastStartTime) / 1000);
-                            if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ') { lg += elap; actB++; }
-                            else if (u.breakType === 'صلاة') { lp += elap; actP++; }
-                            else if (u.breakType === 'ميتنج') lm += elap;
-                            else if (u.breakType === 'متابع عميل') lf += elap;
-                            else if (u.breakType === 'استراحة VIP') lv += elap;
-                        }
+        // تنسيق حالة الاتصال والجهاز
+        const deviceIcon = u.device === 'mobile' ? '📱' : (u.device === 'tablet' ? '📲' : '💻');
+        const onlineDot = isOnline ? `<span style="color:#10b981;">● متصل</span>` : `<span style="color:#888;">○ أوفلاين</span>`;
 
-                        const rem = ((u.allowance||45)*60) - lg;
+        // نص الحالة التفصيلي
+        let mainStatusText = u.isOnBreak ? (u.lastReason || u.breakType) : 'متاح للعمل ✅';
+        const statusColor = u.isOnBreak ? 'var(--danger)' : 'var(--success)';
 
-                        // تنسيق حالة الاتصال
-                        const onlineDot = isOnline
-                            ? `<span style="display:inline-block; width:10px; height:10px; background:#10b981; border-radius:50%; margin-right:5px; box-shadow:0 0 5px #10b981;"></span> <span style="color:#10b981; font-size:0.8rem;">متصل</span>`
-                            : `<span style="display:inline-block; width:10px; height:10px; background:#64748b; border-radius:50%; margin-right:5px;"></span> <span style="color:#64748b; font-size:0.8rem;">غير متصل</span>`;
+        // رصيد الصلاة
+        const prayerCreditStatus = u.prayerLimit > 0
+            ? `<small style="color:#10b981; display:block;">(رصيد: ${formatTime(u.prayerLimit)}) ✅</small>`
+            : `<small style="color:#64748b; display:block;">(لا يوجد رصيد) ⚪</small>`;
 
-                        const deviceIcon = u.device === 'mobile' ? '📱' : (u.device === 'tablet' ? '📲' : '💻');
-                        const pPic = u.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-                        const imgTag = `<img src="${pPic}" class="profile-img">`;
+        // --- أزرار الكوالتي الجديدة ---
+        const qualityBtns = `
+            <button onclick="openQualityManager('${u.username}')" class="btn btn-warning btn-sm" style="background:#f59e0b; color:white; padding:5px 8px;" title="تقييم جديد">🎧</button>
+            <button onclick="openQualityDashboard('${u.username}')" class="btn btn-primary btn-sm" style="background:#6366f1; color:white; padding:5px 8px;" title="عرض وتعديل السجل">📜</button>
+        `;
 
-                        // القيمة المحفوظة في القائمة المنسدلة
-                        const savedS = adminSelectBuffer[u.username] || 'بريك عام';
-// الكود الجديد (يجلب الاختيار التفصيلي):
-// ابحث عن هذا الجزء داخل renderMonitorTable واستبدله
-let mainStatusText = u.breakType; 
+        // عمود التحكم (ctrl)
+        const ctrl = u.isOnBreak
+            ? `<div style="display:flex; gap:4px; justify-content:center;">
+                <button onclick="adminStop('${u.username}')" class="btn btn-danger btn-sm">🛑 إيقاف</button> 
+                <button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm">📂</button>
+                ${qualityBtns}
+               </div>`
+            : `<div class="admin-table-ctrl">
+                <div class="admin-row-top" style="display:flex; gap:4px; align-items:center;">
+                    <select id="sel_${u.username}" onchange="saveAdminSelect('${u.username}', this.value)" style="width:75px; font-size:0.75rem; padding:4px;">
+                        <option value="بريك عام" ${savedS=='بريك عام'?'selected':''}>بريك</option>
+                        <option value="صلاة" ${savedS=='صلاة'?'selected':''}>صلاة</option>
+                        <option value="ميتنج" ${savedS=='ميتنج'?'selected':''}>ميتنج</option>
+                        <option value="متابع عميل" ${savedS=='متابع عميل'?'selected':''}>متابع</option>
+                        <option value="استراحة VIP" ${savedS=='استراحة VIP'?'selected':''}>VIP</option>
+                    </select>
+                    <button onclick="adminStart('${u.username}')" class="btn btn-success btn-sm">▶</button>
+                    <button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm">📂</button>
+                    ${qualityBtns}
+                </div>
+               </div>`;
 
-// إذا كان الموظف في بريك واختار سبب تفصيلي، نعرض السبب بدلاً من "بريك عام"
-if (u.isOnBreak && u.breakType === 'بريك عام' && u.lastReason) {
-    mainStatusText = u.lastReason; 
+        const alertClass = (u.isOnBreak && u.breakType==='بريك عام' && rem < 300 && rem > 0) ? 'وضع-التنبيه' : '';
+
+        // بناء صف الجدول بجميع الأعمدة
+        tbody.innerHTML += `
+            <tr class="${alertClass}" style="${isOnline ? '' : 'opacity:0.6; filter:grayscale(0.5);'}">
+                <td style="text-align:right;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="${pPic}" class="profile-img" style="width:35px; height:35px;">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; font-size:0.85rem;">${u.realName || u.username} ${u.isVIP ? '⭐' : ''}</div>
+                            <small style="font-size:0.7rem;">${onlineDot} | ${deviceIcon}</small>
+                        </div>
+                    </div>
+                </td>
+                <td style="font-weight:bold; font-size:0.85rem; color:${statusColor}">${mainStatusText}</td>
+                <td><span style="font-weight:bold; color:${rem>=0?'white':'#f43f5e'}">${rem>=0?formatTime(rem):'-'+formatTime(Math.abs(rem))}</span></td>
+                <td>
+                    <span style="font-weight:bold;">${formatTime(lp)}</span><br>
+                    ${prayerCreditStatus}
+                    <small style="color:#aaa;">متبع: ${formatTime(lf)}</small>
+                </td>
+                <td>
+                    <span style="font-weight:bold;">${formatTime(lm)}</span><br>
+                    <small style="color:#ffd700;">VIP: ${formatTime(lv)}</small>
+                </td>
+                <td>${ctrl}</td>
+            </tr>`;
+    });
+
+    // تحديث شريط العدادات العلوي
+    const statusDisplay = document.getElementById('statusCountersDisplay');
+    if(statusDisplay) {
+        statusDisplay.innerHTML = `
+            <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; font-size:0.9rem;">
+                <span style="color:#10b981;">🟢 متواجد: ${onlineCount}</span>
+                <span style="color:#6366f1;">🍔 بريك: (${actB}/${maxBreaksAllowed})</span>
+                <span style="color:#06b6d4;">🕌 صلاة الآن: (${actP}/${maxPrayersAllowed})</span>
+                <span style="color:#ffd700;">📥 استلموا الرصيد: ${usersWithCredit}</span>
+                <span style="color:#f43f5e;">✅ أتموا الصلاة: ${usersFinishedPrayer}</span>
+            </div>`;
+    }
 }
-
-const statusCell = u.isOnBreak
-    ? `<span style="color:var(--danger); font-weight:900; animation: pulse 2s infinite;">${mainStatusText}</span>`
-    : '<span style="color:var(--success); font-weight:bold;">متاح للعمل ✅</span>';
-
-                        const ctrl = u.isOnBreak
-                            ? `<button onclick="adminStop('${u.username}')" class="btn btn-danger btn-sm">🛑 إيقاف</button> <button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm" title="الملف والشكاوى">📂</button>`
-                            : `<div class="admin-table-ctrl"><div class="admin-row-top"><select id="sel_${u.username}" onchange="saveAdminSelect('${u.username}', this.value)" style="width:80px;"><option value="بريك عام" ${savedS=='بريك عام'?'selected':''}>بريك</option><option value="صلاة" ${savedS=='صلاة'?'selected':''}>صلاة</option><option value="ميتنج" ${savedS=='ميتنج'?'selected':''}>ميتنج</option><option value="متابع عميل" ${savedS=='متابع عميل'?'selected':''}>متابع</option><option value="استراحة VIP" ${savedS=='استراحة VIP'?'selected':''}>VIP</option></select><button onclick="adminStart('${u.username}')" class="btn btn-success btn-sm">▶</button><button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm" title="الملف والشكاوى">📂</button></div></div>`;
-
-                        // تظليل الصف لو غير متصل (باهت)
-                        const rowStyle = isOnline ? '' : 'opacity: 0.5; filter: grayscale(0.8);';
-
-                        // تنبيه الأكسدة
-                        const alertClass = (u.isOnBreak && u.breakType==='بريك عام' && rem < 300 && rem > 0) ? 'وضع-التنبيه' : '';
-
-                        const prayerCreditStatus = u.prayerLimit > 0
-                            ? `<small style="color:#10b981; display:block;">(رصيد: ${formatTime(u.prayerLimit)}) ✅</small>`
-                            : `<small style="color:#64748b; display:block;">(لا يوجد رصيد) ⚪</small>`;
-
-                        tbody.innerHTML += `
-                            <tr class="${alertClass}" style="${rowStyle}">
-                                <td style="text-align:right;">
-                                    <div style="display:flex; align-items:center;">
-                                        ${imgTag}
-                                        <div style="flex:1;">
-                                            <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                                ${u.realName || u.username} ${u.isVIP ? '⭐' : ''}
-                                                <!-- إضافة تاج صغير يوضح اسم المجموعة -->
-                                                <span style="font-size: 0.65rem; color: #6366f1; background: rgba(99, 102, 241, 0.1); padding: 2px 6px; border-radius: 4px; margin-right: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                                                    📁 ${u.groupName || 'بلا مجموعة'}
-                                                </span>
-                                            </div>
-                                            <div style="font-size:0.75rem;">${onlineDot} | ${deviceIcon}</div>
-                                        </div>
-                                    </div>
-                                </td>
-<td>${statusCell}<br>${u.isOnBreak ? `<small style="color:#aaa; font-size:0.7rem;">(النوع: ${u.breakType})</small>` : ''}</td>
-                                <td><span id="rem_${u.username}" style="font-weight:bold; font-size:1.1rem; color:${rem>=0?'white':'var(--danger)'}">${rem>=0?formatTime(rem):'-'+formatTime(Math.abs(rem))}</span></td>
-                                <td><span id="pray_${u.username}">${formatTime(lp)}</span><br>${prayerCreditStatus}<small>متبع: <span id="follow_${u.username}">${formatTime(lf)}</span></small></td>
-                                <td><span id="meet_${u.username}">${formatTime(lm)}</span><br><small>VIP: <span id="vip_${u.username}">${formatTime(lv)}</span></small></td>
-                                <td>${ctrl}</td>
-                            </tr>`;
-                    });
-
-                    // حساب إحصائيات الصلاة
-                    let usersWithCredit = 0; // اللي استلموا الـ 15 دقيقة
-                    let usersFinishedPrayer = 0; // اللي خلصوا صلاتهم
-
-                    Object.values(allUsersData).forEach(u => {
-                        if (u.username && !MANAGERS.includes(u.username)) {
-                            if (u.prayerLimit > 0) usersWithCredit++;
-                            if (u.prayerCountToday > 0) usersFinishedPrayer++;
-                        }
-                    });
-
-                    // تحديث شريط الحالة العلوي
-                    const statusDisplay = document.getElementById('statusCountersDisplay');
-                    if(statusDisplay) {
-                        statusDisplay.innerHTML = `
-                            <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
-                                <span style="color:#10b981;">🟢 متواجد: ${onlineCount}</span>
-                                <span style="color:#6366f1;">🍔 بريك: (${actB}/${maxBreaksAllowed})</span>
-                                <span style="color:#06b6d4;">🕌 صلاة الآن: (${actP}/${maxPrayersAllowed})</span>
-                                <span style="color:#ffd700; border-right: 2px solid #444; padding-right:15px;">📥 استلموا الرصيد: ${usersWithCredit}</span>
-                                <span style="color:#f43f5e;">✅ أتموا الصلاة: ${usersFinishedPrayer}</span>
-                            </div>
-                        `;
-                    }
-                }
 
                                             function updateMonitorValuesOnly() {
                                                 // بنلف على الموظفين ونحدث الخلايا اللي محتاجة تحديث بس من غير ما نمسح الجدول
@@ -5423,6 +6268,7 @@ function updateEmStatus() {
                                                             <button onclick="openUserProfile('${u.username}')" class="btn btn-dark btn-sm" title="الملف">📂</button>
                                                             <button onclick="editUser('${u.username}')" class="btn btn-warning btn-sm">✎</button>
                                                             <button onclick="deleteUser('${u.username}')" class="btn btn-danger btn-sm">🗑</button>
+                                                            
                                                         </td>
                                                     </tr>`;
                                                 });
@@ -6837,6 +7683,7 @@ function updateEmStatus() {
                 // تعديل دالة showAdmin عشان تظهر الزرار لمحمود بس
                 // (مهم: ابحث عن دالة showAdmin الموجودة عندك وضف السطر ده جواها)
                                             function showAdmin() {
+                                                initChatNotifications();
                                                 // إظهار وإخفاء الأقسام الرئيسية
                                                 const loginSec = document.getElementById('loginSection');
                                                 const adminSec = document.getElementById('adminSection');
@@ -8408,6 +9255,7 @@ function updateEmStatus() {
             });
         }
             function showEmployee() { 
+                initChatNotifications();
                 document.getElementById('loginSection').classList.add('hidden'); 
                 document.getElementById('employeeSection').classList.remove('hidden'); 
                 document.getElementById('welcomeMsg').innerText = `أهلاً، ${currentUser.realName || currentUser.username}`; 
@@ -8459,8 +9307,14 @@ function updateEmStatus() {
                 updateWeeklyLogDisplays();
 
                 // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
-               // ✅ 2. فتح ويدجت الصلاة تلقائياً فور دخول الموظف
-
+                setTimeout(() => {
+                    const widget = document.getElementById('prayerWidget');
+                    const btn = document.querySelector('.prayer-toggle-btn');
+                    if(widget && !widget.classList.contains('active')) {
+                        widget.classList.add('active');
+                        if(btn) btn.classList.add('active');
+                    }
+                }, 1500); // يفتح بعد ثانية ونصف عشان يتحمل الأول
             }
             // دالة الحصول على تاريخ السيرفر بصيغة YYYY-MM-DD (لتطابق موقع الحضور)
             function getServerDateKey() {
@@ -10376,6 +11230,1048 @@ function listenForRemoteLogout(username) {
         }
     });
 }
+// دالة تحديث قائمة الموظفين في لوحة التميز والبث
+function updateBroadcastTargets() {
+    const select = document.getElementById('broadcastTarget');
+    if (!select) return;
+
+    // حفظ الموظفين المختارين حالياً عشان ميروحوش مع التحديث
+    const selectedValues = Array.from(select.selectedOptions).map(option => option.value);
+
+    // البدء بخيار "للجميع"
+    let html = `<option value="all" ${selectedValues.includes('all') ? 'selected' : ''}>📣 للجميع</option>`;
+
+    // إضافة أسماء الموظفين من البيانات الموجودة
+    Object.values(allUsersData).forEach(u => {
+        if (u.username && !MANAGERS.includes(u.username)) {
+            const isSelected = selectedValues.includes(u.username) ? 'selected' : '';
+            html += `<option value="${u.username}" ${isSelected}>👤 ${u.realName || u.username}</option>`;
+        }
+    });
+
+    select.innerHTML = html;
+}
+// وظائف الموظف الكسول في تسجيل الدخول
+function wakeUp() {
+    const char = document.getElementById('lazyCharacter');
+    char.innerText = "😲"; // يستيقظ عند الضغط على الاسم
+    char.style.transform = "scale(1.2)";
+    // إخفاء الـ Zzz عند الاستيقاظ
+    document.querySelector('.zzz-container').style.display = 'none';
+}
+
+function goSleep() {
+    const char = document.getElementById('lazyCharacter');
+    char.innerText = "😴"; // يرجع ينام
+    char.style.transform = "scale(1)";
+    document.querySelector('.zzz-container').style.display = 'block';
+}
+
+function hideEyes() {
+    const char = document.getElementById('lazyCharacter');
+    char.innerText = "🙈"; // يخبي عينه عند كتابة الباسورد
+    char.style.transform = "scale(1.1)";
+}
+// نصوص التريقة (تظهر لما يغلط)
+const roastMessages = [
+    "أنت متأكد إنك شغال معانا؟ روح نام يا بابا! 😂",
+    "دي حتى البصمة أسهل من اللي أنت بتعمله ده.. غلط!",
+    "يا عم اطلب قهوة وركز، الباسورد مش كدة خالص!",
+    "شكلك لسه ما شربتش الشاي.. الباسورد غلط يا نجم",
+    "عثمان بيقولك: 'أنا لو منك استقيل أكرملي' 🥱",
+    "بقولك إيه؟ ما تحاولش تاني عشان هنام منك!"
+];
+
+function osmanFocus() {
+    // يفتح عين واحدة ويبص بقرف
+    document.getElementById('eyeL').setAttribute('d', 'M85 100 A5 5 0 1 1 95 100');
+    document.getElementById('osmanBubble').innerText = "نعم؟ عايز إيه؟ 🤨";
+    document.getElementById('osmanBubble').style.display = "block";
+}
+
+function osmanSleep() {
+    // يرجع ينام
+    document.getElementById('eyeL').setAttribute('d', 'M85 100 Q90 105 95 100');
+    document.getElementById('eyeR').setAttribute('d', 'M105 100 Q110 105 115 100');
+    document.getElementById('osmanBubble').innerText = "Zzz... 😴";
+}
+
+function osmanHide() {
+    // يغطي عينه في الباسورد
+    document.getElementById('osmanBubble').innerText = "مش هبص بس اخلص! 🙈";
+    document.getElementById('eyeL').setAttribute('d', 'M85 100 Q90 105 95 100');
+    document.getElementById('eyeR').setAttribute('d', 'M105 100 Q110 105 115 100');
+}
+
+// دالة محاكاة الدخول مع التريقة
+function mockAttemptLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+
+    // استدعاء دالة الدخول الأصلية بتاعتك بس هنزود عليها التريقة
+    if (allUsersData[u] && allUsersData[u].password === p) {
+        // نجاح (دخول طبيعي)
+        attemptLogin();
+    } else {
+        // فشل (بدء التريقة)
+        const card = document.getElementById('loginCard');
+        const bubble = document.getElementById('osmanBubble');
+        const mouth = document.getElementById('osmanMouth');
+
+        // هز الكارت
+        card.classList.add('wrong-data');
+        setTimeout(() => card.classList.remove('wrong-data'), 500);
+
+        // عثمان بيضحك تريقة
+        mouth.setAttribute('d', 'M90 120 Q100 140 110 120'); // ابتسامة تريقة
+        bubble.innerText = roastMessages[Math.floor(Math.random() * roastMessages.length)];
+        bubble.style.display = "block";
+        bubble.style.background = "#ff4444";
+        bubble.style.color = "#fff";
+
+        // عثمان يتهز كأنه بيضحك
+        document.getElementById('osmanSvg').style.transform = "scale(1.1) rotate(5deg)";
+        setTimeout(() => {
+            document.getElementById('osmanSvg').style.transform = "scale(1) rotate(0deg)";
+            mouth.setAttribute('d', 'M95 125 Q100 130 105 125');
+        }, 1000);
+    }
+}
+const roasts = [
+    "الباسورد غلط يا عبقري.. روح كمل نوم!",
+    "أنت متأكد إنك شغال معانا؟ عثمان مش فاكرك!",
+    "يا ابني ركز.. شكلك لسه ما فطرتش 🍩",
+    "غلط! شكلك محتاج كورس 'كيف تكتب يوزر نيم'",
+    "عثمان بيقولك: جرب تاني بس بعيد عني عشان هنام"
+];
+
+function stateActive() {
+    // يفتح عينه
+    document.getElementById('eyeL').setAttribute('d', 'M85 75 A5 5 0 1 1 95 75');
+    document.getElementById('eyeR').setAttribute('d', 'M105 75 A5 5 0 1 1 115 75');
+    showBubble("نعم؟ عايز إيه؟ 🤨");
+}
+
+function stateSleep() {
+    // يرجع ينام
+    document.getElementById('eyeL').setAttribute('d', 'M85 80 Q90 85 95 80');
+    document.getElementById('eyeR').setAttribute('d', 'M105 80 Q110 85 115 80');
+    document.getElementById('roastBubble').style.opacity = "0";
+}
+
+function stateHide() {
+    // يخبي عينه
+    showBubble("مش هبص والله.. اخلص! 🙈");
+    document.getElementById('eyeL').setAttribute('d', 'M85 80 Q90 85 95 80');
+    document.getElementById('eyeR').setAttribute('d', 'M105 80 Q110 85 115 80');
+}
+
+function showBubble(msg) {
+    const b = document.getElementById('roastBubble');
+    b.innerText = msg;
+    b.style.opacity = "1";
+}
+
+// دالة محاكاة الدخول مع نظام التريقة المطور
+function mockAttemptLogin() {
+    const u = document.getElementById('loginUser').value.trim().toLowerCase();
+    const p = document.getElementById('loginPass').value.trim();
+
+    // استدعاء المنطق الأصلي بتاعك
+    if (allUsersData[u] && allUsersData[u].password === p) {
+        attemptLogin(); // دالة الدخول الأصلية في ملفك
+    } else {
+        // فشل -> تريقة
+        const card = document.getElementById('loginCard');
+        const mouth = document.getElementById('workerMouth');
+        
+        // 1. هزة الكارت
+        card.classList.add('shake-card');
+        setTimeout(() => card.classList.remove('shake-card'), 500);
+
+        // 2. تريقة عثمان
+        showBubble(roasts[Math.floor(Math.random() * roasts.length)]);
+        document.getElementById('roastBubble').style.background = "#ef4444"; // قلب أحمر من الغيظ
+
+        // 3. شكل بقه يتغير لضحكة تريقة
+        mouth.setAttribute('d', 'M90 95 Q100 115 110 95');
+        
+        setTimeout(() => {
+            mouth.setAttribute('d', 'M95 100 Q100 105 105 100');
+            document.getElementById('roastBubble').style.background = "#6366f1";
+        }, 2000);
+    }
+}
+let currentChatRecipient = null;
+let chatListener = null;
+
+// تبديل ظهور نافذة الشات
+function toggleChatWindow() {
+    const win = document.getElementById('chatWindow');
+    win.classList.toggle('hidden');
+    if(!win.classList.contains('hidden')) {
+        renderContacts();
+    }
+}
+
+// رسم قائمة الموظفين والمدرين
+function renderContacts() {
+    const container = document.getElementById('contactsContainer');
+    container.innerHTML = '';
+
+    Object.values(allUsersData).forEach(u => {
+        if(!u.username || u.username === currentUser.username) return;
+
+        const isManager = MANAGERS.includes(u.username);
+        const statusColor = u.state === 'online' ? 'var(--success)' : '#666';
+
+        container.innerHTML += `
+            <div class="chat-contact-item" onclick="openPrivateChat('${u.username}', '${u.realName || u.username}')">
+                <div style="position:relative;">
+                    <img src="${u.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid ${isManager ? 'gold' : 'var(--primary)'};">
+                    <div style="position:absolute; bottom:0; right:0; width:10px; height:10px; background:${statusColor}; border-radius:50%; border:2px solid #1e293b;"></div>
+                </div>
+                <div>
+                    <div style="font-weight:bold; font-size:0.9rem; color:${isManager ? 'gold' : 'white'}">${u.realName || u.username} ${isManager ? '👑' : ''}</div>
+                    <div style="font-size:0.7rem; color:#aaa;">${isManager ? 'مشرف النظام' : 'موظف'}</div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// فتح شات خاص مع شخص معين
+function openPrivateChat(username, displayName) {
+    currentChatRecipient = username;
+    document.getElementById('chatContactsList').classList.add('hidden');
+    document.getElementById('chatMessagesArea').classList.remove('hidden');
+    document.getElementById('backToContacts').classList.remove('hidden');
+    document.getElementById('chatHeaderInfo').innerHTML = `<span style="color:white;">دردشة مع: </span><b style="color:var(--accent)">${displayName}</b>`;
+    
+    loadChatMessages();
+}
+
+// العودة للقائمة
+function closeChatArea() {
+    currentChatRecipient = null;
+    currentChatID = null; // تصفير المعرف الحالي
+    
+    if(chatListener) chatListener.off(); // إيقاف الاستماع للرسائل لتوفير البيانات
+
+    // إظهار القائمة والتبويبات مرة أخرى
+    document.getElementById('chatContactsList').classList.remove('hidden');
+    document.getElementById('chatTabs').classList.remove('hidden');
+    document.getElementById('btnNewGroup').classList.remove('hidden');
+
+    // إخفاء منطقة الرسائل وزر الرجوع
+    document.getElementById('chatMessagesArea').classList.add('hidden');
+    document.getElementById('backToContacts').classList.add('hidden');
+    
+    // إعادة الهيدر لشكلة الطبيعي
+    document.getElementById('chatHeaderInfo').innerHTML = `<div style="width:12px; height:12px; background:#10b981; border-radius:50%; box-shadow: 0 0 10px #10b981;"></div><span style="font-weight:900; color:#818cf8; font-size:1.1rem;">الدردشة الذكية</span>`;
+}
+
+// جلب رسائل الشات من Firebase
+function loadChatMessages() {
+    const msgContainer = document.getElementById('messagesContainer');
+    msgContainer.innerHTML = '';
+    
+    // إنشاء معرف فريد للغرفة بين شخصين (ترتيب أبجدي لضمان توحد المعرف)
+    const roomID = [currentUser.username, currentChatRecipient].sort().join('_');
+    
+    if(chatListener) chatListener.off();
+    chatListener = db.ref('private_chats/' + roomID);
+    
+    chatListener.limitToLast(50).on('child_added', (snap) => {
+        const msg = snap.val();
+        const isMe = msg.sender === currentUser.username;
+        
+        const msgHtml = `
+            <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-them'}">
+                ${msg.text}
+                <span class="chat-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        `;
+        msgContainer.innerHTML += msgHtml;
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    });
+}
+
+// إرسال رسالة
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if(!text || !currentChatRecipient) return;
+
+    const roomID = [currentUser.username, currentChatRecipient].sort().join('_');
+    
+    const newMsg = {
+        sender: currentUser.username,
+        text: text,
+        timestamp: getServerTime()
+    };
+
+    db.ref('private_chats/' + roomID).push(newMsg).then(() => {
+        input.value = '';
+    });
+}
+
+// تشغيل الإرسال عند الضغط على Enter
+document.getElementById('chatInput')?.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') sendChatMessage();
+});
+let currentEvalUser = ""; 
+
+// 1. فتح نافذة التقييم للمدير
+// 1. فتح نافذة الإرسال (تقييم جديد)
+function openQualityManager(username) {
+    currentEvalUser = username;
+    const u = allUsersData[username];
+    document.getElementById('editingEvalKey').value = ""; // تصفير مفتاح التعديل
+    document.getElementById('evalModalTitle').innerText = "🎧 تقييم أداء جديد";
+    document.getElementById('evalTargetName').innerText = "الموظف: " + (u.realName || username);
+    document.getElementById('adminQualityEvalModal').classList.remove('hidden');
+    
+    // تصفير الخانات
+    document.getElementById('evalScore').value = "";
+    document.getElementById('evalNote').value = "";
+    document.getElementById('evalAudioInput').value = "";
+    document.getElementById('evalAudioFileName').innerText = "";
+}
+
+// 2. دالة حفظ أو تحديث التقييم
+async function submitQualityEval() {
+    const score = document.getElementById('evalScore').value;
+    const note = document.getElementById('evalNote').value.trim();
+    const month = document.getElementById('evalMonth').value;
+    const week = document.getElementById('evalWeek').value;
+    const color = document.getElementById('evalColor').value;
+    const evalKey = document.getElementById('editingEvalKey').value;
+    const audioFile = document.getElementById('evalAudioInput').files[0];
+
+    if (!score || !note) return alert("اكمل البيانات أولاً");
+
+    const btn = document.getElementById('btnSubmitEval');
+    btn.disabled = true;
+    btn.innerText = "جاري الحفظ...";
+
+    try {
+        let audioUrl = "";
+        // نرفع الصوت فقط لو المشرف اختار ملف جديد
+        if (audioFile) {
+            audioUrl = await uploadToCloudinary(audioFile);
+        }
+
+        const evalData = {
+            score: score,
+            note: note,
+            month: month,
+            week: week,
+            statusColor: color, // حفظ اللون المختار يدوياً
+            admin: currentUser.realName || currentUser.username,
+            timestamp: getServerTime(),
+            dateStr: getServerDateString()
+        };
+        
+        // إذا كان هناك رابط صوتي قديم ولم يتم اختيار جديد، نحتفظ بالقديم (في حالة التعديل)
+        if (!audioUrl && evalKey !== "") {
+            const oldEval = allUsersData[currentEvalUser].evaluations[evalKey];
+            if (oldEval && oldEval.audioRecord) evalData.audioRecord = oldEval.audioRecord;
+        } else if (audioUrl) {
+            evalData.audioRecord = audioUrl;
+        }
+
+        if (evalKey === "") {
+            // إضافة جديد
+            await db.ref(`users/${currentEvalUser}/evaluations`).push(evalData);
+        } else {
+            // تعديل موجود
+            await db.ref(`users/${currentEvalUser}/evaluations/${evalKey}`).update(evalData);
+        }
+
+        alert("تم الحفظ بنجاح ✅");
+        document.getElementById('adminQualityEvalModal').classList.add('hidden');
+    } catch (e) {
+        alert("فشل الحفظ");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "حفظ التقييم 💾";
+    }
+}
+
+// 3. دالة جلب البيانات للتعديل
+function editEval(username, evalKey) {
+    const ev = allUsersData[username].evaluations[evalKey];
+    if (!ev) return;
+
+    currentEvalUser = username;
+    document.getElementById('editingEvalKey').value = evalKey;
+    document.getElementById('evalModalTitle').innerText = "📝 تعديل تقييم قائم";
+    document.getElementById('evalTargetName').innerText = "تعديل تقييم: " + (allUsersData[username].realName || username);
+    
+    // ملء الخانات بالبيانات القديمة
+    document.getElementById('evalScore').value = ev.score;
+    document.getElementById('evalNote').value = ev.note;
+    document.getElementById('evalMonth').value = ev.month;
+    document.getElementById('evalWeek').value = ev.week;
+    document.getElementById('evalColor').value = ev.statusColor || "#fbbf24";
+    
+    document.getElementById('adminQualityEvalModal').classList.remove('hidden');
+}
+
+// 4. تحديث دالة العرض لتشمل زر التعديل واللون اليدوي
+let allLoadedEvaluations = {}; // متغير عالمي لتخزين التقييمات مؤقتاً
+
+// 1. الدالة الأساسية لفتح الداشبورد وجلب البيانات
+function openQualityDashboard(targetUser = null) {
+    const userToView = targetUser || currentUser.username;
+    const modal = document.getElementById('employeeQualityViewModal');
+    const container = document.getElementById('qualityHistoryContainer');
+    
+    modal.classList.remove('hidden');
+    container.innerHTML = '<p style="text-align:center; color:var(--accent);">⏳ جاري فحص السجلات المتاحة...</p>';
+
+    db.ref(`users/${userToView}/evaluations`).once('value', (snap) => {
+        allLoadedEvaluations = snap.val() || {};
+        
+        if (Object.keys(allLoadedEvaluations).length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">لا توجد تقييمات مسجلة لك بعد.</p>';
+            // تصفير القوائم إذا كان لا يوجد بيانات
+            document.getElementById('filterViewMonth').innerHTML = '<option value="">لا يوجد شهور</option>';
+            document.getElementById('filterViewWeek').innerHTML = '<option value="">لا يوجد أسابيع</option>';
+        } else {
+            // بناء قائمة الشهور المتاحة أولاً
+            buildAvailableMonths();
+            // عرض أحدث تقييم تلقائياً
+            renderFilteredQuality(true); 
+        }
+    });
+}
+
+// 2. دالة الفلترة (التصفية) والعرض
+function renderFilteredQuality(showLatest = false) {
+    const container = document.getElementById('qualityHistoryContainer');
+    const selMonth = document.getElementById('filterViewMonth').value;
+    const selWeek = document.getElementById('filterViewWeek').value;
+    
+    const evalsArray = Object.values(allLoadedEvaluations);
+    let targetEval = null;
+
+    if (showLatest) {
+        // ترتيب لجلب الأحدث
+        evalsArray.sort((a, b) => b.timestamp - a.timestamp);
+        targetEval = evalsArray[0];
+        // تحديث القوائم لتطابق الأحدث
+        document.getElementById('filterViewMonth').value = targetEval.month;
+        document.getElementById('filterViewWeek').value = targetEval.week;
+    } else {
+        // البحث عن التقييم اللي يطابق اختيار الموظف
+        targetEval = evalsArray.find(ev => ev.month == selMonth && ev.week == selWeek);
+    }
+
+    if (!targetEval) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:50px; background:rgba(255,255,255,0.02); border-radius:25px; border:1px dashed #333;">
+                <i class="fa-solid fa-folder-open" style="font-size:3rem; color:#222; margin-bottom:15px;"></i>
+                <h3 style="color:#666;">لا يوجد تقييم لهذه الفترة</h3>
+                <p style="color:#444; font-size:0.8rem;">تأكد من اختيار الشهر والأسبوع الصحيح أو تواصل مع المشرف.</p>
+            </div>`;
+        return;
+    }
+
+    // رسم الكارت المختار (نفس الشكل الفخم اللي عملناه)
+    const monthsNames = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    const statusColor = targetEval.statusColor || "#fbbf24";
+
+    container.innerHTML = `
+        <div class="quality-card" style="border-right: 6px solid ${statusColor}; animation: zoomIn 0.3s ease-out;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div class="quality-score-circle" style="border-color:${statusColor}; box-shadow: 0 0 20px ${statusColor}44;">
+                        <span class="score-value" style="background:none; -webkit-text-fill-color:${statusColor}">${targetEval.score}%</span>
+                        <small style="font-size:0.5rem; color:#64748b; font-weight:bold;">SCORE</small>
+                    </div>
+                    <div>
+                        <div class="quality-badge" style="background:${statusColor}">${monthsNames[targetEval.month]} - الأسبوع ${targetEval.week}</div>
+                        <div class="eval-meta">
+                            <span><i class="fa-solid fa-user-tie"></i> المشرف: ${targetEval.admin}</span>
+                            <span><i class="fa-solid fa-calendar-day"></i> ${targetEval.dateStr}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="eval-note-container" style="border-color:${statusColor}; margin-top:20px; font-size:1.1rem;">
+                ${targetEval.note}
+            </div>
+
+            ${targetEval.audioRecord ? `
+                <div class="audio-player-wrapper" style="margin-top:20px;">
+                    <div style="color:var(--accent); font-size:0.8rem; margin-bottom:8px;"><i class="fa-solid fa-microphone-lines"></i> تسجيل المكالمة المرفق:</div>
+                    <audio src="${targetEval.audioRecord}" controls style="width:100%; height:40px;"></audio>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+// 4. دالة الحذف (للمدير)
+function deleteEval(username, evalKey) {
+    if(!confirm("⚠️ هل أنت متأكد من حذف هذا التقييم نهائياً؟")) return;
+    
+    db.ref(`users/${username}/evaluations/${evalKey}`).remove().then(() => {
+        alert("تم الحذف ✅");
+        // لا نحتاج لإغلاق المودال لأن المستمع (on value) سيحدث القائمة تلقائياً
+    });
+}
+function buildAvailableMonths() {
+    const monthSelect = document.getElementById('filterViewMonth');
+    const monthsNames = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    
+    // استخراج الشهور الفريدة من البيانات
+    const availableMonths = [...new Set(Object.values(allLoadedEvaluations).map(ev => ev.month))];
+    availableMonths.sort((a, b) => b - a); // ترتيب تنازلي (الأحدث أولاً)
+
+    let html = '';
+    availableMonths.forEach(m => {
+        html += `<option value="${m}">${monthsNames[m]}</option>`;
+    });
+    
+    monthSelect.innerHTML = html;
+    
+    // عند تغيير الشهر، يجب تحديث قائمة الأسابيع المتاحة لهذا الشهر
+    monthSelect.onchange = buildAvailableWeeks;
+    
+    // بناء الأسابيع لأول شهر مختار تلقائياً
+    buildAvailableWeeks();
+}
+function buildAvailableWeeks() {
+    const monthSelect = document.getElementById('filterViewMonth');
+    const weekSelect = document.getElementById('filterViewWeek');
+    const selectedMonth = monthSelect.value;
+    
+    if (!selectedMonth) return;
+
+    // استخراج الأسابيع المتاحة داخل الشهر المختار فقط
+    const availableWeeks = [...new Set(
+        Object.values(allLoadedEvaluations)
+        .filter(ev => ev.month == selectedMonth)
+        .map(ev => ev.week)
+    )];
+    
+    availableWeeks.sort((a, b) => b - a); // ترتيب الأسبوع الأحدث أولاً
+
+    let html = '';
+    availableWeeks.forEach(w => {
+        html += `<option value="${w}">الأسبوع ${w}</option>`;
+    });
+    
+    weekSelect.innerHTML = html;
+}
+let currentChatType = 'private'; // 'private' or 'group'
+let currentChatID = null;
+let currentChatDisplayName = "";
+
+// 1. تبديل التبويب
+function switchChatTab(type) {
+    currentChatType = type;
+    const tabP = document.getElementById('tabPrivate');
+    const tabG = document.getElementById('tabGroups');
+    
+    if(type === 'private') {
+        tabP.style.background = 'rgba(99, 102, 241, 0.2)'; tabP.style.color = 'white';
+        tabG.style.background = 'transparent'; tabG.style.color = '#aaa';
+        renderContacts();
+    } else {
+        tabG.style.background = 'rgba(99, 102, 241, 0.2)'; tabG.style.color = 'white';
+        tabP.style.background = 'transparent'; tabP.style.color = '#aaa';
+        renderChatGroups();
+    }
+}
+
+// 2. رسم جهات الاتصال (كما في الصورة)
+function renderContacts() {
+    const container = document.getElementById('contactsContainer');
+    container.innerHTML = '';
+
+    Object.values(allUsersData).forEach(u => {
+        if(!u.username || u.username === currentUser.username) return;
+
+        const isManager = MANAGERS.includes(u.username);
+        const statusColor = u.state === 'online' ? '#10b981' : '#64748b';
+        const pPic = u.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+
+        container.innerHTML += `
+            <div class="chat-contact-item" onclick="openPrivateChat('${u.username}', '${u.realName || u.username}')" 
+                 style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:18px; cursor:pointer; transition:0.3s; margin-bottom:8px; background:rgba(255,255,255,0.02);">
+                <div style="position:relative;">
+                    <img src="${pPic}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid ${isManager ? '#fbbf24' : '#6366f1'};">
+                    <div style="position:absolute; bottom:2px; right:2px; width:12px; height:12px; background:${statusColor}; border-radius:50%; border:2px solid #0f172a;"></div>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-weight:900; font-size:1rem; color:${isManager ? '#fbbf24' : 'white'}">${u.realName || u.username} ${isManager ? '👑' : ''}</div>
+                    <div style="font-size:0.75rem; color:#64748b;">${isManager ? 'مشرف النظام' : 'موظف'}</div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// 3. رسم المجموعات
+// دالة رسم المجموعات مع خاصية الحذف والخروج
+function renderChatGroups() {
+    const container = document.getElementById('contactsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    db.ref('chat_groups').once('value', (snap) => {
+        const groups = snap.val();
+        if (!groups) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">لا توجد مجموعات بعد</div>';
+            return;
+        }
+
+        Object.entries(groups).forEach(([gid, g]) => {
+            // نتحقق إذا كان المستخدم الحالي عضو في المجموعة
+            if (g.members && g.members.includes(currentUser.username)) {
+                
+                // تحديد هل المستخدم هو المنشئ؟
+                const isCreator = (g.creator === currentUser.username);
+
+                container.innerHTML += `
+                    <div class="chat-contact-item" style="display:flex; align-items:center; gap:15px; padding:15px; border-radius:18px; cursor:pointer; background:rgba(99, 102, 241, 0.05); margin-bottom:8px; border:1px solid rgba(99,102,241,0.1); position:relative;">
+                        <!-- الجزء الخاص بفتح الشات -->
+                        <div onclick="openGroupChat('${gid}', '${g.name}')" style="display:flex; align-items:center; gap:15px; flex:1;">
+                            <div style="width:50px; height:50px; background:linear-gradient(45deg, #6366f1, #06b6d4); border-radius:15px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.5rem;">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:900; color:white;">${g.name}</div>
+                                <div style="font-size:0.7rem; color:#818cf8;">${g.members.length} أعضاء ${isCreator ? '<span style="color:#fbbf24;">(أنت المنشئ)</span>' : ''}</div>
+                            </div>
+                        </div>
+
+                        <!-- أزرار التحكم (حذف أو خروج) -->
+                        <div style="display:flex; gap:10px;">
+                            ${isCreator ? 
+                                `<button onclick="deleteGroupChat('${gid}')" title="حذف المجموعة نهائياً" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.1rem;"><i class="fa-solid fa-trash-can"></i></button>` : 
+                                `<button onclick="leaveGroupChat('${gid}')" title="خروج من المجموعة" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:1.1rem;"><i class="fa-solid fa-right-from-bracket"></i></button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    });
+}
+
+// 4. فتح المحادثة
+function openPrivateChat(username, name) {
+    currentChatType = 'private';
+    currentChatID = [currentUser.username, username].sort().join('_');
+    currentChatDisplayName = name;
+    prepareChatUI();
+}
+
+function openGroupChat(gid, name) {
+    currentChatType = 'group';
+    currentChatID = gid;
+    currentChatDisplayName = name;
+    prepareChatUI();
+}
+
+function prepareChatUI() {
+    // إخفاء قائمة الأسماء والتبويبات
+    document.getElementById('chatContactsList').classList.add('hidden');
+    document.getElementById('chatTabs').classList.add('hidden'); // أخفينا التبويبات
+    document.getElementById('btnNewGroup').classList.add('hidden'); // إخفاء زر إنشاء مجموعة أثناء المحادثة
+
+    // إظهار منطقة الرسائل وزر الرجوع
+    document.getElementById('chatMessagesArea').classList.remove('hidden');
+    document.getElementById('backToContacts').classList.remove('hidden'); // إظهار زر الرجوع
+    
+    document.getElementById('chatHeaderInfo').innerHTML = `<span style="color:#aaa;">محادثة: </span><b style="color:white;">${currentChatDisplayName}</b>`;
+    loadChatMessages();
+}
+
+// 5. تحميل الرسائل مع عرض الصور والأسماء
+function loadChatMessages() {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = '';
+    
+    const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
+    
+    if(chatListener) chatListener.off();
+    chatListener = db.ref(path + currentChatID);
+    
+    chatListener.limitToLast(50).on('child_added', (snap) => {
+        const m = snap.val();
+        const isMe = m.sender === currentUser.username;
+        const senderData = allUsersData[m.sender] || { realName: m.sender, profilePic: '' };
+        
+        const avatar = `<img src="${senderData.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; margin-bottom: -15px;">`;
+
+        container.innerHTML += `
+            <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-start' : 'flex-end'}; max-width:85%; ${isMe ? 'margin-right:auto' : 'margin-left:auto'}">
+                ${!isMe ? `<small style="font-size:0.65rem; color:#818cf8; margin-bottom:2px; margin-left:10px;">${senderData.realName || m.sender}</small>` : ''}
+                <div style="display:flex; gap:8px; align-items:flex-end; flex-direction:${isMe ? 'row' : 'row-reverse'}">
+                    ${!isMe ? avatar : ''}
+                    <div style="padding:12px 16px; border-radius:20px; font-size:0.9rem; line-height:1.4; 
+                                background:${isMe ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : 'rgba(255,255,255,0.08)'}; 
+                                color:white; border-bottom-${isMe ? 'right' : 'left'}-radius:5px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                        ${m.text}
+                        <span style="display:block; font-size:0.6rem; opacity:0.5; margin-top:5px; text-align:left;">${new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+// 6. إرسال الرسالة
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if(!text || !currentChatID) return;
+
+    const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
+    
+    db.ref(path + currentChatID).push({
+        sender: currentUser.username,
+        text: text,
+        timestamp: getServerTime()
+    }).then(() => input.value = '');
+}
+
+// 7. إنشاء مجموعة
+function showCreateGroupUI() {
+    document.getElementById('chatContactsList').classList.add('hidden');
+    document.getElementById('createGroupUI').classList.remove('hidden');
+    const checklist = document.getElementById('groupMembersChecklist');
+    checklist.innerHTML = '';
+    
+    Object.values(allUsersData).forEach(u => {
+        if(u.username && u.username !== currentUser.username) {
+            checklist.innerHTML += `
+                <label style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; margin-bottom:5px; cursor:pointer;">
+                    <input type="checkbox" class="group-member-check" value="${u.username}">
+                    <img src="${u.profilePic || ''}" style="width:30px; height:30px; border-radius:50%;">
+                    <span style="color:white; font-size:0.85rem;">${u.realName || u.username}</span>
+                </label>`;
+        }
+    });
+}
+
+function execCreateGroup() {
+    const name = document.getElementById('newGroupName').value.trim();
+    const checks = document.querySelectorAll('.group-member-check:checked');
+    const selected = Array.from(checks).map(c => c.value);
+    
+    if(!name || selected.length === 0) return alert("دخل اسم المجموعة واختار عضو واحد على الأقل");
+    
+    selected.push(currentUser.username); // إضافة المنشئ
+    
+    const gid = 'GROUP_' + Date.now();
+    db.ref('chat_groups/' + gid).set({
+        name: name,
+        creator: currentUser.username,
+        members: selected,
+        timestamp: getServerTime()
+    }).then(() => {
+        alert("تم إنشاء المجموعة بنجاح ✅");
+        hideCreateGroupUI();
+        switchChatTab('groups');
+    });
+}
+
+function hideCreateGroupUI() {
+    document.getElementById('createGroupUI').classList.add('hidden');
+    document.getElementById('chatContactsList').classList.remove('hidden');
+}
+// دالة رفع وتغيير خلفية الشات
+async function updateChatBackground(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // تنبيه للموظف
+        alert("جاري رفع الخلفية الجديدة... ⏳");
+
+        // استخدام دالة الرفع الموجودة أصلاً في كودك
+        const downloadURL = await uploadToCloudinary(file);
+
+        if (downloadURL) {
+            // حفظ الرابط في بيانات الموظف تحت مفتاح جديد اسمه chatBg
+            db.ref('users/' + currentUser.username).update({
+                chatBg: downloadURL
+            }).then(() => {
+                alert("تم تغيير الخلفية بنجاح! 🎉");
+                applyChatBackground(downloadURL); // تطبيقها فوراً
+            });
+        }
+    }
+}
+
+// دالة لتطبيق الخلفية على الواجهة
+function applyChatBackground(url) {
+    const chatArea = document.getElementById('messagesContainer'); // أو chatMessagesArea
+    if (chatArea) {
+        if (url) {
+            chatArea.style.backgroundImage = `url('${url}')`;
+            chatArea.style.backgroundSize = "cover";
+            chatArea.style.backgroundPosition = "center";
+        } else {
+            // الخلفية الافتراضية لو الموظف مختارش حاجة
+            chatArea.style.backgroundImage = "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')";
+        }
+    }
+}
+let unreadMessagesData = {}; // تخزين عدد الرسائل غير المقروءة لكل غرفة
+
+// 1. دالة بدء مراقبة الرسائل الجديدة (تستدعى عند تسجيل الدخول)
+function initChatNotifications() {
+    if (!currentUser) return;
+
+    // مراقبة الرسائل الخاصة
+    db.ref('private_messages').on('value', (snap) => {
+        const allRooms = snap.val() || {};
+        processUnread(allRooms, 'private');
+    });
+
+    // مراقبة رسائل المجموعات
+    db.ref('group_messages').on('value', (snap) => {
+        const allGroups = snap.val() || {};
+        processUnread(allGroups, 'group');
+    });
+}
+
+// 2. معالجة الرسائل وحساب غير المقروء
+function processUnread(roomsData, type) {
+    let totalUnread = 0;
+    const lastSeenData = JSON.parse(localStorage.getItem('chat_last_seen') || '{}');
+
+    Object.entries(roomsData).forEach(([roomId, messages]) => {
+        // نتحقق إذا كانت الغرفة تخص المستخدم الحالي
+        const isMyRoom = type === 'private' ? roomId.includes(currentUser.username) : true; // المجموعات هنفلترها في render
+        
+        if (isMyRoom) {
+            const lastSeen = lastSeenData[roomId] || 0;
+            const roomMessages = Object.values(messages);
+            
+            // عد الرسائل اللي وقتها أكبر من آخر وقت أنا شوفت فيه الأوضة دي، ومش أنا اللي باعتها
+            const unreadInThisRoom = roomMessages.filter(m => m.timestamp > lastSeen && m.sender !== currentUser.username).length;
+            
+            unreadMessagesData[roomId] = unreadInThisRoom;
+            totalUnread += unreadInThisRoom;
+        }
+    });
+
+    updateGlobalBadge(totalUnread);
+    renderContacts(); // تحديث القائمة لإظهار العلامات الخضراء
+}
+
+// 3. تحديث الرقم الأحمر على الزرار العائم
+function updateGlobalBadge(count) {
+    const badge = document.getElementById('chatNotificationBadge');
+    if (count > 0) {
+        badge.innerText = count > 99 ? '+99' : count;
+        badge.classList.remove('hidden');
+        
+        // تشغيل صوت تنبيه خفيف لو زاد العدد (إختياري)
+        if(count > (window.lastTotalUnread || 0)) {
+            document.getElementById('notifySound')?.play().catch(e=>{});
+        }
+        window.lastTotalUnread = count;
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+// 4. تحديث دالة renderContacts لإظهار التنبيهات جنب الأسماء
+function renderContacts() {
+    const container = document.getElementById('contactsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    Object.values(allUsersData).forEach(u => {
+        if(!u.username || u.username === currentUser.username) return;
+
+        const roomId = [currentUser.username, u.username].sort().join('_');
+        const unreadCount = unreadMessagesData[roomId] || 0;
+        const isManager = MANAGERS.includes(u.username);
+        const statusColor = u.state === 'online' ? '#10b981' : '#64748b';
+
+        container.innerHTML += `
+            <div class="chat-contact-item ${unreadCount > 0 ? 'has-unread' : ''}" onclick="openPrivateChat('${u.username}', '${u.realName || u.username}')">
+                <div style="position:relative;">
+                    <img src="${u.profilePic || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid ${isManager ? '#fbbf24' : '#6366f1'};">
+                    <div style="position:absolute; bottom:2px; right:2px; width:12px; height:12px; background:${statusColor}; border-radius:50%; border:2px solid #0f172a;"></div>
+                </div>
+                <div style="flex:1; margin-right:10px;">
+                    <div style="font-weight:900; font-size:0.95rem; color:${isManager ? '#fbbf24' : 'white'}">${u.realName || u.username}</div>
+                    <div style="font-size:0.7rem; color:#64748b;">${unreadCount > 0 ? 'بعت لك رسالة جديدة' : (isManager ? 'مشرف' : 'موظف')}</div>
+                </div>
+                ${unreadCount > 0 ? `<div class="unread-dot"></div>` : ''}
+            </div>
+        `;
+    });
+}
+
+// 5. دالة تحديث "وقت الرؤية" عند فتح شات معين
+function markAsRead(roomId) {
+    const lastSeenData = JSON.parse(localStorage.getItem('chat_last_seen') || '{}');
+    lastSeenData[roomId] = Date.now() + 5000; // إضافة ٥ ثواني احتياطي لوقت السيرفر
+    localStorage.setItem('chat_last_seen', JSON.stringify(lastSeenData));
+    
+    unreadMessagesData[roomId] = 0;
+    
+    // إعادة حساب الإجمالي
+    let total = 0;
+    Object.values(unreadMessagesData).forEach(v => total += v);
+    updateGlobalBadge(total);
+}
+
+// 6. تعديل دوال فتح الشات لإلغاء التنبيه
+const originalOpenPrivateChat = openPrivateChat;
+openPrivateChat = function(username, name) {
+    const roomId = [currentUser.username, username].sort().join('_');
+    markAsRead(roomId);
+    originalOpenPrivateChat(username, name);
+};
+// 1. دالة حذف الجروب نهائياً (للمنشئ فقط)
+function deleteGroupChat(gid) {
+    if (!confirm("⚠️ هل أنت متأكد من حذف هذه المجموعة نهائياً لجميع الأعضاء؟\nلا يمكن التراجع عن هذا الإجراء.")) return;
+
+    // حذف الجروب من قائمة المجموعات
+    db.ref('chat_groups/' + gid).remove().then(() => {
+        // حذف رسائل الجروب أيضاً لتوفير مساحة الداتابيز (إختياري)
+        db.ref('group_messages/' + gid).remove();
+        
+        alert("تم حذف المجموعة بنجاح ✅");
+        renderChatGroups(); // تحديث القائمة
+    }).catch(err => alert("فشل الحذف: " + err.message));
+}
+
+// 2. دالة الخروج من الجروب (للأعضاء)
+function leaveGroupChat(gid) {
+    if (!confirm("هل أنت متأكد من الخروج من هذه المجموعة؟")) return;
+
+    db.ref('chat_groups/' + gid).once('value', (snap) => {
+        const g = snap.val();
+        if (g && g.members) {
+            // حذف اسم المستخدم الحالي من مصفوفة الأعضاء
+            const updatedMembers = g.members.filter(m => m !== currentUser.username);
+
+            if (updatedMembers.length === 0) {
+                // لو الجروب مابقاش فيه حد خالص، نمسحه
+                db.ref('chat_groups/' + gid).remove();
+            } else {
+                // تحديث قائمة الأعضاء في السيرفر
+                db.ref('chat_groups/' + gid).update({
+                    members: updatedMembers
+                });
+                
+                // إرسال رسالة نظام للجروب (إختياري)
+                db.ref('group_messages/' + gid).push({
+                    sender: "System",
+                    text: `📢 خرج الزميل (${currentUser.realName || currentUser.username}) من المجموعة.`,
+                    timestamp: getServerTime()
+                });
+            }
+
+            alert("لقد غادرت المجموعة 🚪");
+            renderChatGroups(); // تحديث القائمة
+        }
+    });
+}
+// 1. قاعدة بيانات الفوازير والنكت والتريقة
+const osmanGames = {
+    riddles: [
+        { q: "حاجة بتشوف كل شيء ومعندهاش عيون؟", a: "المراية", roast: "يا عم دي مرايتك اللي بتصدمك كل يوم الصبح!" },
+        { q: "إيه هو الشيء الذي يقرصك ولا تراه؟", a: "الجوع", roast: "باين عليك واقع من الجوع، روح اطلب ساندوتش وسيب الذكاء لأهله" },
+        { q: "حاجة بتمشي ومعندهاش رجلين وبتبكي ومعندهاش عيون؟", a: "السحاب", roast: "السحاب يا ذكي.. انت شكلك محتاج بريك من البريك نفسه" },
+        { q: "ما هو الشيء الذي كلما زاد نقص؟", a: "العمر", roast: "عمرك اللي بيضيع وأنت مش عارف تجاوب دي!" }
+    ],
+    roasts: [
+        "إجابة غلط! أنت أكيد شغال بالبركة 😂",
+        "لا لا.. كدة كتير، أنت محتاج كورس محو أمية فوازير",
+        "بقولك إيه؟ روح كمل أكل وأنا هعتبر نفسي مشفتش الإجابة دي 🤫",
+        "يا ابني ركز، ده السؤال أسهل من بصمة الحضور!"
+    ]
+};
+
+let currentRiddle = null;
+
+// 2. الدالة الرئيسية للفحص (هل هو في بريك؟)
+function checkBreakAndPlay() {
+    if (!currentUser) return;
+    
+    // فحص هل الموظف في بريك فعلاً؟
+    if (!currentUser.isOnBreak) {
+        alert("🚨 عثمان بيقولك: مفيش لعب وقت الشغل يا وحش! افتح بريك الأول وتعالالي 😉");
+        return;
+    }
+
+    // لو في بريك.. ابدأ اللعبة
+    startOsmanRiddle();
+}
+
+// 3. ابدأ الفزورة
+function startOsmanRiddle() {
+    const randomIndex = Math.floor(Math.random() * osmanGames.riddles.length);
+    currentRiddle = osmanGames.riddles[randomIndex];
+
+    // إرسال السؤال في الشات كأنه من عثمان
+    sendBotMessage(`🤖 فزورة من عثمان: ${currentRiddle.q} \n (اكتب: "الإجابة هي ...." عشان تحل)`);
+}
+
+// 4. دالة إرسال رسالة من البوت في الشات
+function sendBotMessage(text) {
+    if (!currentChatID) {
+        alert("افتح أي شات الأول عشان عثمان يظهر فيه!");
+        return;
+    }
+    const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
+    db.ref(path + currentChatID).push({
+        sender: "عثمان الرخم 🤖",
+        text: text,
+        timestamp: getServerTime(),
+        isBot: true
+    });
+}
+
+// 5. تعديل دالة استقبال الرسائل لفحص الإجابات
+// (يجب دمج هذا الجزء داخل المستمع 'child_added' في loadChatMessages)
+// ابحث عن loadChatMessages وضيف في آخرها المنطق ده:
+
+function checkGameAnswer(msgText, sender) {
+    if (!currentRiddle || sender === "عثمان الرخم 🤖") return;
+
+    const userAnswer = msgText.toLowerCase();
+    const correctAnswer = currentRiddle.a.toLowerCase();
+
+    if (userAnswer.includes(correctAnswer)) {
+        // فاز بنقاط
+        const points = 10;
+        updateUserPoints(sender, points);
+        sendBotMessage(`🎉 برافو يا ${getRealName(sender)}! إجابتك صح. خدت ${points} نقطة. \n ${currentRiddle.roast}`);
+        currentRiddle = null; // إنهاء الفزورة الحالية
+    } else if (userAnswer.startsWith("الإجابة هي")) {
+        // إجابة غلط وتريقة
+        const randomRoast = osmanGames.roasts[Math.floor(Math.random() * osmanGames.roasts.length)];
+        sendBotMessage(`❌ ${randomRoast}`);
+    }
+}
+
+// 6. تحديث نقاط الموظف في الداتابيز
+function updateUserPoints(username, points) {
+    db.ref(`users/${username}/points`).transaction((currentPoints) => {
+        return (currentPoints || 0) + points;
+    });
+}
+
+// جوه الـ on('child_added')
+const m = snap.val();
+checkGameAnswer(m.text, m.sender); // ده السطر اللي هيخلي عثمان يراقب الإجابات
                 </script>
                 <script>
 
