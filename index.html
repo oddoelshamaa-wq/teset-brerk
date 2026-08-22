@@ -723,27 +723,28 @@
                 }
 
                                                 /* تنسيقات حقول الإدخال والقوائم الجديدة */
-                                                .form-control-glass {
-                                                    width: 100%;
-                                                    background: rgba(0, 0, 0, 0.4);
-                                                    border: 1px solid var(--glass-border);
-                                                    color: white;
-                                                    padding: 15px;
-                                                    border-radius: 12px;
-                                                    margin-bottom: 15px;
-                                                    font-family: 'Cairo', sans-serif;
-                                                    font-size: 1rem;
-                                                    outline: none;
-                                                    transition: 0.3s;
-                                                    /* لإصلاح شكل القائمة المنسدلة */
-                                                    appearance: none;
-                                                    -webkit-appearance: none;
-                                                    -moz-appearance: none;
-                                                    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-                                                    background-repeat: no-repeat;
-                                                    background-position: left 15px center; /* السهم على اليسار لأن الموقع RTL */
-                                                    background-size: 15px;
-                                                }
+                                              .form-control-glass {
+    width: 100% !important; /* ضمان العرض الكامل */
+    box-sizing: border-box;  /* أهم سطر: بيخلي الـ Padding يتحسب جوة العرض مش برة */
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 12px 15px; /* تصغير الـ padding سنة */
+    border-radius: 12px;
+    margin-bottom: 0px; /* هنخلي المسافات تتحكم فيها الـ Grid */
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* تعديل المسافات بين عناصر الـ Grid عشان متبقاش مخنوقة */
+#csAgentDashboard .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px; /* مسافة مريحة بين العناصر */
+    margin-bottom: 15px;
+}
 
                                                 textarea.form-control-glass {
                                                     background-image: none; /* إزالة السهم من الـ textarea */
