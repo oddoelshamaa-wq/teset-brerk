@@ -140,24 +140,21 @@
                                                 .timer-big-text { font-size: 3.2rem; font-weight: 900; line-height: 1; }
 
                                                 /* تخطيط الموظف الجديد */
-                                                .employee-hero-grid {
-                                                    display: grid;
-                                                    grid-template-columns: 1fr 1fr;
-                                                    gap: 25px;
-                                                    align-items: stretch;
-                                                    margin-bottom: 25px;
-                                                }
+                                              /* تحسين شكل الشبكة الرئيسية */
+.employee-hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr; /* جعل قسم التوجيهات أعرض قليلاً من العداد */
+    gap: 20px;
+    align-items: stretch;
+}
 
-                                                .hero-card {
-                                                    background: rgba(255, 255, 255, 0.03);
-                                                    border: 1px solid var(--glass-border);
-                                                    border-radius: 30px;
-                                                    padding: 30px;
-                                                    display: flex;
-                                                    flex-direction: column;
-                                                    justify-content: center;
-                                                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                                                }
+/* التأكد من أن الكروت لها نفس الارتفاع */
+.hero-card {
+    height: 100%;
+    min-height: 350px; /* توحيد الحد الأدنى للطول */
+    display: flex;
+    flex-direction: column;
+}
 
                                                 .broadcast-box {
                                                     text-align: right;
@@ -172,15 +169,31 @@
                                                     padding-left: 5px;
                                                 }
 
-                                                .broadcast-item {
-                                                    background: rgba(255,255,255,0.05);
-                                                    border-right: 4px solid var(--primary);
-                                                    padding: 12px;
-                                                    border-radius: 12px;
-                                                    margin-bottom: 10px;
-                                                    font-size: 0.9rem;
-                                                    animation: slideIn 0.3s ease;
-                                                }
+                                             .broadcast-item {
+    display: flex;
+    justify-content: space-between; /* لرمي الوقت في أقصى اليسار والنص في اليمين */
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    border-right: 4px solid var(--primary);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+.broadcast-time-tag {
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: rgba(6, 182, 212, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap; /* لمنع الوقت من النزول لسطر جديد */
+    direction: ltr;
+}
+.broadcast-msg-text {
+    flex: 1; /* لجعل النص يأخذ المساحة المتبقية */
+    line-height: 1.5;
+}
 
                                                 @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -2000,6 +2013,37 @@
     width: 90%;
     margin: 10px auto;
     animation: pulse 1s infinite;
+}
+/* --- تنسيق شريط التمرير (السكرول بار) ليصبح رمادي --- */
+
+/* 1. التنسيق العام لكل صناديق الموقع */
+::-webkit-scrollbar {
+    width: 8px; /* عرض الشريط */
+    height: 8px;
+}
+
+/* 2. لون الخلفية (الخط اللي كان أبيض وعاوزه رمادي) */
+::-webkit-scrollbar-track {
+    background: #1e293b; /* رمادي غامق جداً متناسق مع الخلفية */
+    border-radius: 10px;
+}
+
+/* 3. لون الجزء المتحرك (المقبض) */
+::-webkit-scrollbar-thumb {
+    background: #475569; /* رمادي متوسط */
+    border-radius: 10px;
+    border: 2px solid #1e293b; /* فراغ بسيط حول المقبض */
+}
+
+/* 4. عند تمرير الماوس فوق المقبض */
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b; /* رمادي فاتح قليلاً عند اللمس */
+}
+
+/* تخصيص إضافي لصندوق التوجيهات تحديداً لضمان اختفاء اللون الأبيض */
+.log-container {
+    scrollbar-width: thin; /* للمتصفحات مثل فايرفوكس */
+    scrollbar-color: #475569 #1e293b; 
 }
                                             </style>
                                         </head>
@@ -12046,27 +12090,30 @@ function initChatNotifications() {
 
 // 2. معالجة الرسائل وحساب غير المقروء
 function processUnread(roomsData, type) {
-    let totalUnread = 0;
     const lastSeenData = JSON.parse(localStorage.getItem('chat_last_seen') || '{}');
 
     Object.entries(roomsData).forEach(([roomId, messages]) => {
         // نتحقق إذا كانت الغرفة تخص المستخدم الحالي
-        const isMyRoom = type === 'private' ? roomId.includes(currentUser.username) : true; // المجموعات هنفلترها في render
+        const isMyRoom = type === 'private' ? roomId.includes(currentUser.username) : true; 
         
         if (isMyRoom) {
             const lastSeen = lastSeenData[roomId] || 0;
             const roomMessages = Object.values(messages);
             
-            // عد الرسائل اللي وقتها أكبر من آخر وقت أنا شوفت فيه الأوضة دي، ومش أنا اللي باعتها
-            const unreadInThisRoom = roomMessages.filter(m => m.timestamp > lastSeen && m.sender !== currentUser.username).length;
+            // بنشوف هل الغرفة دي فيها "أي" رسالة جديدة مبعوتة لي؟
+            const hasUnreadInThisRoom = roomMessages.some(m => m.timestamp > lastSeen && m.sender !== currentUser.username);
             
-            unreadMessagesData[roomId] = unreadInThisRoom;
-            totalUnread += unreadInThisRoom;
+            // هنا التغيير: بنسجل 1 لو فيه رسائل، و 0 لو مفيش (عشان نعد غرف مش رسائل)
+            unreadMessagesData[roomId] = hasUnreadInThisRoom ? 1 : 0;
         }
     });
 
-    updateGlobalBadge(totalUnread);
-    renderContacts(); // تحديث القائمة لإظهار العلامات الخضراء
+    // جمع عدد "الغرف" اللي فيها رسائل غير مقروءة
+    let totalUnreadRooms = 0;
+    Object.values(unreadMessagesData).forEach(val => totalUnreadRooms += val);
+
+    updateGlobalBadge(totalUnreadRooms);
+    renderContacts(); 
 }
 
 // 3. تحديث الرقم الأحمر على الزرار العائم
@@ -12119,15 +12166,18 @@ function renderContacts() {
 // 5. دالة تحديث "وقت الرؤية" عند فتح شات معين
 function markAsRead(roomId) {
     const lastSeenData = JSON.parse(localStorage.getItem('chat_last_seen') || '{}');
-    lastSeenData[roomId] = Date.now() + 5000; // إضافة ٥ ثواني احتياطي لوقت السيرفر
+    // بنسجل الوقت الحالي + ثانية زيادة للتأكيد
+    lastSeenData[roomId] = getServerTime() + 1000; 
     localStorage.setItem('chat_last_seen', JSON.stringify(lastSeenData));
     
+    // تصفير الغرفة دي في الذاكرة فوراً
     unreadMessagesData[roomId] = 0;
     
-    // إعادة حساب الإجمالي
+    // إعادة حساب الإجمالي وتحديث الزرار فوراً
     let total = 0;
     Object.values(unreadMessagesData).forEach(v => total += v);
     updateGlobalBadge(total);
+    renderContacts();
 }
 
 // 6. تعديل دوال فتح الشات لإلغاء التنبيه
@@ -12184,35 +12234,99 @@ function leaveGroupChat(gid) {
     });
 }
 // 1. قاعدة بيانات الفوازير والنكت والتريقة
+// 1. قاعدة بيانات عثمان المطورة (فوازير + تريقة + نقاط)
 const osmanGames = {
     riddles: [
-        { q: "حاجة بتشوف كل شيء ومعندهاش عيون؟", a: "المراية", roast: "يا عم دي مرايتك اللي بتصدمك كل يوم الصبح!" },
+        { q: "حاجة بتشوف كل شيء ومعندهاش عيون؟", a: "المراية", roast: "يا عم دي مرايتك اللي بتصدمك كل يوم الصبح، فوق لنفسك!" },
         { q: "إيه هو الشيء الذي يقرصك ولا تراه؟", a: "الجوع", roast: "باين عليك واقع من الجوع، روح اطلب ساندوتش وسيب الذكاء لأهله" },
         { q: "حاجة بتمشي ومعندهاش رجلين وبتبكي ومعندهاش عيون؟", a: "السحاب", roast: "السحاب يا ذكي.. انت شكلك محتاج بريك من البريك نفسه" },
-        { q: "ما هو الشيء الذي كلما زاد نقص؟", a: "العمر", roast: "عمرك اللي بيضيع وأنت مش عارف تجاوب دي!" }
+        { q: "ما هو الشيء الذي كلما زاد نقص؟", a: "العمر", roast: "عمرك اللي بيضيع وأنت مش عارف تجاوب دي!" },
+        { q: "إيه هو الشيء اللي له أسنان ومبيعرفش يعض؟", a: "المشط", roast: "المشط يا من كش ملك! شكلك مسرحتش شعرك النهاردة" },
+        { q: "حاجة بترمى قشرتها وبتاكل قلبها؟", a: "البيضة", roast: "البيضة يا بتاع الفطار.. ركز شوية!" },
+        { q: "إيه هو الشيء اللي بيدخل مبلول ويخرج ناشف؟", a: "العيش", roast: "العيش يا فنان.. مش بقولك ركز في مبيعات العيش اللي في السيستم!" },
+        { q: "صانعها مبيحبهاش، ومشتريها مبيستعملهاش، ومستعملها مبيشوفهاش؟", a: "الكفن", roast: "الكفن.. فال الله ولا فالك، بس أنت اللي جلبته لنفسك بذكائك ده" },
+        { q: "إيه هو الشيء اللي في نصه 'قاف'؟", a: "القاهرة", roast: "القاهرة يا ابن النيل.. ضيعت هيبة المحافظة!" }
     ],
-    roasts: [
+    wrongRoasts: [
         "إجابة غلط! أنت أكيد شغال بالبركة 😂",
         "لا لا.. كدة كتير، أنت محتاج كورس محو أمية فوازير",
         "بقولك إيه؟ روح كمل أكل وأنا هعتبر نفسي مشفتش الإجابة دي 🤫",
-        "يا ابني ركز، ده السؤال أسهل من بصمة الحضور!"
+        "يا ابني ركز، ده السؤال أسهل من بصمة الحضور اللي بتنساها!",
+        "غلط طبعاً! ده أنت لو هبدت بالصدفة كانت هتطلع صح عن كدة",
+        "عثمان بيقولك: 'استقيل أكرملك.. الإجابة غلط'",
+        "يا عيني على الذكاء.. الإجابة في وادي وأنت في وادي تاني خالص",
+        "أنا لو مكان المشرف أخصملك 5 دقايق على الإجابة دي!"
     ]
 };
 
 let currentRiddle = null;
 
-// 2. الدالة الرئيسية للفحص (هل هو في بريك؟)
+// 2. الدالة الرئيسية للفحص والتشغيل
 function checkBreakAndPlay() {
     if (!currentUser) return;
     
-    // فحص هل الموظف في بريك فعلاً؟
+    // فحص هل الموظف في بريك فعلاً؟ (عشان ميلعبش وقت الشغل)
     if (!currentUser.isOnBreak) {
         alert("🚨 عثمان بيقولك: مفيش لعب وقت الشغل يا وحش! افتح بريك الأول وتعالالي 😉");
         return;
     }
 
-    // لو في بريك.. ابدأ اللعبة
     startOsmanRiddle();
+}
+
+// 3. ابدأ الفزورة
+function startOsmanRiddle() {
+    const randomIndex = Math.floor(Math.random() * osmanGames.riddles.length);
+    currentRiddle = osmanGames.riddles[randomIndex];
+
+    sendBotMessage(`🤖 فزورة من عثمان: ${currentRiddle.q} \n\n (اكتب: "الإجابة هي ...." عشان تحل)`);
+}
+
+// 4. دالة إرسال رسالة البوت (بتنسيق مميز)
+function sendBotMessage(text) {
+    if (!currentChatID) {
+        alert("افتح أي شات الأول (خاص أو مجموعة) عشان عثمان يظهر فيه!");
+        return;
+    }
+    const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
+    db.ref(path + currentChatID).push({
+        sender: "عثمان الرخم 🤖",
+        text: text,
+        timestamp: getServerTime(),
+        isBot: true // علامة عشان السيستم يعرف إنه بوت
+    });
+}
+
+// 5. مراقبة الإجابات
+function checkGameAnswer(msgText, sender) {
+    if (!currentRiddle || sender === "عثمان الرخم 🤖") return;
+
+    const userAnswer = msgText.toLowerCase();
+    const correctAnswer = currentRiddle.a.toLowerCase();
+
+    // فحص لو المستخدم بيحاول يجاوب
+    if (userAnswer.includes("الإجابة هي") || userAnswer.includes("الاجابه هي")) {
+        
+        if (userAnswer.includes(correctAnswer)) {
+            // فاز بنقاط
+            const points = 10;
+            updateUserPoints(sender, points);
+            
+            sendBotMessage(`🎉 عاش يا ${getRealName(sender)}! إجابتك صح. \n خدت ${points} نقطة في رصيدك. \n\n عثمان بيقولك: "${currentRiddle.roast}"`);
+            currentRiddle = null; // إنهاء الفزورة
+        } else {
+            // إجابة غلط وتريقة
+            const randomRoast = osmanGames.wrongRoasts[Math.floor(Math.random() * osmanGames.wrongRoasts.length)];
+            sendBotMessage(`❌ ${randomRoast}`);
+        }
+    }
+}
+
+// 6. نظام النقاط في الداتابيز
+function updateUserPoints(username, points) {
+    db.ref(`users/${username}/gamePoints`).transaction((currentPoints) => {
+        return (currentPoints || 0) + points;
+    });
 }
 
 // 3. ابدأ الفزورة
