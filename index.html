@@ -3,8 +3,7 @@
                                             <html lang="ar" dir="rtl">
                                             <head>
                         <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-                        <!-- تم تحديث هذا السطر للسماح بعمل المكتبات -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">                        <!-- تم تحديث هذا السطر للسماح بعمل المكتبات -->
             <meta http-equiv="Content-Security-Policy" content="default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval'; script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob: 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: ; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; media-src * blob: data:;">            <title>ELSHAMAA | إدارة البريك</title>
                     <!-- كود تحويل الموقع لتطبيق (PWA) -->
         <link rel="manifest" href="manifest.json">
@@ -3021,6 +3020,9 @@ html, body {
                                                     <label style="color:var(--primary); font-weight:bold; border:1px solid var(--primary); padding:0 10px; border-radius:10px;">
                                                         <input type="checkbox" id="isCSAgent"> 🎧 خدمة عملاء (مكالمات + بريك فقط)
                                                     </label>
+    <label style="color:#a78bfa; font-weight:bold; border:1px solid #a78bfa; padding:0 10px; border-radius:10px;">
+        <input type="checkbox" id="isSohraBreak"> 🌙 بريك سهرة (VIP)
+    </label>
 
                                                 </div>
                                                             <button onclick="saveUser()" id="saveUserBtn" class="btn btn-success" style="width:100%">حفظ</button>
@@ -3371,7 +3373,11 @@ html, body {
     <div id="vipControlArea" class="hidden" style="margin-bottom: 20px;">
         <button onclick="document.getElementById('vipPickerModal').classList.remove('hidden')" class="btn btn-vip" style="width:100%; max-width:500px;">👑 بدء استراحة VIP</button>
     </div>
-
+<!-- ابحث عن هذا السطر وأضف له الـ id الموضح باللون الأحمر -->
+<!-- الزرار الآن مخفي تلقائياً ولا يظهر إلا لو الموظف مسموح له -->
+<button id="sohraBreakBtn" onclick="confirmVIPAction('بريك سهر')" class="btn hidden" style="background: linear-gradient(135deg, #4c1d95, #2e1065); border: 1px solid #a78bfa; padding:20px; font-size:1.1rem; color:white;">
+    <span style="font-size:1.8rem;">🌙</span><br>بريك سهر
+</button>
                                                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; max-width: 800px; margin: 0 auto;">
     <div style="border:1px solid var(--success); padding:8px; border-radius:15px;">
         <h4>🍔 بريك</h4>
@@ -3571,6 +3577,10 @@ html, body {
                 <button onclick="confirmVIPAction('حمام (VIP)')" class="btn" style="background: linear-gradient(135deg, #444, #222); border: 1px solid #ffd700; padding:20px; font-size:1.1rem; color:#ffd700;">
                     <span style="font-size:1.8rem;">🚾</span><br>دخول الحمام
                 </button>
+                            <button onclick="confirmVIPAction('بريك سهر')" class="btn" style="background: linear-gradient(135deg, #4c1d95, #2e1065); border: 1px solid #a78bfa; padding:20px; font-size:1.1rem; color:white;">
+                <span style="font-size:1.8rem;">🌙</span><br>بريك سهر
+            </button>
+
                 
                 <!-- اختيار بريك VIP عادي -->
             
@@ -5630,80 +5640,112 @@ html, body {
                                                 }
 
                     function renderUserReport() {
-                const un = document.getElementById('reportUserSelect').value; 
-                if(!un) { alert("يرجى اختيار موظف أولاً"); return; }
+    const un = document.getElementById('reportUserSelect').value; 
+    if(!un) { alert("يرجى اختيار موظف أولاً"); return; }
 
-                const u = allUsersData[un];
-                const sB = document.getElementById('sessionsReportBody');
-                const mS = document.getElementById('monthlySummary');
-                
-                const start = document.getElementById('filterStartDate').value;
-                const end = document.getElementById('filterEndDate').value;
+    const u = allUsersData[un];
+    const sB = document.getElementById('sessionsReportBody');
+    const mS = document.getElementById('monthlySummary');
+    
+    const start = document.getElementById('filterStartDate').value;
+    const end = document.getElementById('filterEndDate').value;
 
-                sB.innerHTML = ''; 
-                mS.classList.remove('hidden');
-                let tOx=0, tPr=0, tFo=0, tVi=0; 
-                const allowS = (u.allowance || 45) * 60;
+    sB.innerHTML = ''; 
+    mS.classList.remove('hidden');
+    let tOx=0, tPr=0, tFo=0, tVi=0; 
+    const allowS = (u.allowance || 45) * 60;
 
-                if (!u.sessions || Object.keys(u.sessions).length === 0) {
-                    sB.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">⚠️ لا توجد جلسات مسجلة لهذا الموظف بعد.</td></tr>';
-                    return;
-                }
+    if (!u.sessions || Object.keys(u.sessions).length === 0) {
+        sB.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">⚠️ لا توجد جلسات مسجلة لهذا الموظف بعد.</td></tr>';
+        return;
+    }
 
-                const grouped = {};
-                Object.keys(u.sessions).forEach(k => {
-                    const s = u.sessions[k];
-                    if(!s.date) return;
-                    
-                    const parts = s.date.split('/');
-                    const cD = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+    const grouped = {};
+    Object.keys(u.sessions).forEach(k => {
+        const s = u.sessions[k];
+        if(!s.date) return;
+        
+        const parts = s.date.split('/');
+        const cD = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
 
-                    if ((start && cD < start) || (end && cD > end)) return;
+        if ((start && cD < start) || (end && cD > end)) return;
 
-                    if(!grouped[s.date]) grouped[s.date] = { acts: [], total: 0, prayer: 0, follow: 0, vip: 0 };
-                    const dur = parseInt(s.duration) || 0;
-                    
-                    const timeDisplay = `<span style="color:#aaa; font-size:0.7rem;">(${s.startTime || '--'} إلى ${s.endTime || '--'})</span>`;
+        if(!grouped[s.date]) grouped[s.date] = { acts: [], total: 0, prayer: 0, follow: 0, vip: 0 };
+        const dur = parseInt(s.duration) || 0;
+        
+        // --- منطق تمييز وإخفاء سجلات السهرة ---
+        const isSohraRecord = (s.type === 'VIP سهرة' || s.reason === 'VIP سهرة');
 
-                    // التعديل هنا: إضافة سطر "السبب" تحت اسم البريك
-                    grouped[s.date].acts.push(`
-                        <div style="font-size:0.8rem; margin-bottom:5px; background:rgba(255,255,255,0.03); padding:8px; border-radius:8px; border-right: 3px solid var(--primary);">
-                            <div style="display:flex; justify-content:space-between;">
-                                <b style="color:var(--primary);">${s.type}</b>
-                                <span style="color:#fff; font-weight:bold;">${Math.round(dur/60)} د</span>
-                            </div>
-                            ${timeDisplay}
-                            <div style="color:#fbbf24; font-size:0.75rem; margin-top:4px; font-weight:bold;">📝 السبب: ${s.reason || 'غير مسجل'}</div>
+        if (isSohraRecord) {
+            // إذا كان سجل سهرة، نضعه داخل حاوية مخفية بزر ضغط
+            grouped[s.date].acts.push(`
+                <div class="sohra-record-container" style="margin-bottom:8px;">
+                    <button onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'" 
+                            style="background: rgba(167, 139, 250, 0.1); border: 1px dashed #a78bfa; color: #a78bfa; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; cursor: pointer; width: 100%; text-align: right; font-weight: bold; transition: 0.3s;">
+                        👁️ كشف سجل (VIP سهرة)
+                    </button>
+                    <div class="sohra-content" style="display:none; font-size:0.85rem; margin-top:5px; background:rgba(15, 23, 42, 0.6); padding:10px; border-radius:12px; border-right: 4px solid #a78bfa; animation: slideIn 0.3s ease;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b style="color:#a78bfa;">💎 VIP سهرة</b>
+                            <span style="color:#fff; font-weight:900; background:#a78bfa33; padding:2px 8px; border-radius:6px;">${Math.round(dur/60)} د</span>
                         </div>
-                    `);
+                        <div style="color:#aaa; font-size:0.75rem; margin-top:5px;">
+                            <i class="fa-regular fa-clock"></i> التوقيت: ${s.startTime || '--'} إلى ${s.endTime || '--'}
+                        </div>
+                    </div>
+                </div>
+            `);
+        } else {
+            // السجلات العادية تظهر بالصندوق الطبيعي
+            grouped[s.date].acts.push(`
+                <div style="font-size:0.8rem; margin-bottom:8px; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border-right: 4px solid var(--primary);">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b style="color:var(--primary);">${s.type}</b>
+                        <span style="color:#fff; font-weight:bold;">${Math.round(dur/60)} د</span>
+                    </div>
+                    <div style="color:#aaa; font-size:0.7rem; margin-top:3px;">(${s.startTime || '--'} إلى ${s.endTime || '--'})</div>
+                    <div style="color:#fbbf24; font-size:0.75rem; margin-top:5px; font-weight:bold; background:rgba(251, 191, 36, 0.05); padding:3px 7px; border-radius:5px; display:inline-block;">
+                        📝 السبب: ${s.reason || 'غير مسجل'}
+                    </div>
+                </div>
+            `);
+        }
 
-                    if(s.type === 'بريك عام' || s.type === 'طوارئ') grouped[s.date].total += dur;
-                    else if(s.type === 'صلاة') grouped[s.date].prayer += dur; 
-                    else if(s.type === 'متابع عميل') grouped[s.date].follow += dur; 
-                    else if(s.type === 'استراحة VIP') grouped[s.date].vip += dur;
-                });
+        // --- تجميع الإجماليات للحسابات النهائية ---
+        if(s.type === 'بريك عام' || s.type === 'طوارئ') {
+            grouped[s.date].total += dur;
+        } else if(s.type === 'صلاة') {
+            grouped[s.date].prayer += dur; 
+        } else if(s.type === 'متابع عميل') {
+            grouped[s.date].follow += dur; 
+        } else if(s.type === 'استراحة VIP' || s.type === 'VIP سهرة') {
+            grouped[s.date].vip += dur;
+        }
+    });
 
-                const dates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
-                if(dates.length === 0) {
-                    sB.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">🔍 لم يتم العثور على بيانات في هذه الفترة.</td></tr>';
-                }
+    const dates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+    if(dates.length === 0) {
+        sB.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">🔍 لم يتم العثور على بيانات في هذه الفترة.</td></tr>';
+    }
 
-                dates.forEach(d => {
-                    const ox = Math.max(0, grouped[d].total - allowS); 
-                    tOx += ox; tPr += grouped[d].prayer; tFo += grouped[d].follow; tVi += grouped[d].vip;
-                    sB.innerHTML += `<tr>
-                        <td style="vertical-align:top; font-weight:bold;">${d}</td>
-                        <td>${grouped[d].acts.join('')}</td>
-                        <td style="font-weight:bold;">${Math.round(grouped[d].total/60)} د</td>
-                        <td style="color:${ox>0?'#ff4444':'#00ff00'}; font-weight:bold;">${Math.round(ox/60)} د</td>
-                    </tr>`;
-                });
+    dates.forEach(d => {
+        const ox = Math.max(0, grouped[d].total - allowS); 
+        tOx += ox; tPr += grouped[d].prayer; tFo += grouped[d].follow; tVi += grouped[d].vip;
+        sB.innerHTML += `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="vertical-align:top; font-weight:bold; color:#94a3b8; padding:15px;">${d}</td>
+                <td style="padding:10px;">${grouped[d].acts.join('')}</td>
+                <td style="font-weight:bold; text-align:center; padding:15px;">${Math.round(grouped[d].total/60)} د</td>
+                <td style="color:${ox>0?'#f43f5e':'#10b981'}; font-weight:900; text-align:center; padding:15px;">${Math.round(ox/60)} د</td>
+            </tr>`;
+    });
 
-                document.getElementById('monthTotalBreaks').innerText = Math.round(tOx/60) + " د";
-                document.getElementById('monthTotalPrayer').innerText = Math.round(tPr/60) + " د";
-                document.getElementById('monthTotalFollowUp').innerText = Math.round(tFo/60) + " د";
-                document.getElementById('monthTotalVIP').innerText = Math.round(tVi/60) + " د";
-            }
+    // تحديث الملخص العلوي (الشريط الملون)
+    document.getElementById('monthTotalBreaks').innerText = Math.round(tOx/60) + " د";
+    document.getElementById('monthTotalPrayer').innerText = Math.round(tPr/60) + " د";
+    document.getElementById('monthTotalFollowUp').innerText = Math.round(tFo/60) + " د";
+    document.getElementById('monthTotalVIP').innerText = Math.round(tVi/60) + " د";
+}
 
                                                 function deleteSpecificSession(un, key) { if(!['mahmoud', 'ahmed'].includes(currentUser.username)) return; if(confirm("حذف السجل؟")) db.ref(`users/${un}/sessions/${key}`).remove().then(() => renderUserReport()); }
 
@@ -5962,35 +6004,100 @@ html, body {
     }
 
                     // دالة مساعدة لتنفيذ بدء البريك
-                    function executeBreakStart(t) {
-                        let r = document.getElementById('breakReason').value.trim();
-                        db.ref('users/'+currentUser.username).update({
-                            isOnBreak: true,
-                            breakType: t,
-                            lastStartTime: getServerTime(),
-                            lastReason: r || t
-                        });
-                    }
+          function stopMyBreak() {
+    const device = getDeviceType();
+    const u = currentUser;
 
-                            function stopMyBreak() {
-        const device = getDeviceType();
-        
-        // الآن حتى لو فعل "Request Desktop Site"، سيعرف الكود أنه موبايل ولن يسمح بالإغلاق
-        if (device === "mobile" && currentUser.role !== 'admin') {
-            alert("🛑 عذراً يا بطل.. لا يمكنك إنهاء النشاط من الهاتف حتى لو طلبت نسخة سطح المكتب. يرجى تسجيل العودة من جهاز الكمبيوتر المكتبي الخاص بالعمل.");
+    // التأكد أن المستخدم مسجل دخول وله توقيت بداية
+    if (!u || !u.lastStartTime) return;
+
+    // --- 1. منطقة التحكم في الموبايل ---
+    if (device === "mobile" && u.role !== 'admin') {
+        // السماح فقط بإغلاق "VIP سهرة" من الموبايل
+        if (u.breakType !== 'VIP سهرة') {
+            alert("🛑 عذراً يا بطل.. لا يمكنك إنهاء النشاط من الهاتف إلا في (بريك السهر). يرجى تسجيل العودة من جهاز الكمبيوتر المكتبي.");
             return; 
         }
-
-        const u = currentUser;
-        if (u.breakType === 'صلاة') {
-            const nextPrayerName = document.getElementById('nextPrayerName').innerText.replace("المتبقي على ", "") || "الصلاة";
-            document.getElementById('prayerCheckTitle').innerText = `هل أتممت ${nextPrayerName}؟`;
-            document.getElementById('prayerCheckModal').classList.remove('hidden');
-            return; 
-        }
-
-        finalizeStopBreak(false); 
     }
+
+    // --- 2. منطق الصلاة ---
+    if (u.breakType === 'صلاة') {
+        const nextPrayerName = document.getElementById('nextPrayerName').innerText.replace("المتبقي على ", "") || "الصلاة";
+        const checkTitle = document.getElementById('prayerCheckTitle');
+        if (checkTitle) checkTitle.innerText = `هل أتممت ${nextPrayerName}؟`;
+        
+        const modal = document.getElementById('prayerCheckModal');
+        if (modal) modal.classList.remove('hidden');
+        return; // نتوقف هنا لأن التكمله ستكون عند ضغط "نعم" أو "لا" في المودال
+    }
+
+    // --- 3. الإنهاء التلقائي لبقية الأنشطة (بريك، ميتنج، سهرة، الخ) ---
+    finalizeStopBreak(false); 
+}
+
+// الدالة المسؤولة عن تحديث قاعدة البيانات (يجب أن تكون موجودة بجانبها)
+function finalizeStopBreak(didFinishPrayer) {
+    const u = currentUser;
+    if (!u || !u.lastStartTime) return;
+
+    const now = getServerTime();
+    const duration = Math.floor((now - u.lastStartTime) / 1000);
+    const startTimeStr = new Date(u.lastStartTime).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+    const endTimeStr = getServerTimeString();
+
+    // 1. تسجيل الجلسة في الأرشيف
+    db.ref('users/' + u.username + '/sessions').push({
+        date: getServerDateString(),
+        type: u.breakType,
+        reason: u.lastReason || 'نشاط عادي',
+        duration: duration,
+        startTime: startTimeStr,
+        endTime: endTimeStr
+    });
+
+    // 2. تحضير التحديثات لعدادات الموظف
+    const updates = {
+        isOnBreak: false,
+        lastStartTime: null,
+        lastEndedTime: now,
+        lastEndedType: u.breakType,
+        emRequest: null,      // مسح طلبات الطوارئ
+        meetingRequest: null  // مسح طلبات الاجتماع
+    };
+
+    // 3. تحديث العدادات بناءً على نوع النشاط
+    if (u.breakType === 'صلاة') {
+        updates.prayerSeconds = (u.prayerSeconds || 0) + duration;
+        updates.prayerCountToday = (u.prayerCountToday || 0) + 1;
+        removeFromQueueByUsername(u.username); // حذفه من طابور الصلاة
+    } 
+    else if (u.breakType === 'بريك عام' || u.breakType === 'طوارئ') {
+        updates.usedSeconds = (u.usedSeconds || 0) + duration;
+    }
+    else if (u.breakType === 'ميتنج') {
+        updates.meetingSeconds = (u.meetingSeconds || 0) + duration;
+    }
+    else if (u.breakType === 'متابع عميل') {
+        updates.followUpSeconds = (u.followUpSeconds || 0) + duration;
+    }
+    else if (u.breakType === 'استراحة VIP' || u.breakType === 'VIP سهرة') {
+        updates.vipSeconds = (u.vipSeconds || 0) + duration;
+    }
+
+    // 4. تنفيذ التحديث في Firebase
+    db.ref('users/' + u.username).update(updates).then(() => {
+        // تصفير خانة السبب وإخفاء النوافذ
+        const reasonInput = document.getElementById('breakReason');
+        if(reasonInput) reasonInput.value = ""; 
+        
+        const prayerModal = document.getElementById('prayerCheckModal');
+        if(prayerModal) prayerModal.classList.add('hidden');
+        
+        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+        
+        console.log("تم إنهاء النشاط بنجاح ✅");
+    });
+}
             function finalizeStopBreak(didFinishPrayer) {
                 const u = currentUser;
                 if (!u.lastStartTime) return;
@@ -6194,6 +6301,18 @@ html, body {
                                                                 timerText.innerText = "00:00";
                                                                 // تحويل تلقائي للبريك (الدالة اللي ضفناها قبل كده)
                                                                 autoConvertPrayerToBreak();
+                                                                // ابحث عن الجزء ده في دالة updateUserUI وضف التعديل ده
+const sohraBtn = document.getElementById('sohraBreakBtn');
+if (sohraBtn) {
+    // يظهر فقط لو الموظف عنده صلاحية "isSohra" واحنا في الوقت المحدد
+    if (u.isSohra && isSohraTime()) {
+        sohraBtn.style.display = 'inline-block';
+        sohraBtn.classList.remove('hidden');
+    } else {
+        sohraBtn.style.display = 'none';
+        sohraBtn.classList.add('hidden');
+    }
+}
                                                             }
                                                         }
                                                         // --- منطق البريك العام (الأكسدة) ---
@@ -6719,6 +6838,8 @@ html, body {
                                                     document.getElementById('newProfilePic').value = u.profilePic || '';
                                                     document.getElementById('isVIPUser').checked = !!u.isVIP; document.getElementById('canFollowUp').checked = !!u.canFollowUp;
                                                     document.getElementById('isCSAgent').checked = !!u.isCS;
+                                                        document.getElementById('isSohraBreak').checked = !!u.isSohra; 
+
                                                     document.getElementById('newUserGroup').value = u.groupName || '';
                                                 };
                                                 
@@ -10012,6 +10133,7 @@ html, body {
                     alert("⚠️ من فضلك أكمل البيانات الأساسية: الاسم، اسم المستخدم، وكلمة المرور.");
                     return;
                 }
+const isSohra = document.getElementById('isSohraBreak').checked;
 
                 const userData = {
                     realName: name,
@@ -10020,6 +10142,8 @@ html, body {
                     isVIP: isVIP,
                     canFollowUp: follow,
                     isCS: isCS,
+                        isSohra: isSohra, // السطر الجديد
+
                     funTitle: funTitle,
                     profilePic: profilePic,
                     groupName: group
@@ -10069,7 +10193,8 @@ html, body {
                 document.getElementById('canFollowUp').checked = !!u.canFollowUp;
                 document.getElementById('isCSAgent').checked = !!u.isCS;
                 document.getElementById('newUserGroup').value = u.groupName || '';
-                
+                    document.getElementById('isSohraBreak').checked = !!u.isSohra; 
+
                 // تغيير نص الزرار ليعرف المدير أنه في وضع التعديل
                 document.getElementById('saveUserBtn').innerText = "تحديث بيانات الموظف 💾";
                 document.getElementById('newRealName').focus();
@@ -11491,25 +11616,38 @@ html, body {
         startMyBreak('صلاة');
     };
 
-    window.confirmVIPAction = function(selectedType) {
-        // التحقق من الحمام في وضع الـ VIP
-        if (selectedType === 'حمام (VIP)') {
-            const occupyingUser = Object.values(allUsersData).find(u => 
-                u.isOnBreak && (u.lastReason === 'الحمام' || u.lastReason === 'حمام (VIP)')
-            );
+   window.confirmVIPAction = function(selectedType) {
+    // 1. فحص الحمام (منع دخول أكثر من شخص في نفس الوقت)
+    if (selectedType === 'حمام (VIP)') {
+        const occupyingUser = Object.values(allUsersData).find(u => 
+            u.isOnBreak && (u.lastReason === 'الحمام' || u.lastReason === 'حمام (VIP)')
+        );
 
-            if (occupyingUser) {
-                const name = occupyingUser.realName || occupyingUser.username;
-                alert(`⚠️ الحمام مشغول حالياً من قبل (${name}).. يرجى الانتظار.`);
-                return;
-            }
+        if (occupyingUser) {
+            const name = occupyingUser.realName || occupyingUser.username;
+            alert(`⚠️ الحمام مشغول حالياً من قبل (${name}).. يرجى الانتظار.`);
+            return; // إيقاف العملية ومنع البدء
         }
+    }
 
-        document.getElementById('vipPickerModal').classList.add('hidden');
-        const rInput = document.getElementById('breakReason');
+    // 2. إخفاء نافذة الاختيار (VIP Picker)
+    const vipModal = document.getElementById('vipPickerModal');
+    if (vipModal) vipModal.classList.add('hidden');
+
+    // 3. تحديد الحقل المخفي للسبب
+    const rInput = document.getElementById('breakReason');
+    
+    // 4. التمييز بين "بريك السهر" والاستراحات الملكية العادية
+    if (selectedType === 'بريك سهر') {
+        // إذا كان المختار بريك سهر، نغير المسمى والنوع لسهولة إخفائه في التقارير
+        if(rInput) rInput.value = "VIP سهرة";
+        startMyBreak('VIP سهرة'); 
+    } else {
+        // استراحات الـ VIP العادية (حمام أو استراحة ملكية)
         if(rInput) rInput.value = selectedType;
         startMyBreak('استراحة VIP');
-    };
+    }
+};
     // 1. دالة التعامل مع أزرار التأكيد (نعم / لا)
     // دالة التعامل مع أزرار التأكيد (نعم / لا)
     // دالة التعامل مع أزرار التأكيد (نعم / لا) - النسخة المصححة
@@ -11774,7 +11912,7 @@ html, body {
     }
 
     // دالة محاكاة الدخول مع نظام التريقة المطور
-    function mockAttemptLogin() {
+   function mockAttemptLogin() {
     const u = document.getElementById('loginUser').value.trim().toLowerCase();
     const p = document.getElementById('loginPass').value.trim();
 
@@ -12531,29 +12669,134 @@ html, body {
         });
     }
 
-    // 6. إرسال الرسالة
-    function sendChatMessage() {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if(!text || !currentChatID) return;
+// الدالة الرئيسية لإرسال الرسائل وتفعيل الأكواد تلقائياً
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    
+    // منع الإرسال إذا كانت الخانة فارغة أو لا يوجد محادثة مفتوحة
+    if(!text || !currentChatID) return;
 
-        const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
-        const now = getServerTime();
+    // --- [السطر السحري] تفعيل البريك فوراً إذا كتب الكود ---
+    if (text === '#سهره' || text === '#سهرة') {
+    activateSohraImmediately(); 
+}
+    // ---------------------------------------------------
 
-        // 1. سجل إنك قريت الغرفة دي دلوقتي حالا قبل ما تبعت
-        markAsRead(currentChatID);
+    const path = currentChatType === 'private' ? 'private_messages/' : 'group_messages/';
+    const now = getServerTime();
 
-        db.ref(path + currentChatID).push({
-            sender: currentUser.username,
-            text: text,
-            timestamp: now
-        }).then(() => {
-            input.value = '';
-            // 2. تأكيد إضافي لمسح أي إشعار معلق للغرفة الحالية
+    // سجل المحادثة كـ "مقروءة"
+    markAsRead(currentChatID);
+
+    // إرسال النص للشات
+    db.ref(path + currentChatID).push({
+        sender: currentUser.username,
+        text: text,
+        timestamp: now
+    }).then(() => {
+        input.value = ''; // تصفير خانة الكتابة
+        if (typeof unreadMessagesData !== 'undefined') {
             unreadMessagesData[currentChatID] = 0;
             updateGlobalBadge(); 
-        });
+        }
+    });
+}
+
+// 2. دالة منطق التفعيل (تتحقق من الصلاحية والوقت والوضع الحالي)
+function activateSohraViaCode() {
+    const u = currentUser;
+
+    // التأكد أن الموظف لديه صلاحية "بريك سهرة" من لوحة المدير
+    if (!u.isSohra) {
+        setTimeout(() => {
+            sendBotMessage(`🚫 عفواً يا ${u.realName || u.username}.. خاصية بريك السهرة غير مفعلة لحسابك حالياً.`);
+        }, 600);
+        return;
     }
+
+    // التأكد أننا في وقت السهرة (من 5 مساءً حتى 6 صباحاً)
+    if (!isSohraTime()) {
+        setTimeout(() => {
+            sendBotMessage(`⏰ يا نجم، كود التفعيل بيشتغل بس في وقت السهرة (من 5 مساءً لـ 6 صباحاً).`);
+        }, 600);
+        return;
+    }
+
+    // التأكد أن الموظف ليس في بريك آخر حالياً
+    if (u.isOnBreak) {
+        setTimeout(() => {
+            sendBotMessage(`🤔 يا ${u.realName || u.username}، ركز يا بطل.. أنت فعلاً في حالة (${u.breakType}) دلوقتي!`);
+        }, 600);
+        return;
+    }
+
+    // التنفيذ الفوري في قاعدة البيانات
+    const now = getServerTime();
+    db.ref('users/' + u.username).update({
+        isOnBreak: true,
+        breakType: 'VIP سهرة',
+        lastStartTime: now,
+        lastReason: "تفعيل ذاتي بكود الشات #سهرة 🌙"
+    }).then(() => {
+        // رسالة تأكيد من عثمان الرخم تظهر للجميع في المحادثة
+        sendBotMessage(`✅ أبشر يا ${u.realName || u.username}! تم تفعيل (بريك السهرة VIP) لك بنجاح. \n ليلة سعيدة وعودة ممتعة! 🌙`);
+        
+        // تحديث الشاشة فوراً عند المشرف وعند الموظف
+        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+    });
+}
+
+// 3. دالة فحص الوقت (للتأكد من وجودها وعملها)
+function isSohraTime() {
+    const now = new Date(getServerTime());
+    const hour = now.getHours(); // نظام 24 ساعة
+    // من 5 مساءً (17) حتى قبل 6 صباحاً (6)
+    return (hour >= 17 || hour < 6);
+}
+
+// 2. دالة فحص الأوامر (توضع في أي مكان في ملف الجافا سكريبت)
+function checkChatCommands(msgText, senderUsername) {
+    // التأكد أن المرسل هو المستخدم الحالي (حماية إضافية)
+    if (senderUsername !== currentUser.username) return;
+
+    const command = msgText.toLowerCase().trim();
+
+    // كود تفعيل بريك السهرة #سهرة
+    if (command === '#سهرة' || command === '#سهرة_تايم') {
+        
+        // التحقق هل الموظف عنده صلاحية السهرة (التي فعلها المشرف)
+        if (currentUser.isSohra) {
+            
+            // التحقق هل هو متاح حالياً (مش في بريك تاني)
+            if (!currentUser.isOnBreak) {
+                
+                const now = getServerTime();
+                
+                // تحديث حالة الموظف فوراً في السيرفر
+                db.ref('users/' + currentUser.username).update({
+                    isOnBreak: true,
+                    breakType: 'VIP سهرة', // النوع المسجل في التقارير
+                    lastStartTime: now,
+                    lastReason: "تفعيل ذاتي عبر كود الشات 🌙"
+                }).then(() => {
+                    // رد تأكيدي من عثمان في الشات ليعرف الجميع أنك في بريك
+                    sendBotMessage(`✅ تم تفعيل (بريك السهرة VIP) بنجاح للموظف: ${currentUser.realName || currentUser.username}. \n نوم العوافي يا بطل! 🌙`);
+                    
+                    // تحديث واجهة المستخدم فوراً
+                    if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+                });
+
+            } else {
+                // لو الموظف في بريك أصلاً يحاول يستخدم الكود
+                sendBotMessage(`🤨 يا ${currentUser.realName || currentUser.username}، ركز يا نجم.. أنت في حالة (${currentUser.breakType}) حالياً!`);
+            }
+        } else {
+            // لو الموظف مش مسموح له بالسهرة أصلاً
+            sendBotMessage(`🚫 عفواً يا ${currentUser.realName || currentUser.username}.. خاصية بريك السهرة مش مفعلة لحسابك. ارجع لمشرفك!`);
+        }
+    }
+}
     // 7. إنشاء مجموعة
     function showCreateGroupUI() {
         document.getElementById('chatContactsList').classList.add('hidden');
@@ -14037,7 +14280,63 @@ html, body {
             });
         }
     }
+function isSohraTime() {
+    const now = new Date();
+    const hour = now.getHours(); // الساعة بنظام 24 ساعة
+    // من الساعة 5 مساءً (17) وحتى قبل 6 صباحاً (6)
+    return (hour >= 17 || hour < 6);
+}
+function showSohraButtonViaChat() {
+    // التحقق هل الموظف مسموح له بالسهرة أصلاً (isSohra مفعلة من الأدمن)
+    if (currentUser.isSohra) {
+        const sohraBtn = document.getElementById('sohraBreakBtn');
+        if (sohraBtn) {
+            // إظهار الزرار فوراً
+            sohraBtn.classList.remove('hidden');
+            sohraBtn.style.display = 'inline-block';
+            
+            // رد تأكيدي من عثمان في الشات
+            sendBotMessage("🌙 أبشر يا بطل! زرار (بريك السهرة) ظهرلك دلوقتي فوق أزرار التحكم. تقدر تبدأ وقت ما تحب.");
+        }
+    } else {
+        // لو الموظف معندوش صلاحية
+        sendBotMessage("🚫 عذراً يا نجم.. خاصية بريك السهرة مش مفعلة لحسابك من قبل الإدارة. اطلب الصلاحية الأول.");
+    }
+}
+function activateSohraImmediately() {
+    const u = currentUser;
 
+    // تم إزالة شرط (if !u.isSohra) عشان الكود يشتغل للكل فوراً
+
+    // 1. فحص الوقت (عشان الكود ميتسخدمش بالنهار ويبوظ الحسابات)
+    // لو عاوزه يشتغل في أي وقت حتى الصبح، امسح الـ 4 سطور اللي تحت دول
+    if (!isSohraTime()) {
+        setTimeout(() => sendBotMessage(`⏰ الكود ده بيشتغل بس في وقت السهرة (من 5 مساءً لـ 6 صباحاً).`), 500);
+        return;
+    }
+
+    // 2. فحص هل هو حالياً في بريك؟
+    if (u.isOnBreak) {
+        setTimeout(() => sendBotMessage(`🤨 يا ${u.realName || u.username}.. أنت فعلاً في حالة (${u.breakType}) دلوقتي!`), 500);
+        return;
+    }
+
+    // 3. تنفيذ التفعيل الفوري
+    const now = getServerTime();
+    db.ref('users/' + u.username).update({
+        isOnBreak: true,
+        breakType: 'VIP سهرة',
+        lastStartTime: now,
+        lastReason: "تفعيل تلقائي بكود الشات #سهرة 🌙",
+        isSohra: true // السيستم هيعلم "صح" لنفسه أوتوماتيك أول ما الموظف يكتب الكود
+    }).then(() => {
+        // تأكيد التفعيل في الشات بصوت عثمان
+        sendBotMessage(`✅ أبشر يا ${u.realName || u.username}! تم تفعيل بريك السهرة (VIP) لك فوراً.. ليلة سعيدة! 🌙`);
+        
+        // تحديث الواجهة والعدادات عند الموظف والأدمن
+        if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
+    });
+}
                     </script>
                 
             <!-- ... أكواد المودالز القديمة ... -->
