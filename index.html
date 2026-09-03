@@ -3,7 +3,7 @@
                                             <html lang="ar" dir="rtl">
                                             <head>
                         <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
                         <!-- تم تحديث هذا السطر للسماح بعمل المكتبات -->
             <meta http-equiv="Content-Security-Policy" content="default-src * data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval'; script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob: 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: ; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline'; media-src * blob: data:;">            <title>ELSHAMAA | إدارة البريك</title>
                     <!-- كود تحويل الموقع لتطبيق (PWA) -->
@@ -2162,6 +2162,53 @@
         from { transform: translateY(20px) scale(0.9); opacity: 0; }
         to { transform: translateY(0) scale(1); opacity: 1; }
     }
+    /* منع الاهتزاز ومنع السكرول بالعرض نهائياً */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    /* ده بيمنع الـ "Elastic Scrolling" اللي بيخلي الشاشة تتهز في الآيفون */
+    position: relative;
+    height: auto;
+    touch-action: pan-y; /* بيسمح بالسكرول لفوق وتحت بس وبيمنع الهز يمين وشمال */
+}
+
+* {
+    box-sizing: border-box; /* عشان الـ Padding ميزودش عرض العناصر ويبوظ الموبايل */
+}
+
+/* تحسين أداء الموبايل: إلغاء الـ Aura المتحركة لأنها تقيلة جداً على المعالج */
+@media (max-width: 768px) {
+    .aura {
+        display: none !important; /* إلغاء الخلفيات المتحركة لتسريع الموبايل ومنع الهز */
+    }
+    
+    .container {
+        width: 100% !important;
+        margin: 5px auto !important;
+        padding: 15px 10px !important;
+        border-radius: 20px !important;
+    }
+
+    /* تكبير الخط في المدخلات لمنع الـ Auto Zoom في الآيفون اللي بيعمل هزة */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* تعديل الشبكة (Grid) لتكون عمود واحد فقط لمنع ضغط العناصر */
+    .employee-hero-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    /* ضبط الجداول عشان متخرجش برة الشاشة */
+    .table-responsive {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+}
     
 
                                                 </style>
@@ -4334,27 +4381,30 @@
 
                                                 const MANAGERS = ['mahmoud', 'bo', 'ahmed'];
 
-                                         function getDeviceType() {
-    const ua = navigator.userAgent;
-    
-    // فحص اللمس المتعدد (ميزة أساسية في الموبايل والتابلت)
-    const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+                                            function getDeviceType() {
+        const ua = navigator.userAgent;
+        
+        // فحص إذا كان الجهاز يدعم اللمس المتعدد (ميزة أساسية في الموبايل والتابلت وغير موجودة في الـ PC العادي)
+        const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
 
-    const isMobileUA = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle/i.test(ua);
-    const isTabletUA = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
+        // فحص الموبايل والتابلت من خلال اسم المتصفح
+        const isMobileUA = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua);
+        const isTabletUA = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
 
-    // حتى لو طلب "Desktop Site"، إذا كان فيه لمس فهو غالباً موبايل
-    if (isMobileUA || isTabletUA || (isTouchDevice && !ua.includes("Windows NT") && !ua.includes("Macintosh"))) {
-        return "mobile";
+        // المنطق الجديد: 
+        // حتى لو طلب "Desktop Site"، إذا كان الجهاز يدعم اللمس (Touch) فهو موبايل/تابلت وليس PC
+        if (isMobileUA || isTabletUA || (isTouchDevice && !ua.includes("Windows NT") && !ua.includes("Macintosh"))) {
+            return "mobile";
+        }
+        
+        // في حالة الـ iPhone "Request Desktop Site" المتصفح يدعي أنه Macintosh
+        // لكننا نتأكد من اللمس (iPhones have at least 5 touch points)
+        if (ua.includes("Macintosh") && navigator.maxTouchPoints > 1) {
+            return "mobile"; 
+        }
+
+        return "desktop";
     }
-    
-    // حالة خاصة للايفون في وضع سطح المكتب
-    if (ua.includes("Macintosh") && navigator.maxTouchPoints > 1) {
-        return "mobile"; 
-    }
-
-    return "desktop";
-}
 
                                                 const localLoadTime = Date.now();
                                                 db.ref('refreshSignal').on('value', (snap) => {
@@ -4438,7 +4488,29 @@
                                                     }
                                                 }
 
-       
+        // الاستماع للرسائل الجديدة (نسخة مصلحة تمنع الصوت في الرسائل الصامتة)
+    db.ref('broadcasts').limitToLast(50).on('value', (snap) => { 
+            if (isInitialLoad) return; 
+
+            const b = snap.val();
+            const bKey = snap.key;
+
+            if (currentUser && currentUser.role !== 'admin') {
+                let forMe = (!b.target || b.target === 'all');
+                if(!forMe) {
+                    let targets = Array.isArray(b.target) ? b.target : [b.target];
+                    if(targets.includes(currentUser.username)) forMe = true;
+                }
+
+                if(forMe) {
+                    showBroadcastOverlay(b);
+                    // التعديل هنا: تشغيل الصوت فقط إذا لم تكن الرسالة صامتة
+                    if (soundActive && !b.silent) { 
+                        document.getElementById('broadcastSound').play().catch(e => {});
+                    }
+                }
+            }
+        });
 
                                                 // تحديث السجل فقط عند حدوث أي تغيير (إضافة أو حذف) بدون صوت
                                                 // متغير عالمي لحفظ الرسايل في الذاكرة
@@ -6449,48 +6521,48 @@
                                                         c > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
                                                     }
                                                 }
-                 function endDay() {
-    if (!MANAGERS.includes(currentUser.username)) {
-        alert("⛔ عذراً، هذه الصلاحية خاصة بالمشرفين فقط.");
-        return;
+                            function endDay() {
+        if (!MANAGERS.includes(currentUser.username)) {
+            alert("⛔ عذراً، هذه الصلاحية خاصة بالمشرفين فقط.");
+            return;
+        }
+
+        if(confirm("⚠️ هل أنت متأكد من تصفير العدادات وتسجيل خروج الموظفين من أجهزة الكمبيوتر؟")) {
+            logDeletionAction("تصفير اليوم (End Day)", "الكل", "تم تصفير كافة العدادات وعمل Logout لأجهزة الـ PC");
+
+            const updates = {};
+            const logoutTime = getServerTime(); // وقت الإشارة
+
+            Object.keys(allUsersData).forEach(un => {
+                if(!MANAGERS.includes(un)) {
+                    // تصفير العدادات العادية
+                    updates[`users/${un}/usedSeconds`] = 0;
+                    updates[`users/${un}/prayerSeconds`] = 0;
+                    updates[`users/${un}/prayerLimit`] = 0;
+                    updates[`users/${un}/prayerCountToday`] = 0;
+                    updates[`users/${un}/meetingSeconds`] = 0;
+                    updates[`users/${un}/followUpSeconds`] = 0;
+                    updates[`users/${un}/vipSeconds`] = 0;
+                    updates[`users/${un}/isOnBreak`] = false;
+                    updates[`users/${un}/lastStartTime`] = null;
+                    updates[`users/${un}/otRequest`] = null;
+                    updates[`users/${un}/emRequest`] = null;
+                    updates[`users/${un}/meetingRequest`] = null;
+                    updates[`users/${un}/permRequest`] = null;
+
+                    // --- السطر الجديد: إرسال إشارة تسجيل الخروج ---
+                    updates[`users/${un}/logoutSignal`] = logoutTime; 
+                }
+            });
+
+            updates['settings/prayerOpen'] = false;
+
+            db.ref().update(updates).then(() => {
+                triggerGlobalRefresh();
+                alert("✅ تم تصفير اليوم وتسجيل خروج الموظفين من أجهزة الـ PC بنجاح.");
+            });
+        }
     }
-
-    if(confirm("⚠️ هل أنت متأكد من تصفير العدادات وتسجيل خروج الموظفين من أجهزة الكمبيوتر؟")) {
-        logDeletionAction("تصفير اليوم (End Day)", "الكل", "تم تصفير كافة العدادات وعمل Logout لأجهزة الـ PC");
-
-        const updates = {};
-        const logoutTime = getServerTime(); 
-
-        Object.keys(allUsersData).forEach(un => {
-            if(!MANAGERS.includes(un)) {
-                // تصفير العدادات والبيانات في القاعدة
-                updates[`users/${un}/usedSeconds`] = 0;
-                updates[`users/${un}/prayerSeconds`] = 0;
-                updates[`users/${un}/prayerLimit`] = 0;
-                updates[`users/${un}/prayerCountToday`] = 0;
-                updates[`users/${un}/meetingSeconds`] = 0;
-                updates[`users/${un}/followUpSeconds`] = 0;
-                updates[`users/${un}/vipSeconds`] = 0;
-                updates[`users/${un}/isOnBreak`] = false;
-                updates[`users/${un}/lastStartTime`] = null;
-                updates[`users/${un}/otRequest`] = null;
-                updates[`users/${un}/emRequest`] = null;
-                updates[`users/${un}/meetingRequest`] = null;
-                updates[`users/${un}/permRequest`] = null;
-
-                // إرسال إشارة تسجيل الخروج
-                updates[`users/${un}/logoutSignal`] = logoutTime; 
-            }
-        });
-
-        updates['settings/prayerOpen'] = false;
-
-        db.ref().update(updates).then(() => {
-            triggerGlobalRefresh();
-            alert("✅ تم تصفير اليوم. سيتم تسجيل خروج أجهزة الكمبيوتر حالاً.");
-        });
-    }
-}
                                                 function forceResetPrayerOnly() {
                                                     if(!confirm("هل تريد تصفير بيانات الصلاة لجميع الموظفين؟ (يستخدم في حالة تعليق العدادات)")) return;
 
@@ -11528,41 +11600,37 @@
             if (typeof triggerGlobalRefresh === "function") triggerGlobalRefresh();
         });
     };
-   function listenForRemoteLogout(username) {
-    if (MANAGERS.includes(username)) return; 
+    // مراقبة إشارة تسجيل الخروج الإجباري من الإدارة
+    function listenForRemoteLogout(username) {
+        if (MANAGERS.includes(username)) return; // المشرفين مش هيخرجوا
 
-    const logoutRef = db.ref(`users/${username}/logoutSignal`);
-    const loginTime = Date.now();
-
-    logoutRef.on('value', (snap) => {
-        const signalTime = snap.val();
+        const logoutRef = db.ref(`users/${username}/logoutSignal`);
         
-        // إذا كانت الإشارة جديدة (أرسلت بعد دخول الموظف)
-        if (signalTime && signalTime > (loginTime - 10000)) { 
-            
-            // فحص نوع الجهاز بدقة عالية
-            const device = getDeviceType(); 
-            
-            // فحص إضافي: هل الجهاز يدعم اللمس؟ (معظم أجهزة الموبايل تدعم 5 نقاط لمس على الأقل)
-            const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        // حفظ وقت الدخول عشان الموظف ما يخرجش أول ما يفتح لو اليوم مقفول قديم
+        const loginTime = Date.now();
 
-            // الشرط: إذا لم يكن موبايل، ولم يكن تابلت، ولا يدعم اللمس -> إذن هو كمبيوتر
-            if (device !== "mobile" && device !== "tablet" && !isTouch) {
-                console.log("🚨 جهاز كمبيوتر مكتشف: تنفيذ الخروج الإجباري.");
+        logoutRef.on('value', (snap) => {
+            const signalTime = snap.val();
+            
+            if (signalTime && signalTime > (loginTime - 10000)) { // لو الإشارة جديدة (بعد ما فتح بـ 10 ثواني)
+                const device = getDeviceType(); // جلب نوع الجهاز
                 
-                // مسح الإشارة حتى لا يخرج مرة أخرى عند محاولة الدخول
-                logoutRef.set(null); 
-                
-                alert("⏰ تم إقفال اليوم من قبل الإدارة. سيتم تسجيل خروج جهاز الكمبيوتر.");
-                logout(); 
-            } else {
-                // إذا كان موبايل، يمسح الإشارة فقط لكي لا تظهر الرسائل ولكنه يبقى داخل النظام
-                console.log("📱 موبايل مكتشف: تجاهل أمر الخروج.");
-                logoutRef.set(null);
+                // الشرط: لو الجهاز مش موبايل ومش تابلت (يعني كمبيوتر فقط)
+                if (device !== "mobile" && device !== "tablet") {
+                    console.log("🚨 تم استلام أمر تسجيل خروج إجباري للكمبيوتر...");
+                    
+                    // مسح الإشارة من الداتابيز عشان يعرف يدخل تاني
+                    logoutRef.set(null); 
+                    
+                    // تنفيذ تسجيل الخروج
+                    alert("⏰ تم إقفال اليوم من قبل الإدارة. سيتم تسجيل خروجك الآن.");
+                    logout(); 
+                } else {
+                    console.log("📱 الموظف فاتح من موبايل، لن يتم تسجيل الخروج.");
+                }
             }
-        }
-    });
-}
+        });
+    }
     // دالة تحديث قائمة الموظفين في لوحة التميز والبث
     function updateBroadcastTargets() {
         const select = document.getElementById('broadcastTarget');
@@ -11707,34 +11775,22 @@
 
     // دالة محاكاة الدخول مع نظام التريقة المطور
     function mockAttemptLogin() {
-        const u = document.getElementById('loginUser').value.trim().toLowerCase();
-        const p = document.getElementById('loginPass').value.trim();
+    const u = document.getElementById('loginUser').value.trim().toLowerCase();
+    const p = document.getElementById('loginPass').value.trim();
 
-        // استدعاء المنطق الأصلي بتاعك
-        if (allUsersData[u] && allUsersData[u].password === p) {
-            attemptLogin(); // دالة الدخول الأصلية في ملفك
-        } else {
-            // فشل -> تريقة
-            const card = document.getElementById('loginCard');
-            const mouth = document.getElementById('workerMouth');
-            
-            // 1. هزة الكارت
-            card.classList.add('shake-card');
-            setTimeout(() => card.classList.remove('shake-card'), 500);
-
-            // 2. تريقة عثمان
-            showBubble(roasts[Math.floor(Math.random() * roasts.length)]);
-            document.getElementById('roastBubble').style.background = "#ef4444"; // قلب أحمر من الغيظ
-
-            // 3. شكل بقه يتغير لضحكة تريقة
-            mouth.setAttribute('d', 'M90 95 Q100 115 110 95');
-            
-            setTimeout(() => {
-                mouth.setAttribute('d', 'M95 100 Q100 105 105 100');
-                document.getElementById('roastBubble').style.background = "#6366f1";
-            }, 2000);
-        }
+    if (allUsersData[u] && allUsersData[u].password === p) {
+        attemptLogin();
+    } else {
+        const card = document.getElementById('loginCard');
+        card.classList.add('shake-card');
+        // السطر ده مهم جداً عشان يوقف الهزة بعد نص ثانية
+        setTimeout(() => {
+            card.classList.remove('shake-card');
+        }, 500);
+        
+        showBubble(roasts[Math.floor(Math.random() * roasts.length)]);
     }
+}
     let currentChatRecipient = null;
     let chatListener = null;
 
