@@ -119,61 +119,37 @@ const firebaseConfig = {
     projectId: "brak-nagaf-v2",
     storageBucket: "brak-nagaf-v2.firebasestorage.app",
     messagingSenderId: "637473406996",
-    appId: "1:637473406996:web:4c6538e86dee9cb4c72701",
-    measurementId: "G-82VDNF5M0L"
+    appId: "1:637473406996:web:4c6538e86dee9cb4c72701"
 };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- دالة فحص الوصول الموحدة والمحسنة ---
 function checkAccess() {
-    const user = localStorage.getItem('break_sys_user');
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // 1. التحقق من أن الجهاز موبايل
-    if (!isMobile) {
-        document.getElementById('mobileOnlyScreen').style.display = 'flex';
-        return;
-    }
-
-    // 2. التحقق من وجود اسم مستخدم مسجل
-    if (!user) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    const managers = ['mahmoud', 'bo', 'ahmed'];
-
-    // 3. مراقبة التغييرات في قاعدة البيانات لحظياً
-    db.ref().on('value', snap => {
-        const data = snap.val();
-        if (!data) return; // انتظر حتى تحميل البيانات
-
-        // قراءة إعدادات السيرفر العامة
-        const globalSettings = data.gameSettings || { allowAll: false };
-        // قراءة بيانات المستخدم الحالي
-        const userData = data.users ? data.users[user] : null;
+    if(!isMobile) { document.getElementById('mobileOnlyScreen').style.display='flex'; return; }
+    
+    const user = localStorage.getItem('break_sys_user');
+    if(!user) { window.location.href = 'index.html'; return; }
+    
+    // مراقبة الوصول العام + وصول المستخدم في نفس الوقت
+    db.ref('gameSettings/allowAll').on('value', globalSnap => {
+        const isGlobalAllowed = globalSnap.val();
         
-        // الشرط النهائي للدخول:
-        // (إدمن) أو (الفتح للجميع مفعل) أو (المستخدم حالياً في وضع بريك)
-        const canEnter = managers.includes(user) || 
-                         globalSettings.allowAll === true || 
-                         (userData && userData.isOnBreak === true);
-
-        if (canEnter) {
-            // إظهار اللعبة وإخفاء أي رسائل منع
-            document.getElementById('mainApp').style.display = 'block';
-            // تتبع النشاط (أونلاين)
-            if (typeof trackActivity === 'function') trackActivity(user);
-        } else {
-            // منع الدخول وإرسال المستخدم لصفحة تسجيل الدخول
-            alert("عفواً، اللعبة متاحة فقط وقت البريك أو بإذن الإدارة");
-            window.location.href = 'index.html';
-        }
+        db.ref('users/' + user).on('value', userSnap => {
+            const userData = userSnap.val();
+            const managers = ['mahmoud', 'bo', 'ahmed']; // المشرفين يدخلون دائماً
+            
+            // شروط الدخول: (إذا كان مشرف) أو (إذا كان السيرفر مفتوح للكل) أو (إذا كان المستخدم عليه بريك)
+            if(managers.includes(user) || isGlobalAllowed || (userData && userData.isOnBreak)) {
+                document.getElementById('mainApp').style.display='block';
+            } else {
+                // إذا تم قفل الوصول وهو داخل اللعبة، يتم إخراجه
+                alert("عذراً، لا تملك صلاحية الدخول الآن. انتظر تفعيل البريك.");
+                window.location.href = 'index.html';
+            }
+        });
     });
 }
-
-// تشغيل الفحص فور تحميل الصفحة
 checkAccess();
 
 // --- منطق اللعبة ---
@@ -350,21 +326,6 @@ function setupGameUI() {
 function toggleReviewPanel() {
     document.getElementById('adminReviewPanel').classList.toggle('hidden');
 }
-// --- أضف هذا الجزء داخل كود اللعبة الأصلي ---
-
-function trackActivity(user) {
-    const activityRef = db.ref('active_players/' + user);
-    // تسجيل الدخول
-    activityRef.set({
-        name: user,
-        lastSeen: firebase.database.ServerValue.TIMESTAMP,
-        status: 'playing'
-    });
-    // مسح الاسم عند إغلاق الصفحة
-    activityRef.onDisconnect().remove();
-}
-
-
 </script>
 </body>
-</html>
+</html> 
