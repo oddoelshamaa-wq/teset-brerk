@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -126,23 +125,52 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// --- إعدادات الحماية والوصول المحدثة ---
 function checkAccess() {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if(!isMobile) { document.getElementById('mobileOnlyScreen').style.display='flex'; return; }
-    
     const user = localStorage.getItem('break_sys_user');
-    if(!user) { window.location.href = 'index.html'; return; }
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // 1. فحص هل الجهاز موبايل
+    if (!isMobile) {
+        document.getElementById('mobileOnlyScreen').style.display = 'flex';
+        return;
+    }
+
+    // 2. فحص هل المستخدم مسجل دخول
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // 3. مراقبة الصلاحيات من قاعدة البيانات بشكل حي
+    const managers = ['mahmoud', 'bo', 'ahmed'];
     
-    db.ref('users/' + user).on('value', snap => {
-        const d = snap.val();
-        const managers = ['mahmoud', 'bo', 'ahmed'];
-        if(managers.includes(user) || (d && d.isOnBreak)) {
-            document.getElementById('mainApp').style.display='block';
+    // مراقبة حالة السيرفر العامة وحالة المستخدم الخاصة في وقت واحد
+    db.ref().on('value', snap => {
+        const data = snap.val();
+        if (!data) return;
+
+        const globalSettings = data.gameSettings || { allowAll: false };
+        const userData = data.users ? data.users[user] : null;
+        
+        // الشرط الذهبي: (إدمن) أو (الكل مسموح له) أو (الموظف في بريك)
+        const hasAccess = managers.includes(user) || 
+                          globalSettings.allowAll === true || 
+                          (userData && userData.isOnBreak === true);
+
+        if (hasAccess) {
+            // السماح بدخول اللعبة
+            document.getElementById('mainApp').style.display = 'block';
+            trackActivity(user); // تتبع النشاط
         } else {
+            // منع الدخول وإظهار الرسالة
+            alert("عفواً، اللعبة متاحة فقط وقت البريك أو بإذن الإدارة");
             window.location.href = 'index.html';
         }
     });
 }
+
+// تشغيل الفحص فوراً
 checkAccess();
 
 // --- منطق اللعبة ---
