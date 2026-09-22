@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>اطلب الآن | تجربة فاخرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +14,6 @@
             --text-muted: #6e6e73;
             --border: #e5e5ea;
             --whatsapp: #25D366;
-            --whatsapp-dark: #128C7E;
             --blue: #007aff;
             --orange: #ff9500;
             --danger: #ff3b30;
@@ -25,15 +24,13 @@
             --shadow: rgba(0, 0, 0, 0.08);
         }
 
-        /* الألوان للوضع الليلي (Dark Mode) */
+        /* الألوان للوضع الليلي */
         body.dark-mode {
             --bg-color: #000000;
             --card-bg: #1c1c1e;
             --text-main: #f5f5f7;
             --text-muted: #98989d;
             --border: #2c2c2e;
-            --whatsapp: #25D366;
-            --whatsapp-dark: #128C7E;
             --blue: #0a84ff;
             --orange: #ff9f0a;
             --danger: #ff453a;
@@ -52,9 +49,9 @@
             line-height: 1.6;
             padding-bottom: 40px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* الهيدر */
         header {
             background-color: var(--card-bg);
             padding: 1.5rem 1rem;
@@ -67,106 +64,96 @@
             box-shadow: 0 2px 10px var(--shadow);
         }
         .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 500px; margin: 0 auto; }
-        header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text-main); }
+        header h1 { font-size: 1.6rem; font-weight: 800; }
         header p { color: var(--text-muted); font-size: 0.85rem; }
 
-        /* زرار الدارك مود */
         .theme-toggle {
-            background: var(--input-bg);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-main);
-            border: 1px solid var(--border);
+            background: var(--input-bg); border: 1px solid var(--border);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
         }
 
         .container { max-width: 480px; margin: 0 auto; padding: 0 15px; }
 
-        /* الكروت */
         .card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px var(--shadow);
-            border: 1px solid var(--border);
+            background-color: var(--card-bg); border-radius: 20px; padding: 20px;
+            margin-bottom: 1.5rem; box-shadow: 0 4px 15px var(--shadow); border: 1px solid var(--border);
         }
-        .section-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.2rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; }
 
-        /* بانر الشروط */
         .terms-banner {
-            background: var(--gold-bg);
-            border: 1px solid var(--gold-border);
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            background: var(--gold-bg); border: 1px solid var(--gold-border);
+            padding: 15px; border-radius: 16px; margin-bottom: 1.5rem; text-align: center;
         }
         .terms-banner h3 { font-size: 0.95rem; color: var(--gold-text); margin-bottom: 5px; font-weight: 800; }
-        .terms-banner p { font-size: 0.8rem; color: var(--text-main); font-weight: 600; opacity: 0.9; line-height: 1.4; }
+        .terms-banner p { font-size: 0.8rem; font-weight: 600; opacity: 0.9; line-height: 1.4; }
 
-        /* أزرار المناطق */
         .zones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .zone-btn {
-            padding: 14px; border: 2px solid var(--border); background: var(--card-bg); border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; color: var(--text-muted);
+            padding: 14px; border: 2px solid var(--border); background: var(--card-bg);
+            border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; color: var(--text-muted);
         }
-        .zone-btn.active {
-            background: var(--whatsapp); color: white; border-color: var(--whatsapp);
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-        }
+        .zone-btn.active { background: var(--whatsapp); color: white; border-color: var(--whatsapp); }
 
-        /* المنيو */
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .menu-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .menu-item:last-child { border-bottom: none; }
-        .item-img { width: 65px; height: 65px; border-radius: 14px; object-fit: cover; background-color: var(--input-bg); }
+        .item-img { width: 65px; height: 65px; border-radius: 14px; object-fit: cover; background-color: var(--input-bg); flex-shrink: 0; }
         .item-info { flex: 1; }
-        .item-info h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
-        .item-price { font-weight: 800; font-size: 1rem; color: var(--text-main); }
+        .item-info h3 { font-size: 1.05rem; font-weight: 700; }
+        .item-price { font-weight: 800; font-size: 1rem; }
         .item-price small { font-size: 0.7rem; color: var(--orange); font-weight: 700; display: block; margin-top: 2px; }
+        
+        .size-options { display: flex; gap: 8px; margin-top: 8px; }
+        .size-btn {
+            padding: 6px 12px; border: 1px solid var(--border); background: var(--input-bg);
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-muted);
+        }
+        .size-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
 
-        /* أزرار الكمية */
-        .qty-controls { display: flex; align-items: center; background: var(--input-bg); border-radius: 20px; padding: 5px; }
+        .item-note {
+            width: 100%; margin-top: 8px; padding: 8px 12px; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--input-bg); color: var(--text-main);
+            font-size: 0.85rem; font-weight: 600;
+        }
+        .item-note:focus { outline: none; border-color: var(--whatsapp); }
+        .item-note::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+        .qty-controls { display: flex; align-items: center; background: var(--input-bg); border-radius: 20px; padding: 5px; margin-top: 5px; }
         .qty-btn { background: var(--card-bg); border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; font-weight: 800; display: flex; align-items: center; justify-content: center; color: var(--whatsapp); box-shadow: 0 2px 4px var(--shadow); }
         .qty-btn:active { transform: scale(0.9); }
-        .qty-num { font-weight: 800; min-width: 28px; text-align: center; font-size: 1rem; color: var(--text-main); }
+        .qty-num { font-weight: 800; min-width: 28px; text-align: center; font-size: 1rem; }
 
-        /* المدخلات */
         .input-field {
-            width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 1rem; margin-bottom: 12px; background: var(--input-bg); color: var(--text-main); font-weight: 600;
+            width: 100%; padding: 14px; border: 2px solid transparent; border-radius: 14px;
+            font-size: 16px; margin-bottom: 12px; background: var(--input-bg); color: var(--text-main); font-weight: 600;
         }
-        .input-field:focus { outline: 2px solid var(--whatsapp); background: var(--card-bg); }
+        .input-field:focus { outline: none; border-color: var(--whatsapp); background: var(--card-bg); }
         .input-field::placeholder { color: var(--text-muted); opacity: 0.7; }
 
-        /* الأزرار */
-        .btn { width: 100%; padding: 18px; font-size: 1.1rem; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; display: block; margin-bottom: 12px; }
+        .btn { width: 100%; padding: 18px; font-size: 1.1rem; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; text-decoration: none; display: block; margin-bottom: 12px; }
         .btn-submit { background: var(--whatsapp); color: white; box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4); }
-        .btn-submit:active { transform: scale(0.98); }
         
         .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
-        .action-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); padding: 12px 5px; border-radius: 14px; font-weight: 700; text-align: center; text-decoration: none; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .action-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); padding: 12px 5px; border-radius: 14px; font-weight: 700; text-decoration: none; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
         .btn-new-order { background: transparent; color: var(--blue); border: 2px solid var(--blue); display: none; }
-
         .locked { opacity: 0.5; pointer-events: none; user-select: none; filter: grayscale(50%); }
 
+        /* تطوير شكل السلة (الفاتورة) */
         .cart-summary { background: var(--input-bg); border-radius: 14px; padding: 15px; margin-top: 15px; display: none; }
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
-        .cart-total { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; font-weight: 900; font-size: 1.1rem; color: var(--whatsapp); }
+        .invoice-section { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border); }
+        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
+        .invoice-row.total { font-size: 1.1rem; font-weight: 900; color: var(--text-main); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
+        .invoice-row.total span:last-child { color: var(--whatsapp); }
 
         .edit-banner { background: rgba(255, 149, 0, 0.1); color: var(--orange); padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 15px; display: none; border: 1px solid var(--orange); }
 
-        /* سجل الطلبات */
         .history-box { background: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px var(--shadow); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .history-header h4 { font-size: 1rem; color: var(--text-main); font-weight: 800; }
+        .history-header h4 { font-size: 1rem; font-weight: 800; }
         .history-id { font-size: 0.75rem; background: var(--input-bg); padding: 4px 8px; border-radius: 6px; color: var(--text-muted); font-weight: 700; }
-        .history-items { font-size: 0.85rem; color: var(--text-main); margin-bottom: 8px; background: var(--input-bg); padding: 10px; border-radius: 8px; border-right: 3px solid var(--whatsapp); }
+        .history-items { font-size: 0.85rem; margin-bottom: 8px; background: var(--input-bg); padding: 10px; border-radius: 8px; border-right: 3px solid var(--whatsapp); }
         .history-box.modified .history-items { border-right-color: var(--orange); }
         .history-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; }
         .reorder-btn { width: 100%; background: transparent; color: var(--blue); border: 1px solid var(--blue); padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.9rem; }
@@ -227,6 +214,7 @@
                 <div class="item-info">
                     <h3>برجر لحم</h3>
                     <div class="item-price">45 ج.م <small>+ خدمة التوصيل</small></div>
+                    <input type="text" class="item-note" placeholder="📝 ملاحظات (زيادة صوص، بدون بصل...)">
                 </div>
                 <div class="qty-controls">
                     <button class="qty-btn" onclick="changeQty(this, -1)">-</button>
@@ -238,8 +226,16 @@
             <div class="menu-item">
                 <img src="https://via.placeholder.com/65x65?text=بيتزا" alt="بيتزا" class="item-img">
                 <div class="item-info">
-                    <h3>بيتزا</h3>
-                    <div class="item-price">80 ج.م <small>+ خدمة التوصيل</small></div>
+                    <h3>بيتزا مارجريتا</h3>
+                    <div class="item-price" data-base-price="80"><span class="price-text">80 ج.م</span> <small>+ خدمة التوصيل</small></div>
+                    
+                    <div class="size-options">
+                        <button class="size-btn" onclick="selectSize(this, 'صغير', 80)">صغير (80)</button>
+                        <button class="size-btn active" onclick="selectSize(this, 'وسط', 120)">وسط (120)</button>
+                        <button class="size-btn" onclick="selectSize(this, 'كبير', 150)">كبير (150)</button>
+                    </div>
+
+                    <input type="text" class="item-note" placeholder="📝 ملاحظات (أطراف هشة، زيادة جبنة...)">
                 </div>
                 <div class="qty-controls">
                     <button class="qty-btn" onclick="changeQty(this, -1)">-</button>
@@ -248,36 +244,35 @@
                 </div>
             </div>
 
-            <div class="menu-item">
-                <img src="https://via.placeholder.com/65x65?text=مشروب" alt="مشروب" class="item-img">
-                <div class="item-info">
-                    <h3>مشروب غازي</h3>
-                    <div class="item-price">15 ج.م <small>+ خدمة التوصيل</small></div>
-                </div>
-                <div class="qty-controls">
-                    <button class="qty-btn" onclick="changeQty(this, -1)">-</button>
-                    <span class="qty-num">0</span>
-                    <button class="qty-btn" onclick="changeQty(this, 1)">+</button>
-                </div>
-            </div>
-
+            <!-- الفاتورة الجديدة -->
             <div class="cart-summary" id="cartSummary">
-                <div class="section-title" style="font-size: 1rem; margin-bottom: 10px;">🧾 سجل طلبك الحالي:</div>
+                <div class="section-title" style="font-size: 1rem; margin-bottom: 10px;">🧾 ملخص طلبك:</div>
                 <div id="cartItems"></div>
-                <div class="cart-total">
-                    <span>الإجمالي:</span>
-                    <span id="cartTotal">0 ج.م</span>
+                
+                <div class="invoice-section">
+                    <div class="invoice-row">
+                        <span>السعر الكلي للخدمة (منتجات):</span>
+                        <span id="cartSubtotal">0 ج.م</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span>خدمة التوصيل:</span>
+                        <span style="color: var(--orange); font-size: 0.8rem;">تحدد عند التأكيد</span>
+                    </div>
+                    <div class="invoice-row total">
+                        <span>المبلغ الإجمالي المستحق:</span>
+                        <span id="cartTotal">0 ج.م</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="card" id="detailsCard">
-            <div class="section-title">📝 خطوة 3: بياناتك وملاحظات الطلب</div>
+            <div class="section-title">📝 خطوة 3: بياناتك</div>
             <input type="text" id="customerName" class="input-field" placeholder="الاسم بالكامل">
             <input type="text" id="customerPhone" class="input-field" placeholder="رقم الهاتف">
-            <input type="text" id="customerLandmark" class="input-field" placeholder="أقرب علامة مميزة أو اسم الشارع (إجباري)">
+            <input type="text" id="customerLandmark" class="input-field" placeholder="أقرب علامة مميزة (إجباري)">
             <textarea id="customerAddress" class="input-field" style="min-height: 60px; resize: vertical;" placeholder="تفاصيل العنوان (عمارة، دور، شقة)"></textarea>
-            <textarea id="orderNotes" class="input-field" style="min-height: 60px; resize: vertical;" placeholder="ملاحظات الطلب (بدون مخلل، زيادة صوص...)"></textarea>
+            <textarea id="orderNotes" class="input-field" style="min-height: 60px; resize: vertical;" placeholder="ملاحظات عامة على الطلب"></textarea>
         </div>
 
         <button onclick="handleOrderAction()" class="btn btn-submit" id="actionBtn">
@@ -298,7 +293,6 @@
         let currentOrder = {};
         let currentOrderId = ""; 
 
-        // التحقق من الوضع الليلي عند فتح الموقع
         window.onload = function() {
             if(localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
@@ -307,12 +301,10 @@
             loadHistory();
         };
 
-        // دالة التبديل بين الوضع الليلي والنهاري
         function toggleTheme() {
             const body = document.body;
             const toggleBtn = document.querySelector('.theme-toggle');
             body.classList.toggle('dark-mode');
-            
             if(body.classList.contains('dark-mode')) {
                 localStorage.setItem('theme', 'dark');
                 toggleBtn.innerText = '☀️';
@@ -327,6 +319,15 @@
             document.querySelectorAll('.zone-btn').forEach(btn => btn.classList.remove('active'));
             selectedZoneName = button.innerText;
             button.classList.add('active');
+        }
+
+        function selectSize(button, sizeName, price) {
+            if(orderState === "sent") return;
+            const itemInfo = button.closest('.item-info');
+            itemInfo.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            itemInfo.querySelector('.price-text').innerText = price + " ج.م";
+            updateCart();
         }
 
         function changeQty(button, delta) {
@@ -346,19 +347,26 @@
             currentOrder = {};
 
             menuItems.forEach(item => {
-                const name = item.querySelector('h3').innerText;
-                const priceText = item.querySelector('.item-price').innerText;
+                const nameElement = item.querySelector('h3');
+                const name = nameElement.innerText;
+                const priceElement = item.querySelector('.item-price');
+                const priceText = priceElement.querySelector('.price-text') ? priceElement.querySelector('.price-text').innerText : priceElement.innerText;
                 const price = parseInt(priceText.replace(/\D/g, ''));
                 const qty = parseInt(item.querySelector('.qty-num').innerText);
 
+                const activeSizeBtn = item.querySelector('.size-btn.active');
+                const size = activeSizeBtn ? activeSizeBtn.innerText.split(' ')[0] : null;
+
                 if (qty > 0) {
-                    cartHtml += `<div class="cart-item"><span>${name} (x${qty})</span> <span>${qty * price} ج.م</span></div>`;
+                    let displayName = size ? `${name} (${size})` : name;
+                    cartHtml += `<div class="cart-item"><span>${displayName} (x${qty})</span> <span>${qty * price} ج.م</span></div>`;
                     total += (qty * price);
-                    currentOrder[name] = qty;
+                    currentOrder[displayName] = qty;
                 }
             });
 
             document.getElementById('cartItems').innerHTML = cartHtml;
+            document.getElementById('cartSubtotal').innerText = total + " ج.م";
             document.getElementById('cartTotal').innerText = total + " ج.م";
             document.getElementById('cartSummary').style.display = cartHtml ? "block" : "none";
         }
@@ -414,9 +422,14 @@
             previousOrder = {}; currentOrder = {}; selectedZoneName = ""; currentOrderId = "";
 
             document.querySelectorAll('.qty-num').forEach(span => span.innerText = '0');
-            document.querySelectorAll('.input-field').forEach(field => field.value = '');
+            document.querySelectorAll('.input-field, .item-note').forEach(field => field.value = '');
             document.querySelectorAll('.zone-btn').forEach(btn => btn.classList.remove('active'));
             
+            document.querySelectorAll('.size-options').forEach(opt => {
+                const defaultBtn = opt.querySelector('.size-btn:nth-child(2)') || opt.querySelector('.size-btn');
+                if(defaultBtn) defaultBtn.click();
+            });
+
             document.getElementById('cartSummary').style.display = "none";
             document.getElementById('editBanner').style.display = "none";
             document.getElementById('newOrderBtn').style.display = "none";
@@ -435,19 +448,26 @@
         function reorderSpecific(orderId) {
             let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
             let selectedOrder = history.find(o => o.id === orderId);
-
             if(!selectedOrder) return;
 
             startNewOrder(); 
-
+            
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
-                const itemName = item.querySelector('h3').innerText;
-                if(selectedOrder.rawItems[itemName]) {
-                    item.querySelector('.qty-num').innerText = selectedOrder.rawItems[itemName];
-                }
+                const baseName = item.querySelector('h3').innerText;
+                Object.keys(selectedOrder.rawItems).forEach(savedName => {
+                    if(savedName.includes(baseName)) {
+                        item.querySelector('.qty-num').innerText = selectedOrder.rawItems[savedName];
+                        const sizeMatch = savedName.match(/\((.*?)\)/);
+                        if(sizeMatch) {
+                            const sizeName = sizeMatch[1];
+                            item.querySelectorAll('.size-btn').forEach(btn => {
+                                if(btn.innerText.includes(sizeName)) btn.click();
+                            });
+                        }
+                    }
+                });
             });
-
             updateCart();
             alert("تم تحميل الطلب القديم! برجاء مراجعة السلة والبيانات ثم اضغط إرسال الطلب.");
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -465,11 +485,22 @@
             let total = 0;
 
             menuItems.forEach(item => {
-                const itemName = item.querySelector('h3').innerText;
-                const price = parseInt(item.querySelector('.item-price').innerText.replace(/\D/g, ''));
+                const nameElement = item.querySelector('h3');
+                const baseName = nameElement.innerText;
+                const priceElement = item.querySelector('.item-price');
+                const priceText = priceElement.querySelector('.price-text') ? priceElement.querySelector('.price-text').innerText : priceElement.innerText;
+                const price = parseInt(priceText.replace(/\D/g, ''));
                 const qty = parseInt(item.querySelector('.qty-num').innerText);
+                const noteInput = item.querySelector('.item-note');
+                const note = noteInput ? noteInput.value.trim() : "";
+
+                const activeSizeBtn = item.querySelector('.size-btn.active');
+                const size = activeSizeBtn ? activeSizeBtn.innerText.split(' ')[0] : null;
+
                 if (qty > 0) {
-                    orderText += `🔸 *${itemName}* (الكمية: ${qty}) - ${qty * price} ج.م\n`;
+                    let displayName = size ? `${baseName} (حجم ${size})` : baseName;
+                    orderText += `🔸 *${displayName}* (الكمية: ${qty}) - ${qty * price} ج.م\n`;
+                    if(note) orderText += `   📝 ملاحظات: ${note}\n`;
                     total += (qty * price);
                 }
             });
@@ -479,15 +510,22 @@
                 msg += `🟢 *طلب جديد تماماً* (رقم الطلب: ${currentOrderId})\n\n`; 
                 msg += "مرحباً، أريد طلب المنتجات التالية:\n\n";
                 msg += orderText;
-                msg += `\n💰 *الإجمالي: ${total} ج.م (بدون خدمة توصيل)*\n`;
-                msg += "------------------------------\n";
+                
+                // شكل الفاتورة في الواتساب زي اللي في الصورة
+                msg += `\n-----------------------\n`;
+                msg += `💵 *ملخص الفاتورة:*\n`;
+                msg += `السعر الكلي للخدمة (منتجات): ${total} ج.م\n`;
+                msg += `خدمة التوصيل: تُحسب عند التأكيد\n`;
+                msg += `المبلغ الإجمالي المستحق: ${total} ج.م + التوصيل\n`;
+                msg += `-----------------------\n\n`;
+                
                 msg += "📋 *بيانات العميل:*\n";
                 msg += `📍 المنطقة: ${selectedZoneName}\n`;
                 msg += `🏷️ العلامة المميزة: ${landmark}\n`;
                 msg += `🏠 العنوان: ${address || "لم يُكتب"}\n`;
                 msg += `👤 الاسم: ${name || "لم يُكتب"}\n`;
                 msg += `📞 الهاتف: ${phone || "لم يُكتب"}\n`;
-                msg += `📝 ملاحظات: ${notes || "بدون"}\n`;
+                if(notes) msg += `📝 ملاحظات عامة: ${notes}\n`;
                 msg += "------------------------------\n";
                 msg += "🛍️ _ملاحظة: الطلب يخرج بدون أكياس ثابتة._\n";
                 msg += "🙏 _برجاء انتظار تأكيد الموظف._\n";
@@ -512,8 +550,13 @@
                 if(removed.length > 0) msg += `➖ *المحذوفات:*\n- ${removed.join('\n- ')}\n\n`;
 
                 msg += `🧾 *الطلب النهائي بعد التعديل:*\n${orderText}\n`;
-                msg += `💰 *الإجمالي الجديد: ${total} ج.م (بدون خدمة توصيل)*\n`;
-                msg += "------------------------------\n";
+                
+                msg += `\n-----------------------\n`;
+                msg += `💵 *ملخص الفاتورة الجديدة:*\n`;
+                msg += `السعر الكلي للخدمة (منتجات): ${total} ج.م\n`;
+                msg += `المبلغ الإجمالي المستحق: ${total} ج.م + التوصيل\n`;
+                msg += `-----------------------\n`;
+                
                 msg += "🙏 _برجاء انتظار تأكيد الموظف على التعديل._\n";
             }
 
